@@ -10,15 +10,11 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private InputManager inputManager;
     [SerializeField] private Transform buildingContainer;
 
-    [Header("빌딩 데이터베이스")]
-    [SerializeField] private BuildingDatabaseSO database;
-
     // 셀별로 어떤 건물이 점유 중인지 저장
     private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
 
     // 현재 배치 대상으로 선택된 건물 데이터
-    private BuildingData selectedBuildingData;
-    private int selectedBuildingIndex = -1;
+    private BuildingDataSO selectedBuildingData;
     private GameObject previewObject;
     private Vector3Int currentCell;
 
@@ -26,9 +22,9 @@ public class PlacementSystem : MonoBehaviour
     private bool canPlace;
 
     public bool IsPlacementMode => selectedBuildingData != null;
-    public BuildingData SelectedBuildingData => selectedBuildingData;
+    public BuildingDataSO SelectedBuildingData => selectedBuildingData;
 
-    public event Action<PlacedBuilding, BuildingData> OnBuildingPlaced;
+    public event Action<PlacedBuilding, BuildingDataSO> OnBuildingPlaced;
 
     private void OnEnable()
     {
@@ -64,23 +60,18 @@ public class PlacementSystem : MonoBehaviour
     }
 
     // BuildingDatabaseSO의 배열 인덱스로 건물 선택 후 프리뷰 생성
-    public void StartPlacement(int id)
+    public void StartPlacement(BuildingDataSO buildingData)
     {
-        if (database == null) return;
-        if (database.buildingDatas == null) return;
-
-        CancelPlacement();
-
-        // 빌딩 ID로 검색해 해당하는 건물의 인덱스를 저장
-        selectedBuildingIndex = database.buildingDatas.FindIndex(selectedBuildingData => selectedBuildingData.ID == id);
-        Debug.Log(selectedBuildingIndex);
-        if (selectedBuildingIndex < 0)
+        if (buildingData == null)
         {
-            Debug.LogWarning($"Id not found : {id}");
+            Debug.LogWarning("배치할 건물 데이터가 지정되지 않았습니다.");
             return;
         }
 
-        selectedBuildingData = database.buildingDatas[selectedBuildingIndex];
+        // 기존 선택된 건물 배치를 취소하기 위해 Cancel 호출
+        CancelPlacement();
+
+        selectedBuildingData = buildingData;
         rotationIndex = 0;
 
         CreatePreview();
@@ -90,7 +81,6 @@ public class PlacementSystem : MonoBehaviour
     public void CancelPlacement()
     {
         selectedBuildingData = null;
-        selectedBuildingIndex = -1;
         rotationIndex = 0;
         canPlace = false;
 
@@ -142,6 +132,7 @@ public class PlacementSystem : MonoBehaviour
         UpdatePreviewVisual(canPlace);
     }
 
+    // 프리뷰 위치에 실제 건물 인스턴스 생성
     private void PlaceBuilding()
     {
         if (!IsPlacementMode || !canPlace || previewObject == null)
@@ -165,7 +156,12 @@ public class PlacementSystem : MonoBehaviour
         PlacedBuilding placedBuilding = buildingObj.GetComponent<PlacedBuilding>();
         if (placedBuilding != null)
         {
-            placedBuilding.Initialize(selectedBuildingData, currentCell, 0, cells);
+            placedBuilding.Initialize(
+                selectedBuildingData, 
+                currentCell, 
+                rotationIndex, 
+                cells
+            );
 
             // 설치된 건물이 차지하는 모든 셀을 등록
             foreach (Vector3Int cell in cells)
@@ -174,6 +170,9 @@ public class PlacementSystem : MonoBehaviour
             }
         }
 
+        OnBuildingPlaced?.Invoke(placedBuilding, selectedBuildingData);
+
+        // 건물을 반복적으로 설치할 수 있도록 프리뷰 갱신 (직전 설치 위치에는 설치 X 표시)
         UpdatePreview();
     }
 

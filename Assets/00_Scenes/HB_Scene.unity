@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 52373059}
   - component: {fileID: 52373058}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Processor_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -204,10 +204,10 @@ MonoBehaviour:
       - m_Target: {fileID: 1620588799}
         m_TargetAssemblyTypeName: PlacementSystem, Assembly-CSharp
         m_MethodName: StartPlacement
-        m_Mode: 3
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 2def409779f8e9749808260e728305a6, type: 2}
+          m_ObjectArgumentAssemblyTypeName: BuildingDataSO, Assembly-CSharp
           m_IntArgument: 1000
           m_FloatArgument: 0
           m_StringArgument: 
@@ -609,7 +609,7 @@ GameObject:
   - component: {fileID: 633960899}
   - component: {fileID: 633960898}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: Cancel_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1351,7 +1351,6 @@ MonoBehaviour:
   mainCamera: {fileID: 1200449583}
   inputManager: {fileID: 1139283684}
   buildingContainer: {fileID: 172377084}
-  database: {fileID: 11400000, guid: da22c39c322d7514e87e1ed04caa5251, type: 2}
 --- !u!1 &1652260404
 GameObject:
   m_ObjectHideFlags: 0
@@ -1650,7 +1649,7 @@ GameObject:
   - component: {fileID: 2077077926}
   - component: {fileID: 2077077925}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Stand_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1722,10 +1721,10 @@ MonoBehaviour:
       - m_Target: {fileID: 1620588799}
         m_TargetAssemblyTypeName: PlacementSystem, Assembly-CSharp
         m_MethodName: StartPlacement
-        m_Mode: 3
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 92fe497f088767e4682beea85db6a607, type: 2}
+          m_ObjectArgumentAssemblyTypeName: BuildingDataSO, Assembly-CSharp
           m_IntArgument: 1001
           m_FloatArgument: 0
           m_StringArgument: 
