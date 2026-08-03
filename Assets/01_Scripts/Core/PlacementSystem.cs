@@ -18,6 +18,7 @@ public class PlacementSystem : MonoBehaviour
     private GameObject previewObject;
     private Vector3Int currentCell;
 
+    // 0 : 0도 / 1: 90도 / 2: 180도 / 3: 270도
     private int rotationIndex;
     private bool canPlace;
 
@@ -32,6 +33,7 @@ public class PlacementSystem : MonoBehaviour
 
         inputManager.OnClicked += PlaceBuilding;
         inputManager.OnExit += CancelPlacement;
+        inputManager.OnRotation += RotatePreview;
     }
 
     private void OnDisable()
@@ -40,6 +42,7 @@ public class PlacementSystem : MonoBehaviour
 
         inputManager.OnClicked -= PlaceBuilding;
         inputManager.OnExit -= CancelPlacement;
+        inputManager.OnRotation -= RotatePreview;
     }
 
 
@@ -60,6 +63,7 @@ public class PlacementSystem : MonoBehaviour
     }
 
     // BuildingDatabaseSO의 배열 인덱스로 건물 선택 후 프리뷰 생성
+    // 버튼에 직접 연결해 사용
     public void StartPlacement(BuildingDataSO buildingData)
     {
         if (buildingData == null)
@@ -119,17 +123,37 @@ public class PlacementSystem : MonoBehaviour
 
         previewObject.SetActive(true);
 
+        // 현재 마우스가 위치한 월드 위치 저장
         Vector3 worldPos = inputManager.GetWorldPosition();
+
+        // 해당 월드 위치가 어떤 셀에 있는지 저장
         currentCell = grid.WorldToCell(worldPos);
+        // 높이 고정
         currentCell.y = 0;
 
-        Vector3 previewPos = GetBuildingCenter(currentCell, selectedBuildingData.Size);
+        Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 
-        previewObject.transform.position = previewPos;
+        Vector3 previewPos = GetBuildingCenter(currentCell, rotatedSize);
 
-        canPlace = IsCellsAvailable(currentCell, selectedBuildingData.Size);
+        previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
+
+        canPlace = IsCellsAvailable(currentCell, rotatedSize);
 
         UpdatePreviewVisual(canPlace);
+    }
+
+    // R 키를 눌렀을 때 프리뷰 시계방향 회전
+    private void RotatePreview()
+    {
+        if (!IsPlacementMode || previewObject == null) return;
+
+        // 회전 인덱스 증가
+        rotationIndex = (rotationIndex + 1) % 4;
+
+        // 프리뷰 회전
+        previewObject.transform.rotation = GetRotation(rotationIndex);
+
+        UpdatePreview();
     }
 
     // 프리뷰 위치에 실제 건물 인스턴스 생성
@@ -138,16 +162,16 @@ public class PlacementSystem : MonoBehaviour
         if (!IsPlacementMode || !canPlace || previewObject == null)
             return;
 
-        Vector2Int buildingSize = selectedBuildingData.Size;
+        Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 
-        List<Vector3Int> cells = GetOccupiedCells(currentCell, buildingSize);
+        List<Vector3Int> cells = GetOccupiedCells(currentCell, rotatedSize);
 
-        Vector3 buildingPos = GetBuildingCenter(currentCell, buildingSize);
+        Vector3 buildingPos = GetBuildingCenter(currentCell, rotatedSize);
 
         GameObject buildingObj = Instantiate(
             selectedBuildingData.BuildingPrefab,
             buildingPos,
-            Quaternion.identity,
+            GetRotation(rotationIndex),
             buildingContainer
         );
 
@@ -225,6 +249,24 @@ public class PlacementSystem : MonoBehaviour
         return (firstCenter + lastCenter) * 0.5f;
     }
 
+    // 건물에 회전을 적용했을 때 차지하는 크기
+    private Vector2Int GetRotatedSize(Vector2Int originSize, int targetRotationIndex)
+    {
+        bool swapXToY = targetRotationIndex == 1 || targetRotationIndex == 3;
+
+        return swapXToY ? new Vector2Int(originSize.y, originSize.x) : originSize;
+    }
+
+    // 회전 인덱스를 Y축 회전값으로 변환
+    private Quaternion GetRotation(int targetRotationIndex)
+    {
+        return Quaternion.Euler(
+            0f,
+            targetRotationIndex * 90f,
+            0f
+        );
+    }
+
     private void UpdatePreviewVisual(bool isValid)
     {
         if (!previewObject.TryGetComponent(out BuildingPreview buildingPreview))
@@ -241,4 +283,5 @@ public class PlacementSystem : MonoBehaviour
         cell.y = 0;
         return occupiedCells.ContainsKey(cell);
     }
+
 }
