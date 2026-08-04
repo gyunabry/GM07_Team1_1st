@@ -1,17 +1,58 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /*
-ÇÃ·¹ÀÌ¾î ¿ÀºêÁ§Æ®¿¡ ºÎÂøµÇ¾î »óÈ£ÀÛ¿ë °¡´ÉÇÑ ¿ÀºêÁ§Æ®¸¦ °¨ÁöÇÏ´Â Å¬·¡½º
+í”Œë ˆì´ì–´ ì˜¤ë¸Œì íŠ¸ì— ë¶€ì°©ë˜ì–´ ìƒí˜¸ì‘ìš© ê°€ëŠ¥í•œ ì˜¤ë¸Œì íŠ¸ë¥¼ ê°ì§€í•˜ëŠ” í´ë˜ìŠ¤
 
  */
 
 public class PlayerInteractionDetector : MonoBehaviour
 {
+    private readonly HashSet<IInteractable> detectedInteractables = new();
+
+    public int DetectedCount => detectedInteractables.Count;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out IInteractable interactable))
+        IInteractable interactable = other.GetComponentInParent<IInteractable>();
+
+        if (interactable == null) return;
+
+        // ì´ë¯¸ ë“±ë¡ëœ ëŒ€ìƒì´ë©´ ë¦¬í„´
+        if (!detectedInteractables.Add(interactable))
         {
-            
+            return;
         }
+
+        // ê°•ì¡° í‘œì‹œ
+        if (interactable is IHighlightable highlightable)
+        {
+            highlightable.SetHighlighted(true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        IInteractable interactable = other.GetComponentInParent<IInteractable>();
+
+        if (interactable == null) return;
+
+        // ì´ë¯¸ ë“±ë¡ëœ ëŒ€ìƒì´ ì•„ë‹ˆë¼ë©´ ë¦¬í„´
+        if (!detectedInteractables.Remove(interactable))
+        {
+            return;
+        }
+
+        // ê°•ì¡° í‘œì‹œ í•´ì œ
+        if (interactable is IHighlightable highlightable)
+        {
+            highlightable.SetHighlighted(false);
+        }
+    }
+
+    public bool Contains(IInteractable interactable)
+    {
+        return interactable != null && detectedInteractables.Contains(interactable);
     }
 }

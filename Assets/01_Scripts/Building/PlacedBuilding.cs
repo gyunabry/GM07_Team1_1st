@@ -1,15 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlacedBuilding : MonoBehaviour
+public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
 {
     public BuildingDataSO Data { get; private set; }
     public Vector3Int OriginCell { get; private set; }
     public int RotationIndex { get; private set; }
 
+    public string BuildingName => Data.BuildingName;
+
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
+
+    public event Action OnStateChanged;
 
     /// <summary>
     /// 건물 배치 시 초기화하는 메서드.

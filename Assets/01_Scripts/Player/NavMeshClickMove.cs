@@ -10,6 +10,10 @@ public class NavMeshClickMove : MonoBehaviour
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float sampleDistance = 2.0f;
 
+    [Header("ÂüÁ¶")]
+    [SerializeField] private PlayerInteractionController interactionController;
+    [SerializeField] private PlacementSystem placementSystem;
+
     private NavMeshAgent agent;
     private NavMeshPath calculatePath;
     private Vector3 currentDestination;
@@ -30,6 +34,16 @@ public class NavMeshClickMove : MonoBehaviour
     private void MouseInput()
     {
         if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+
+        if (interactionController != null && interactionController.TryInteractUnderPointer())
+        {
+            return;
+        }
+
+        if (placementSystem != null && placementSystem.IsPlacementMode)
+        {
+            return;
+        }
 
         SetDestination();
     }
