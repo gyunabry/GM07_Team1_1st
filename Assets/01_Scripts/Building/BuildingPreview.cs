@@ -9,7 +9,7 @@ public class BuildingPreview : MonoBehaviour
 
     private void Awake()
     {
-        previewRenderer = GetComponent<Renderer>();
+        previewRenderer = GetComponentInChildren<Renderer>();
     }
 
     public void SetPreview(bool isValid)

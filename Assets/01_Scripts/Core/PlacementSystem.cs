@@ -2,6 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ 상태 패턴 활용 리팩토링 예정
+- Placement
+- Remove
+- Interior
+ */
+
 public class PlacementSystem : MonoBehaviour
 {
     [Header("참조")]
@@ -31,6 +38,7 @@ public class PlacementSystem : MonoBehaviour
     {
         if (inputManager == null) return;
 
+        // 이벤트로 입력 처리
         inputManager.OnClicked += PlaceBuilding;
         inputManager.OnExit += CancelPlacement;
         inputManager.OnRotation += RotatePreview;
@@ -44,7 +52,6 @@ public class PlacementSystem : MonoBehaviour
         inputManager.OnExit -= CancelPlacement;
         inputManager.OnRotation -= RotatePreview;
     }
-
 
     private void Awake()
     {
@@ -128,12 +135,12 @@ public class PlacementSystem : MonoBehaviour
 
         // 해당 월드 위치가 어떤 셀에 있는지 저장
         currentCell = grid.WorldToCell(worldPos);
-        // 높이 고정
         currentCell.y = 0;
 
         Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 
         Vector3 previewPos = GetBuildingCenter(currentCell, rotatedSize);
+        previewPos.y = 0;
 
         previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
 
@@ -167,6 +174,7 @@ public class PlacementSystem : MonoBehaviour
         List<Vector3Int> cells = GetOccupiedCells(currentCell, rotatedSize);
 
         Vector3 buildingPos = GetBuildingCenter(currentCell, rotatedSize);
+        buildingPos.y = 0;
 
         GameObject buildingObj = Instantiate(
             selectedBuildingData.BuildingPrefab,
