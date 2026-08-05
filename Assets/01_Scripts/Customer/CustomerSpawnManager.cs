@@ -6,7 +6,9 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 {
     [SerializeField] private CustomerController customerPrefab;
     [SerializeField] private ShopCustomerQueue shopQueue;
+    [SerializeField] private ShopCheckout checkout;
     [SerializeField] private Transform entrancePoint;
+    [SerializeField] private Transform exitTurnPoint;
     [SerializeField] private Transform exitPoint;
     [SerializeField] private CustomerOrder order;
     [SerializeField, Min(0.1f)] private float spawnInterval = 5f;
@@ -27,16 +29,28 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         currency = currencyService;
     }
 
+    public void Configure(CustomerController prefab, ShopCustomerQueue queue, ShopCheckout checkoutService, Transform entrance, Transform exitTurn, Transform exit, CustomerOrder customerOrder, float interval)
+    {
+        customerPrefab = prefab;
+        shopQueue = queue;
+        checkout = checkoutService;
+        entrancePoint = entrance;
+        exitTurnPoint = exitTurn;
+        exitPoint = exit;
+        order = customerOrder;
+        spawnInterval = Mathf.Max(0.1f, interval);
+    }
+
     public bool SpawnOne()
     {
-        if (customerPrefab == null || shopQueue == null || entrancePoint == null || exitPoint == null || PoolManager.Instance == null)
+        if (customerPrefab == null || shopQueue == null || checkout == null || entrancePoint == null || exitPoint == null || PoolManager.Instance == null)
         {
             return false;
         }
 
         CustomerController customer = PoolManager.Instance.GetPool(customerPrefab);
         customer.transform.SetPositionAndRotation(entrancePoint.position, entrancePoint.rotation);
-        if (customer.OnSpawned(shopQueue, exitPoint, order, inventory, currency)) return true;
+        if (customer.OnSpawned(shopQueue, checkout, exitTurnPoint, exitPoint, order, inventory, currency)) return true;
 
         PoolManager.Instance.ReturnPool(customer);
         return false;

@@ -11,6 +11,8 @@ public sealed class CustomerController : MonoBehaviour
     private NavMeshAgent agent;
     private CustomerStateMachine stateMachine;
     private ShopCustomerQueue queue;
+    private ShopCheckout checkout;
+    private Transform exitTurnPoint;
     private Transform exitPoint;
     private ICustomerInventory inventory;
     private ICustomerCurrency currency;
@@ -20,6 +22,8 @@ public sealed class CustomerController : MonoBehaviour
 
     public CustomerOrder Order { get; private set; }
     public ShopCustomerQueue Queue => queue;
+    public ShopCheckout Checkout => checkout;
+    public bool HasExitTurnPoint => exitTurnPoint != null;
     public CustomerStateMachine StateMachine => stateMachine;
     public bool IsPaymentCompleted => paymentCompleted;
     public bool HasInventoryService => inventory != null;
@@ -39,16 +43,18 @@ public sealed class CustomerController : MonoBehaviour
     }
 
     // PoolManager에서 대여한 직후 호출
-    public bool OnSpawned(ShopCustomerQueue shopQueue, Transform exit, CustomerOrder order, ICustomerInventory inventoryService, ICustomerCurrency currencyService)
+    public bool OnSpawned(ShopCustomerQueue shopQueue, ShopCheckout checkoutService, Transform exitTurn, Transform exit, CustomerOrder order, ICustomerInventory inventoryService, ICustomerCurrency currencyService)
     {
         ResetCustomer();
         queue = shopQueue;
+        checkout = checkoutService;
+        exitTurnPoint = exitTurn;
         exitPoint = exit;
         Order = order.IsValid ? order : defaultOrder;
         inventory = inventoryService;
         currency = currencyService;
 
-        if (queue == null || exitPoint == null || !Order.IsValid || !queue.TryJoin(this))
+        if (queue == null || checkout == null || exitPoint == null || !Order.IsValid || !queue.TryJoin(this))
         {
             stateMachine.Cancel();
             return false;
@@ -62,6 +68,8 @@ public sealed class CustomerController : MonoBehaviour
     {
         queue?.Leave(this);
         queue = null;
+        checkout = null;
+        exitTurnPoint = null;
         inventory = null;
         currency = null;
         paymentCompleted = false;
@@ -92,6 +100,11 @@ public sealed class CustomerController : MonoBehaviour
         return exitPoint != null && TryMoveTo(exitPoint.position);
     }
 
+    public bool MoveToExitTurnPoint()
+    {
+        return exitTurnPoint != null && TryMoveTo(exitTurnPoint.position);
+    }
+
     public bool HasArrived()
     {
         return agent != null && agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
@@ -99,7 +112,7 @@ public sealed class CustomerController : MonoBehaviour
 
     public bool TryCompletePayment()
     {
-        if (paymentCompleted || inventory == null || currency == null || !Order.IsValid || !inventory.TryConsumeAll(Order.Items))
+        if (paymentCompleted || checkout == null || !checkout.HasOperator || inventory == null || currency == null || !Order.IsValid || !inventory.TryConsumeAll(Order.Items))
         {
             return false;
         }
@@ -122,6 +135,22 @@ public sealed class CustomerController : MonoBehaviour
         if (inventory != null)
         {
             inventory.InventoryChanged -= handler;
+        }
+    }
+
+    public void SubscribeOperatorPresenceChanged(System.Action handler)
+    {
+        if (checkout != null)
+        {
+            checkout.OperatorPresenceChanged += handler;
+        }
+    }
+
+    public void UnsubscribeOperatorPresenceChanged(System.Action handler)
+    {
+        if (checkout != null)
+        {
+            checkout.OperatorPresenceChanged -= handler;
         }
     }
 

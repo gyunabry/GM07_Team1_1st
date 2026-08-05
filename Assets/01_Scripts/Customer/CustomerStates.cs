@@ -31,12 +31,14 @@ public sealed class CustomerIdleState : ICustomerState
 {
     private readonly CustomerController controller;
     private bool inventoryChanged;
+    private bool operatorPresenceChanged;
     public string Name => "Idle";
     public CustomerIdleState(CustomerController controller) => this.controller = controller;
-    public void Enter() { controller.SubscribeInventoryChanged(OnInventoryChanged); TryAutoPayment(); }
-    public void Update() { if (inventoryChanged) { inventoryChanged = false; TryAutoPayment(); } }
-    public void Exit() { controller.UnsubscribeInventoryChanged(OnInventoryChanged); }
+    public void Enter() { controller.SubscribeInventoryChanged(OnInventoryChanged); controller.SubscribeOperatorPresenceChanged(OnOperatorPresenceChanged); TryAutoPayment(); }
+    public void Update() { if (inventoryChanged || operatorPresenceChanged) { inventoryChanged = false; operatorPresenceChanged = false; TryAutoPayment(); } }
+    public void Exit() { controller.UnsubscribeInventoryChanged(OnInventoryChanged); controller.UnsubscribeOperatorPresenceChanged(OnOperatorPresenceChanged); }
     private void OnInventoryChanged() { inventoryChanged = true; }
+    private void OnOperatorPresenceChanged() { operatorPresenceChanged = true; }
     private void TryAutoPayment()
     {
         if (controller.TryCompletePayment()) controller.StateMachine.ChangeState(new CustomerExitState(controller));
@@ -47,9 +49,26 @@ public sealed class CustomerIdleState : ICustomerState
 public sealed class CustomerExitState : ICustomerState
 {
     private readonly CustomerController controller;
+    private bool movingToFinalExit;
     public string Name => "Exit";
     public CustomerExitState(CustomerController controller) => this.controller = controller;
-    public void Enter() { controller.Queue?.Leave(controller); if (!controller.MoveToExit()) controller.ReturnToPool(); }
-    public void Update() { if (controller.HasArrived()) controller.ReturnToPool(); }
+    public void Enter()
+    {
+        controller.Queue?.Leave(controller);
+        movingToFinalExit = !controller.HasExitTurnPoint;
+        bool moveStarted = movingToFinalExit ? controller.MoveToExit() : controller.MoveToExitTurnPoint();
+        if (!moveStarted) controller.ReturnToPool();
+    }
+    public void Update()
+    {
+        if (!controller.HasArrived()) return;
+        if (!movingToFinalExit)
+        {
+            movingToFinalExit = true;
+            if (controller.MoveToExit()) return;
+        }
+
+        controller.ReturnToPool();
+    }
     public void Exit() { }
 }

@@ -16,6 +16,11 @@ public interface ICustomerCurrency
     void Grant(int amount);
 }
 
+// 계산대에서 손님 주문을 처리할 수 있는 플레이어 또는 자동 판매직원 표식
+public interface IShopCheckoutOperator
+{
+}
+
 // 주문에 필요한 재료 하나와 수량
 [Serializable]
 public struct CustomerOrderItem

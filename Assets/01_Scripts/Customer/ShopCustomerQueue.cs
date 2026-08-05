@@ -10,6 +10,13 @@ public sealed class ShopCustomerQueue : MonoBehaviour
 
     private readonly List<CustomerController> customers = new List<CustomerController>();
 
+    public void Configure(Transform front, float slotSpacing, int capacity)
+    {
+        checkoutFront = front;
+        spacing = Mathf.Max(0.1f, slotSpacing);
+        maxCustomers = Mathf.Max(1, capacity);
+    }
+
     public bool TryJoin(CustomerController customer)
     {
         if (customer == null || checkoutFront == null || customers.Contains(customer) || customers.Count >= maxCustomers)
