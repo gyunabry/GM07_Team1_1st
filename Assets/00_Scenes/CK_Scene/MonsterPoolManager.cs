@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PoolManager : MonoBehaviour
+public class MonsterPoolManager : MonoBehaviour
 {
-    public static PoolManager Instance { get; private set; }
+    public static MonsterPoolManager Instance { get; private set; }
 
     private Dictionary<Type, Queue<Component>> poolDic = new Dictionary<Type, Queue<Component>>();
     private Dictionary<Type, Transform> poolParent = new Dictionary<Type, Transform>();

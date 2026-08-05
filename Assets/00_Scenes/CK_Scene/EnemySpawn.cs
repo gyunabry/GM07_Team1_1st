@@ -8,7 +8,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int maxEnemy;
     [SerializeField] private float enemySpawnTimer;
     [SerializeField] private Enemy enemy;
-    [SerializeField] private PoolManager poolManager;
+    [SerializeField] private MonsterPoolManager poolManager;
     [SerializeField] private Collider spawnArea;
     [SerializeField] private EnemySO enemySO;
     private Coroutine co;

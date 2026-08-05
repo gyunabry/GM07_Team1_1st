@@ -12,7 +12,7 @@ public class PoolPreLoader : MonoBehaviour
 
     private void Start()
     {
-        PoolManager.Instance.PreLoadPool(enemyPrefab, enemyCount);
-        PoolManager.Instance.PreLoadPool(dropItemPrefab, dropItemCount);
+        MonsterPoolManager.Instance.PreLoadPool(enemyPrefab, enemyCount);
+        MonsterPoolManager.Instance.PreLoadPool(dropItemPrefab, dropItemCount);
     }
 }

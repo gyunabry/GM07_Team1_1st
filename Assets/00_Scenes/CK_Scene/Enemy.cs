@@ -10,13 +10,13 @@ public class Enemy : MonoBehaviour
     public NavMeshAgent agent;
     public float runDistance;
     public EnemySpawn enemySpawn;
-    private PoolManager poolManager;
+    private MonsterPoolManager poolManager;
     private bool isStart = false;
     public int nowHp { get; set; }
    
     private void OnEnable()
     {
-        poolManager = FindAnyObjectByType<PoolManager>();
+        poolManager = FindAnyObjectByType<MonsterPoolManager>();
         if (!isStart)
         {
             isStart = true;
