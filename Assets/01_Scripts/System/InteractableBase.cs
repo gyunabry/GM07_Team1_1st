@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class InteractableBase : MonoBehaviour, IInteractable, IHighlightable
@@ -8,8 +10,9 @@ public abstract class InteractableBase : MonoBehaviour, IInteractable, IHighligh
     [SerializeField] private bool isEnabled = true;
 
     [Header("강조 표시")]
-    [SerializeField] private Renderer[] highlightRenderers;
-    [SerializeField] private Color highlightColor = Color.white;
+    [SerializeField] private GameObject outlineObject;
+
+    private bool isHighlighted;
 
     public string InteractionName => interactionName;
 
@@ -25,6 +28,36 @@ public abstract class InteractableBase : MonoBehaviour, IInteractable, IHighligh
 
     public void SetHighlighted(bool value)
     {
+        if (isHighlighted == value)
+        {
+            return;
+        }
 
+        isHighlighted = value;
+
+        if (value)
+        {
+            ShowOutline();
+        }
+        else
+        {
+            HideOutline();
+        }
+    }
+
+    private void ShowOutline()
+    {
+        if (outlineObject != null) 
+        { 
+            outlineObject.SetActive(true);
+        }
+    }
+
+    private void HideOutline()
+    {
+        if (outlineObject != null)
+        {
+            outlineObject.SetActive(false);
+        }
     }
 }

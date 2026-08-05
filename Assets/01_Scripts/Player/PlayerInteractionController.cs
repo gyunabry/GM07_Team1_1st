@@ -7,7 +7,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask interactionLayer;
     [SerializeField] private PlayerInteractionDetector detector;
-    [SerializeField] private BuildingInfoPanel buildingInfoPanel;
+    [SerializeField] private BuildingInteractionPanel buildingPanel;
 
     private void Awake()
     {
@@ -65,6 +65,6 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     {
         if (building == null) return;
 
-        buildingInfoPanel.ShowPanel(building);
+        buildingPanel.ShowPanel(building);
     }
 }

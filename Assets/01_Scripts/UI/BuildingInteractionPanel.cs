@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class BuildingInfoPanel : MonoBehaviour
+public class BuildingInteractionPanel : MonoBehaviour
 {
     [SerializeField] private GameObject panelRoot;
     [SerializeField] private TMP_Text buildingNameText;

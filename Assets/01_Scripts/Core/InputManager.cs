@@ -3,6 +3,17 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
+/* 
+우클릭 이동으로 수정
+
+- UI 위 -> 월드에서 아무 동작도 하지 않음
+- 건물 배치 모드 -> 배치만 시도
+- 상호작용 가능한 대상 -> 선택
+- 이동 가능한 지형 -> 플레이어 이동
+- 모두 실패 -> return
+ 
+ */
+
 public class InputManager : MonoBehaviour
 {
     [SerializeField] private LayerMask groundLayer;

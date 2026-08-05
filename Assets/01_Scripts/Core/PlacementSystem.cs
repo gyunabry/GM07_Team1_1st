@@ -202,6 +202,8 @@ public class PlacementSystem : MonoBehaviour
             }
         }
 
+        placedBuilding.BeginConstruction();
+
         OnBuildingPlaced?.Invoke(placedBuilding, selectedBuildingData);
 
         // 건물을 반복적으로 설치할 수 있도록 프리뷰 갱신 (직전 설치 위치에는 설치 X 표시)
