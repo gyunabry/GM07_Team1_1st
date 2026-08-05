@@ -1,15 +1,36 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
-public class PlacedBuilding : MonoBehaviour
+public enum BuildingState
 {
+    Constructing,
+    Completed
+}
+
+public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
+{
+    [Header("건축 상태 오브젝트")]
+    [SerializeField] private GameObject constructionObject;
+    [SerializeField] private GameObject completedObject;
+
     public BuildingDataSO Data { get; private set; }
     public Vector3Int OriginCell { get; private set; }
     public int RotationIndex { get; private set; }
 
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
+
+    public BuildingState State { get; private set; }
+    public float ConstructionProgress { get; private set; }
+    public bool IsComplete => State == BuildingState.Completed;
+
+    public event Action OnStateChanged;
+    public event Action<PlacedBuilding> OnConstructionCompleted;
+
+    public string BuildingName => Data.BuildingName;
 
     /// <summary>
     /// 건물 배치 시 초기화하는 메서드.
@@ -27,5 +48,53 @@ public class PlacedBuilding : MonoBehaviour
 
         occupiedCells.Clear();
         occupiedCells.AddRange(cells);
+
+        // 건설 시작
+        State = BuildingState.Constructing;
+        ConstructionProgress = 0f;
+
+        constructionObject?.SetActive(true);
+        completedObject?.SetActive(false);
+
+        OnStateChanged?.Invoke();
+    }
+
+    public void BeginConstruction()
+    {
+        ConstructAsync(this.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+    private async UniTask ConstructAsync(CancellationToken cancellationToken)
+    {
+        float buildTime = Mathf.Max(0f, Data.BuildTime);
+
+        if (buildTime > 0f)
+        {
+            float elapsedTime = 0f;
+
+            while (elapsedTime < buildTime)
+            {
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+
+                elapsedTime += Time.deltaTime;
+                ConstructionProgress = Mathf.Clamp01(elapsedTime / buildTime);
+
+                OnStateChanged?.Invoke();
+            }
+        }
+
+        CompleteConstruction();
+    }
+
+    private void CompleteConstruction()
+    {
+        State = BuildingState.Completed;
+        ConstructionProgress = 1f;
+
+        constructionObject?.SetActive(false);
+        completedObject.SetActive(true);
+
+        OnStateChanged?.Invoke();
+        OnConstructionCompleted?.Invoke(this);
     }
 }

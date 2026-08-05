@@ -1,34 +1,63 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class InteractableBase : MonoBehaviour, IInteractable
+public abstract class InteractableBase : MonoBehaviour, IInteractable, IHighlightable
 {
-    [Header("»óÈ£ÀÛ¿ë")]
-    [SerializeField] private string interactionName = "»óÈ£ÀÛ¿ë";
+    [Header("ìƒí˜¸ì‘ìš©")]
+    [SerializeField] private string interactionName = "ìƒí˜¸ì‘ìš©";
     [SerializeField] private Transform interactionPoint;
-    [SerializeField] private float interactionRange = 1.5f;
     [SerializeField] private bool isEnabled = true;
+
+    [Header("ê°•ì¡° í‘œì‹œ")]
+    [SerializeField] private GameObject outlineObject;
+
+    private bool isHighlighted;
 
     public string InteractionName => interactionName;
 
     public Transform InteractionPoint => interactionPoint != null ? interactionPoint : transform;
-
-    public float InteractableRange => interactionRange;
 
     public bool CanInteract(GameObject interactor)
     {
         return isEnabled && interactor != null;
     }
 
-    // ÇØ´ç º£ÀÌ½º¸¦ »ó¼Ó¹Ş´Â ÀÚ½Ä Å¬·¡½º¿¡¼­ ±¸Çö
+    // í•´ë‹¹ ë² ì´ìŠ¤ë¥¼ ìƒì†ë°›ëŠ” ìì‹ í´ë˜ìŠ¤ì—ì„œ êµ¬í˜„
     public abstract void Interact(GameObject interactor);
 
-    public void SetInteractionEnabled(bool value)
+    public void SetHighlighted(bool value)
     {
-        isEnabled = value;
+        if (isHighlighted == value)
+        {
+            return;
+        }
+
+        isHighlighted = value;
+
+        if (value)
+        {
+            ShowOutline();
+        }
+        else
+        {
+            HideOutline();
+        }
     }
 
-    protected void SetInteractionName(string name)
+    private void ShowOutline()
     {
-        interactionName = name;
+        if (outlineObject != null) 
+        { 
+            outlineObject.SetActive(true);
+        }
+    }
+
+    private void HideOutline()
+    {
+        if (outlineObject != null)
+        {
+            outlineObject.SetActive(false);
+        }
     }
 }
