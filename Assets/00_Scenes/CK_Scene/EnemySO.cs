@@ -9,5 +9,7 @@ public class EnemySO : ScriptableObject
     public int hp;
     public float patrolSpeed;
     public float runSpeed;
+    public float runStartDis;
+    public float runEndDis;
     public List<DropItemSO> dropItem;
 }

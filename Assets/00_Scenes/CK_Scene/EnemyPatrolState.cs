@@ -24,14 +24,20 @@ public class EnemyPatrolState : IState
     public void Execute()
     {
         enemy.agent.Move(moveDir * Time.deltaTime * enemy.enemySO.patrolSpeed);
+        
         if (randomEnd == true)
         {
             stateController.ChangeState(stateController.IdleState);
         }
-        Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runDistance / 2, enemy.playerLayer);
+        Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runStartDistance, enemy.playerLayer);
         if(player.Length > 0)
         {
             stateController.ChangeState(stateController.RunState);
+        }
+        if (enemy.isHit)
+        {
+            stateController.ChangeState(stateController.HitRunState);
+            enemy.isHit = false;
         }
         if (enemy.nowHp <= 0)
         {

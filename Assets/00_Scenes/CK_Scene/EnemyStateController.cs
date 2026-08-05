@@ -8,6 +8,7 @@ public class EnemyStateController
     public EnemyPatrolState PatrolState { get; private set; }
     public EnemyRunState RunState { get; private set; }
     public EnemyDieState DieState { get; private set; }
+    public EnemyHitRunState HitRunState { get; private set; }
 
     public EnemyStateController(Enemy enemy)
     {
@@ -15,6 +16,7 @@ public class EnemyStateController
         PatrolState = new EnemyPatrolState(enemy);
         RunState = new EnemyRunState(enemy);
         DieState = new EnemyDieState(enemy);
+        HitRunState = new EnemyHitRunState(enemy);
     }
     public void ChangeState(IState newState)
     {

@@ -31,6 +31,8 @@ public class EnemySpawn : MonoBehaviour
             nowEnemy.GetEnemyData(enemySO);
             nowEnemy.enemySpawn = this;
             nowEnemy.nowHp = enemySO.hp;
+            nowEnemy.runStartDistance = enemySO.runStartDis;
+            nowEnemy.runEndDistance = enemySO.runEndDis;
             activeEnemy.Add(nowEnemy);
         }
         co = null;
