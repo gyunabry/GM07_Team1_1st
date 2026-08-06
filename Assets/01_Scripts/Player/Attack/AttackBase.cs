@@ -32,6 +32,22 @@ public class AttackBase : IAttack
     }
     public void Skill(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
+        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
+        if (enemy.Length > 0) 
+        { 
+            foreach(var that in enemy)
+            {
+                Enemy ene = that.GetComponent<Enemy>();
+                ene.TakeDamage(AttackDamage);
+            }
+        }
+    }
+    public void Skill2(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+
+    }
+    public void Skill3(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
 
     }
 }
@@ -50,11 +66,22 @@ public abstract class AttackDeco : IAttack
     {
         this.attack.Skill(AttackDamage, data, poolManager, layer);
     }
+    public virtual void Skill2(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+        this.attack.Skill2(AttackDamage, data, poolManager, layer);
+    }
+    public virtual void Skill3(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+        this.attack.Skill3(AttackDamage, data, poolManager, layer);
+    }
 }
 public class AttackData
 {
+    public int attackDamage = 5;
+    public float attackSpeed = 0.5f;
     public Vector3 position;
     public Vector3 direction;
+    public float distance;
     public int projectileCount = 1;
     public float spreadAngle = 0f;
 }
@@ -62,4 +89,6 @@ public interface IAttack
 {
     public void Attack(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
     public void Skill(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void Skill2(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void Skill3(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
 }

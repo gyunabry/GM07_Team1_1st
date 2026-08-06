@@ -1409,7 +1409,15 @@ MonoBehaviour:
     m_Bits: 512
   player: {fileID: 2087349290}
   poolManager: {fileID: 1096219248}
-  isTripleShot: 1
+  attackSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  skillSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  skill2SO: {fileID: 0}
+  skill3SO: {fileID: 0}
+  isTripleShot: 0
+  isAttack: 0
+  isSkill: 1
+  isSkill2: 0
+  isSkill3: 0
 --- !u!114 &2087349290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1422,7 +1430,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b45b1cc173c1546bfda0795cd12193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
-  attackDamage: 1
 --- !u!1001 &2824255149350228626
 PrefabInstance:
   m_ObjectHideFlags: 0

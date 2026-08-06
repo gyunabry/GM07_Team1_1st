@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Enemy", menuName = "ScriptableObjects/EnemySO")]
 public class EnemySO : ScriptableObject
 {
+    public int enemyCode;
     public string enemyName;
     public int hp;
     public float patrolSpeed;
