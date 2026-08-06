@@ -10,7 +10,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private Enemy enemy;
     [SerializeField] private MonsterPoolManager poolManager;
     [SerializeField] private Collider spawnArea;
-    [SerializeField] private EnemySO enemySO;
+    [SerializeField] private EnemyDataSO enemyData;
     private Coroutine co;
     public List<Enemy> activeEnemy = new List<Enemy>();
 
@@ -28,11 +28,11 @@ public class EnemySpawn : MonoBehaviour
         {
             Enemy nowEnemy = poolManager.GetPool<Enemy>();
             nowEnemy.transform.position = RandomPoint();
-            nowEnemy.GetEnemyData(enemySO);
+            nowEnemy.GetEnemyData(enemyData);
             nowEnemy.enemySpawn = this;
-            nowEnemy.nowHp = enemySO.hp;
-            nowEnemy.runStartDistance = enemySO.runStartDis;
-            nowEnemy.runEndDistance = enemySO.runEndDis;
+            nowEnemy.CurrentHp = enemyData.Hp;
+            nowEnemy.runStartDistance = enemyData.RunStartDistance;
+            nowEnemy.runEndDistance = enemyData.RunEndDistance;
             activeEnemy.Add(nowEnemy);
         }
         co = null;

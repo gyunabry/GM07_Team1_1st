@@ -35,7 +35,7 @@ public class EnemyIdleState : IState
             stateController.ChangeState(stateController.HitRunState);
             enemy.isHit = false;
         }
-        if (enemy.nowHp <= 0)
+        if (enemy.CurrentHp <= 0)
         {
             stateController.ChangeState(stateController.DieState);
         }

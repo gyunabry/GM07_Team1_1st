@@ -1,5 +1,10 @@
 using UnityEngine;
 
+//public enum BuildingType
+//{
+    
+//}
+
 [CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Tycoon/Building Data")]
 public class BuildingDataSO : ScriptableObject
 {

@@ -33,17 +33,19 @@ public class EnemyRunState : IState
             stateController.ChangeState(stateController.HitRunState);
             enemy.isHit = false;
         }
-        if (enemy.nowHp <= 0)
+        if (enemy.CurrentHp <= 0)
         {
             stateController.ChangeState(stateController.DieState);
         }
     }
+
     public void Exit()
     {
         enemy.agent.ResetPath();
     }
+
     public IEnumerator RandomTime()
     {
-               yield return null;
+        yield return null;
     }
 }
