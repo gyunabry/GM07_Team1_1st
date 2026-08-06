@@ -89,10 +89,9 @@ public class AttackBase : IAttack
     }
     public void Skill4(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
-        Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * data.distance;
-        Vector3 randomPosi = new Vector3(data.position.x + randomCircle.x, data.position.y, data.position.z + randomCircle.y);
+        
 
-        Collider[] enemy = Physics.OverlapSphere(randomPosi, data.distance, layer);
+        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
 
         if (enemy.Length > 0)
         {

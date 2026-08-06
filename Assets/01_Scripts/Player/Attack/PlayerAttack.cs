@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -119,10 +120,10 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = skill2SO.attackDamage;
-            ad.attackSpeed = skill2SO.attackSpeed;
-            ad.distance = skill2SO.distance;
-            ad.spreadAngle = skill2SO.spreadAngle;
+            ad.attackDamage = skill3SO.attackDamage;
+            ad.attackSpeed = skill3SO.attackSpeed;
+            ad.distance = skill3SO.distance;
+            ad.spreadAngle = skill3SO.spreadAngle;
 
             attack.Skill3(ad.attackDamage, ad, poolManager, layer);
 
@@ -133,16 +134,19 @@ public class PlayerAttack : MonoBehaviour
     {
         while (true)
         {
+            Vector2 randomCircle = Random.insideUnitCircle * skill4SO.distance;
+            Vector3 randomPosi = new Vector3(transform.position.x + randomCircle.x, transform.position.y, transform.position.z + randomCircle.y);
             AttackData ad = new AttackData
             {
-                position = transform.position,
+                position = randomPosi,
             };
-            ad.attackDamage = skill2SO.attackDamage;
-            ad.attackSpeed = skill2SO.attackSpeed;
-            ad.distance = skill2SO.distance;
-            giz = transform.position;
+            ad.attackDamage = skill4SO.attackDamage;
+            ad.attackSpeed = skill4SO.attackSpeed;
+            ad.distance = skill4SO.distance;
+            
+            
+            giz = randomPosi;
             dis = ad.distance;
-
             attack.Skill4(ad.attackDamage, ad, poolManager, layer);
 
             yield return new WaitForSeconds(ad.attackSpeed);
