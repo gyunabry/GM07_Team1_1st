@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
@@ -5,7 +6,7 @@ public class AttackBase : IAttack
 {
     public void Attack(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
-        for(int i = 0; i < data.projectileCount; i++)
+        for (int i = 0; i < data.projectileCount; i++)
         {
             AttackPoint ap = poolManager.GetPool<AttackPoint>();
             ap.attackDamage = AttackDamage;
@@ -13,7 +14,7 @@ public class AttackBase : IAttack
             Quaternion baseRota = Quaternion.LookRotation(data.direction);
             baseRota.x = 0f;
             Quaternion side = Quaternion.Euler(0f, 0f, 0f);
-            if(i == 0)
+            if (i == 0)
             {
                 side = Quaternion.Euler(0f, -15f, 0f);
             }
@@ -33,9 +34,10 @@ public class AttackBase : IAttack
     public void Skill(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
-        if (enemy.Length > 0) 
-        { 
-            foreach(var that in enemy)
+
+        if (enemy.Length > 0)
+        {
+            foreach (var that in enemy)
             {
                 Enemy ene = that.GetComponent<Enemy>();
                 ene.TakeDamage(AttackDamage);
@@ -51,6 +53,7 @@ public class AttackBase : IAttack
 
     }
 }
+
 public abstract class AttackDeco : IAttack
 {
     protected IAttack attack;
