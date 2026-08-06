@@ -1,6 +1,6 @@
-using Unity.VisualScripting;
+using System;
+using Unity.Mathematics;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class AttackBase : IAttack
 {
@@ -46,9 +46,65 @@ public class AttackBase : IAttack
     }
     public void Skill2(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
+        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
 
+        if (enemy.Length > 0) 
+        { 
+            foreach(var that in enemy)
+            {
+                Vector3 thatDir = (that.transform.position - data.position).normalized;
+                if(Vector3.Angle(data.forward, thatDir) < data.spreadAngle)
+                {
+                    Enemy ene = that.GetComponent<Enemy>();
+                    ene.TakeDamage(AttackDamage);
+                }
+            }
+        }
     }
     public void Skill3(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
+
+        Collider nearEnemy = null;
+        float minDis = Mathf.Infinity;
+        if (enemy.Length > 0) 
+        { 
+            foreach(var that in enemy)
+            {
+                Vector3 enemyPosi = that.transform.position;
+                float distance = (data.position - enemyPosi).sqrMagnitude;
+                if(distance < minDis)
+                {
+                    minDis = distance;
+                    nearEnemy = that;
+                }
+            }
+            RaycastHit[] hits = Physics.BoxCastAll(data.position, new Vector3(data.distance/2, data.distance / 2, data.distance / 2), (nearEnemy.transform.position - data.position).normalized, quaternion.identity, 20, layer);
+            foreach(var that in hits)
+            {
+                Enemy ene = that.collider.gameObject.transform.GetComponent<Enemy>();
+                ene.TakeDamage(AttackDamage);
+            }
+        }
+    }
+    public void Skill4(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+        Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * data.distance;
+        Vector3 randomPosi = new Vector3(data.position.x + randomCircle.x, data.position.y, data.position.z + randomCircle.y);
+
+        Collider[] enemy = Physics.OverlapSphere(randomPosi, data.distance, layer);
+
+        if (enemy.Length > 0)
+        {
+            foreach (var that in enemy)
+            {
+                Enemy ene = that.GetComponent<Enemy>();
+                ene.TakeDamage(AttackDamage);
+            }
+        }
+
+    }
+    public void Skill5(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
 
     }
@@ -77,12 +133,21 @@ public abstract class AttackDeco : IAttack
     {
         this.attack.Skill3(AttackDamage, data, poolManager, layer);
     }
+    public virtual void Skill4(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+        this.attack.Skill4(AttackDamage, data, poolManager, layer);
+    }
+    public virtual void Skill5(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    {
+        this.attack.Skill5(AttackDamage, data, poolManager, layer);
+    }
 }
 public class AttackData
 {
     public int attackDamage = 5;
     public float attackSpeed = 0.5f;
     public Vector3 position;
+    public Vector3 forward;
     public Vector3 direction;
     public float distance;
     public int projectileCount = 1;
@@ -94,4 +159,6 @@ public interface IAttack
     public void Skill(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
     public void Skill2(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
     public void Skill3(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void Skill4(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void Skill5(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
 }
