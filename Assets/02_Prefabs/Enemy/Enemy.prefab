@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: 627523106153907513}
   - component: {fileID: 6227291396024206101}
   - component: {fileID: 7106573620643557139}
-  m_Layer: 0
-  m_Name: Capsule
+  m_Layer: 9
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,5 +155,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   agent: {fileID: 6227291396024206101}
-  runDistance: 5
-  poolManager: {fileID: 0}
+  runStartDistance: 0
+  runEndDistance: 0
+  enemySpawn: {fileID: 0}
+  isHit: 0

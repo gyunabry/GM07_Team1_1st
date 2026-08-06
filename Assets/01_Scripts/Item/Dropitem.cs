@@ -5,7 +5,7 @@ public class Dropitem : MonoBehaviour
 {
     public DropItemSO dropItem;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private PoolManager poolManager;
+    [SerializeField] private MonsterPoolManager poolManager;
     private Coroutine co;
 
     private void Update()

@@ -16,8 +16,8 @@ public class EnemyRunState : IState
     }
     public void Execute()
     {
-        Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runDistance, enemy.playerLayer);
-        Collider[] playerAttack = Physics.OverlapSphere(enemy.transform.position, 2f, enemy.playerLayer);
+        Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance, enemy.playerLayer);
+        
         if(player.Length > 0)
         {
             Vector3 dirPlayer = enemy.transform.position - player[0].transform.position;
@@ -28,9 +28,10 @@ public class EnemyRunState : IState
         {
             stateController.ChangeState(stateController.IdleState);
         }
-        if(playerAttack.Length > 0)
+        if (enemy.isHit)
         {
-            enemy.nowHp -= 1;
+            stateController.ChangeState(stateController.HitRunState);
+            enemy.isHit = false;
         }
         if (enemy.nowHp <= 0)
         {

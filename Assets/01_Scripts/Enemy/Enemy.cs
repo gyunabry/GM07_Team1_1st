@@ -8,15 +8,17 @@ public class Enemy : MonoBehaviour
     public EnemySO enemySO;
     public LayerMask playerLayer;
     public NavMeshAgent agent;
-    public float runDistance;
+    public float runStartDistance;
+    public float runEndDistance;
     public EnemySpawn enemySpawn;
-    private PoolManager poolManager;
+    private MonsterPoolManager poolManager;
     private bool isStart = false;
+    public bool isHit = false;
     public int nowHp { get; set; }
    
     private void OnEnable()
     {
-        poolManager = FindAnyObjectByType<PoolManager>();
+        poolManager = FindAnyObjectByType<MonsterPoolManager>();
         if (!isStart)
         {
             isStart = true;
@@ -54,5 +56,6 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(int damage)
     {
         nowHp = nowHp - damage;
+        isHit = true;
     }
 }

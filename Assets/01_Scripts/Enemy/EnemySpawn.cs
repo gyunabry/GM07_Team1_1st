@@ -8,7 +8,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private int maxEnemy;
     [SerializeField] private float enemySpawnTimer;
     [SerializeField] private Enemy enemy;
-    [SerializeField] private PoolManager poolManager;
+    [SerializeField] private MonsterPoolManager poolManager;
     [SerializeField] private Collider spawnArea;
     [SerializeField] private EnemySO enemySO;
     private Coroutine co;
@@ -31,6 +31,8 @@ public class EnemySpawn : MonoBehaviour
             nowEnemy.GetEnemyData(enemySO);
             nowEnemy.enemySpawn = this;
             nowEnemy.nowHp = enemySO.hp;
+            nowEnemy.runStartDistance = enemySO.runStartDis;
+            nowEnemy.runEndDistance = enemySO.runEndDis;
             activeEnemy.Add(nowEnemy);
         }
         co = null;
