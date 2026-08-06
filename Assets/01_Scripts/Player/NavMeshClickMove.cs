@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 //클릭한 지점이 이동 가능한 구역일 시, 도착 Marker를 표시하고 가장 빠른 경로로 이동한다.
@@ -9,6 +10,10 @@ public class NavMeshClickMove : MonoBehaviour
     [SerializeField] private Transform destinationMarker;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float sampleDistance = 2.0f;
+
+    [Header("참조")]
+    [SerializeField] private PlayerInteractionController interactionController;
+    [SerializeField] private PlacementSystem placementSystem;
 
     private NavMeshAgent agent;
     private NavMeshPath calculatePath;
@@ -29,7 +34,40 @@ public class NavMeshClickMove : MonoBehaviour
 
     private void MouseInput()
     {
-        if (!Mouse.current.leftButton.wasPressedThisFrame) return;
+        if (Mouse.current == null) return;
+
+        bool leftClicked = Mouse.current.leftButton.wasPressedThisFrame;
+        bool rightClicked = Mouse.current.rightButton.wasPressedThisFrame;
+
+        if (!leftClicked && !rightClicked) return;
+
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        if (leftClicked)
+        {
+            if (placementSystem != null && placementSystem.IsPlacementMode)
+            {
+                return;
+            }
+
+            interactionController?.TryInteractUnderPointer();
+            return;
+        }
+
+        //if (!Mouse.current.rightButton.wasPressedThisFrame) return;
+
+        //if (interactionController != null && interactionController.TryInteractUnderPointer())
+        //{
+        //    return;
+        //}
+
+        //if (placementSystem != null && placementSystem.IsPlacementMode)
+        //{
+        //    return;
+        //}
 
         SetDestination();
     }
