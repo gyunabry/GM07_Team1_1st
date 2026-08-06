@@ -18,9 +18,7 @@ public class AttackPoint : MonoBehaviour
     }
     private void OnCollisionEnter(Collision other)
     {
-        Debug.Log("!");
         if ((layer & (1 << other.gameObject.layer)) == 0) return;
-        Debug.Log("?");
         Enemy enemy = other.gameObject.GetComponent<Enemy>();
         enemy.TakeDamage(attackDamage);
         poolManager.ReturnPool(this);

@@ -10,20 +10,21 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private LayerMask layer;
     [SerializeField] private Player player;
     [SerializeField] private MonsterPoolManager poolManager;
+    [SerializeField] private ParticleManager particleManager;
 
-    [SerializeField] private AttackSO attackSO;
-    [SerializeField] private AttackSO skillSO;
-    [SerializeField] private AttackSO skill2SO;
-    [SerializeField] private AttackSO skill3SO;
-    [SerializeField] private AttackSO skill4SO;
+    [SerializeField] private AttackSO MagicArrowSO;
+    [SerializeField] private AttackSO FireCircleSO;
+    [SerializeField] private AttackSO ChasingSickleSO;
+    [SerializeField] private AttackSO LightningRaySO;
+    [SerializeField] private AttackSO FlowerThornsSO;
     
 
     public bool isTripleShot = false;
-    public bool isAttack = false;
-    public bool isSkill = false;
-    public bool isSkill2 = false;
-    public bool isSkill3 = false;
-    public bool isSkill4 = false;
+    public bool isMagicArrow = false;
+    public bool isFireCircle = false;
+    public bool isChasingSickle = false;
+    public bool isLightningRay = false;
+    public bool isFlowerThorns = false;
 
     Vector3 giz;
     float dis;
@@ -39,18 +40,18 @@ public class PlayerAttack : MonoBehaviour
     }
     public void AllAttackStart()
     {
-        StopCoroutine(AttackCo());
-        StopCoroutine(SkillCo());
-        StopCoroutine(Skill2Co());
-        StopCoroutine(Skill3Co());
-        StopCoroutine(Skill4Co());
-        if (isAttack) StartCoroutine(AttackCo());
-        if (isSkill) StartCoroutine(SkillCo());
-        if (isSkill2) StartCoroutine(Skill2Co());
-        if (isSkill3) StartCoroutine(Skill3Co());
-        if (isSkill4) StartCoroutine(Skill4Co());
+        StopCoroutine(MagicArrow());
+        StopCoroutine(FireCircle());
+        StopCoroutine(ChasingSickle());
+        StopCoroutine(LightningRay());
+        StopCoroutine(FlowerThorns());
+        if (isMagicArrow) StartCoroutine(MagicArrow());
+        if (isFireCircle) StartCoroutine(FireCircle());
+        if (isChasingSickle) StartCoroutine(ChasingSickle());
+        if (isLightningRay) StartCoroutine(LightningRay());
+        if (isFlowerThorns) StartCoroutine(FlowerThorns());
     }
-    IEnumerator AttackCo()
+    IEnumerator MagicArrow()
     {
         while (true)
         {
@@ -59,24 +60,24 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
             };
             Collider[] enemyIn = Physics.OverlapSphere(transform.position, distance, layer);
-            ad.attackDamage = attackSO.attackDamage;
-            ad.attackSpeed = attackSO.attackSpeed;
-            if (enemyIn.Length > 0)
+            ad.attackDamage = MagicArrowSO.attackDamage;
+            ad.attackSpeed = MagicArrowSO.attackSpeed;
+            if (enemyIn.Length == 0)
             {
                 yield return null;
                 continue;
             }
             ad.direction = (enemyIn[0].transform.position - transform.position).normalized;
-            ad.spreadAngle = attackSO.spreadAngle;
+            ad.spreadAngle = MagicArrowSO.spreadAngle;
 
             if (enemyIn.Length > 0)
             {
-                attack.Attack(ad.attackDamage, ad, poolManager, layer);
+                attack.MagicArrow(ad.attackDamage, ad, poolManager, layer);
             }
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator SkillCo()
+    IEnumerator FireCircle()
     {
         while (true)
         {
@@ -84,16 +85,17 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = skillSO.attackDamage;
-            ad.attackSpeed = skillSO.attackSpeed;
-            ad.distance = skillSO.distance;
+            ad.attackDamage = FireCircleSO.attackDamage;
+            ad.attackSpeed = FireCircleSO.attackSpeed;
+            ad.distance = FireCircleSO.distance;
             
-            attack.Skill(ad.attackDamage, ad, poolManager, layer);
-            
+            attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(1, transform.position, transform.rotation);
+
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator Skill2Co()
+    IEnumerator ChasingSickle()
     {
         while (true)
         {
@@ -102,17 +104,18 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
                 forward = transform.forward
             };
-            ad.attackDamage = skill2SO.attackDamage;
-            ad.attackSpeed = skill2SO.attackSpeed;
-            ad.distance = skill2SO.distance;
-            ad.spreadAngle = skill2SO.spreadAngle;
+            ad.attackDamage = ChasingSickleSO.attackDamage;
+            ad.attackSpeed = ChasingSickleSO.attackSpeed;
+            ad.distance = ChasingSickleSO.distance;
+            ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
-            attack.Skill2(ad.attackDamage, ad, poolManager, layer);
+            attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(0, transform.position, transform.rotation);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator Skill3Co()
+    IEnumerator LightningRay()
     {
         while (true)
         {
@@ -120,34 +123,53 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = skill3SO.attackDamage;
-            ad.attackSpeed = skill3SO.attackSpeed;
-            ad.distance = skill3SO.distance;
-            ad.spreadAngle = skill3SO.spreadAngle;
+            ad.attackDamage = LightningRaySO.attackDamage;
+            ad.attackSpeed = LightningRaySO.attackSpeed;
+            ad.distance = LightningRaySO.distance;
+            ad.spreadAngle = LightningRaySO.spreadAngle;
 
-            attack.Skill3(ad.attackDamage, ad, poolManager, layer);
+            Collider[] enemy = Physics.OverlapSphere(transform.position, ad.distance, layer);
+
+            Collider nearEnemy = null;
+            float minDis = Mathf.Infinity;
+            if (enemy.Length > 0)
+            {
+                foreach (var that in enemy)
+                {
+                    Vector3 enemyPosi = that.transform.position;
+                    float distance = (transform.position - enemyPosi).sqrMagnitude;
+                    if (distance < minDis)
+                    {
+                        minDis = distance;
+                        nearEnemy = that;
+                    }
+                }   
+            }
+            float dis = minDis - transform.position.sqrMagnitude;
+            attack.LightningRay(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(3, transform.position, new Quaternion(0f, dis, 0f, 0f));
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator Skill4Co()
+    IEnumerator FlowerThorns()
     {
         while (true)
         {
-            Vector2 randomCircle = Random.insideUnitCircle * skill4SO.distance;
+            Vector2 randomCircle = Random.insideUnitCircle * FlowerThornsSO.distance;
             Vector3 randomPosi = new Vector3(transform.position.x + randomCircle.x, transform.position.y, transform.position.z + randomCircle.y);
             AttackData ad = new AttackData
             {
                 position = randomPosi,
             };
-            ad.attackDamage = skill4SO.attackDamage;
-            ad.attackSpeed = skill4SO.attackSpeed;
-            ad.distance = skill4SO.distance;
-            
+            ad.attackDamage = FlowerThornsSO.attackDamage;
+            ad.attackSpeed = FlowerThornsSO.attackSpeed;
+            ad.distance = FlowerThornsSO.distance;
             
             giz = randomPosi;
             dis = ad.distance;
-            attack.Skill4(ad.attackDamage, ad, poolManager, layer);
+            attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(4, randomPosi, transform.rotation);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }

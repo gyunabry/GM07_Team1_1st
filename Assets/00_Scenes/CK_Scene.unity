@@ -156,63 +156,6 @@ Transform:
   - {fileID: 653804687}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &115620856
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 4.68875
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.98364
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4157899745929140826, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_Name
-      value: Marker
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
 --- !u!1 &154257464
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,6 +667,68 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 15064886}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &752722745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 752722747}
+  - component: {fileID: 752722746}
+  m_Layer: 0
+  m_Name: ParticleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &752722746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752722745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88f188136b8002b4fb955a56ddf12e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParticleManager
+  monsterPoolManager: {fileID: 6062762735513863418}
+  particleList:
+  - particleID: 0
+    particleName: ChasingSickle
+    particlePrefab: {fileID: 786889566517218709, guid: 452664a513437a247a050dee21d35cfe, type: 3}
+    particleRenderer: {fileID: 786889566517218706, guid: 452664a513437a247a050dee21d35cfe, type: 3}
+  - particleID: 1
+    particleName: FireCircle
+    particlePrefab: {fileID: 6476705285018846835, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
+    particleRenderer: {fileID: 6476705285018846834, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
+  - particleID: 4
+    particleName: FlowerThorns
+    particlePrefab: {fileID: 1267626628714948401, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
+    particleRenderer: {fileID: 1267626628716908123, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
+  - particleID: 3
+    particleName: LightningRay
+    particlePrefab: {fileID: 1941226523401448538, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+    particleRenderer: {fileID: 1941226523401448537, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+--- !u!4 &752722747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752722745}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.13055, y: 1.7, z: -1.90534}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1152573503
 GameObject:
@@ -1351,17 +1356,18 @@ MonoBehaviour:
     m_Bits: 512
   player: {fileID: 2087349290}
   poolManager: {fileID: 6062762735513863418}
-  attackSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
-  skillSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
-  skill2SO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
-  skill3SO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
-  skill4SO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
+  particleManager: {fileID: 752722746}
+  MagicArrowSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  FireCircleSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
+  LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
+  FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
   isTripleShot: 0
-  isAttack: 0
-  isSkill: 0
-  isSkill2: 0
-  isSkill3: 0
-  isSkill4: 1
+  isMagicArrow: 0
+  isFireCircle: 0
+  isChasingSickle: 0
+  isLightningRay: 1
+  isFlowerThorns: 0
 --- !u!114 &2087349290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1544,6 +1550,50 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: particleCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: particlePrefab
+      value: 
+      objectReference: {fileID: 2041328280664646685, guid: eeb4a60935754cf4ba85d5a0293df02e, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: fireCircleCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: fireCirclePrefab
+      value: 
+      objectReference: {fileID: -4297715089572210025, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: attackPointPrefab
+      value: 
+      objectReference: {fileID: 3786625189309287409, guid: bbf3284bd517b9b4283e323b24fd189c, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: flowerThornsCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: lightningRayCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: chasingSickleCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: flowerThornsPrefab
+      value: 
+      objectReference: {fileID: 762729780948256457, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: lightningRayPrefab
+      value: 
+      objectReference: {fileID: 120163664264632565, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: chasingSicklePrefab
+      value: 
+      objectReference: {fileID: 3022906258108465468, guid: 452664a513437a247a050dee21d35cfe, type: 3}
     - target: {fileID: 7119374117894832108, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: m_Name
       value: PoolPreLoader
@@ -1635,4 +1685,4 @@ SceneRoots:
   - {fileID: 4740842303492646667}
   - {fileID: 2824255149350228626}
   - {fileID: 2087349286}
-  - {fileID: 115620856}
+  - {fileID: 752722747}
