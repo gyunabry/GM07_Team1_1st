@@ -176,6 +176,7 @@ public class PlayerAttack : MonoBehaviour
         }
     }
     public void GetTripleShot()
+
     {
         attack = new TripleDeco(attack);
     }
