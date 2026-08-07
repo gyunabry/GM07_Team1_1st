@@ -144,10 +144,11 @@ public class PlayerAttack : MonoBehaviour
                         nearEnemy = that;
                     }
                 }   
-            }
-            float dis = minDis - transform.position.sqrMagnitude;
+            Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
+            Quaternion targetRota = Quaternion.LookRotation(dir);
             attack.LightningRay(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(3, transform.position, new Quaternion(0f, dis, 0f, 0f));
+            particleManager.GetParticle(3, transform.position, targetRota);
+            }
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
@@ -173,10 +174,6 @@ public class PlayerAttack : MonoBehaviour
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(giz, dis);
     }
     public void GetTripleShot()
     {

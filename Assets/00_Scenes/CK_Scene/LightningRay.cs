@@ -11,13 +11,14 @@ public class LightningRay : MonoBehaviour
     {
         ps = GetComponent<ParticleSystem>();
     }
+    
     private void OnEnable()
     {
         StartCoroutine(PlayCo());
     }
     IEnumerator PlayCo()
     {
-        yield return new WaitForSeconds(attackSo.attackSpeed);
+        yield return new WaitForSeconds(1f);
         monsterPoolManager.ReturnPool(this);
     }
 }
