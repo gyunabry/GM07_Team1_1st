@@ -17,11 +17,11 @@ public class ProductionMachine
     public ProductionState State { get; private set; }
     public event Action<ProductionState> StateChanged;
 
-    public ProductionState Evaluate(
-        bool isEnabled,
-        bool hasRecipe,
-        bool isProducing,
-        bool hasMaterials,
-        bool hasOutputStorage
-    );
+    //public ProductionState Evaluate(
+    //    bool isEnabled,
+    //    bool hasRecipe,
+    //    bool isProducing,
+    //    bool hasMaterials,
+    //    bool hasOutputStorage
+    //);
 }

@@ -3,27 +3,19 @@ using UnityEngine;
 
 public class Dropitem : MonoBehaviour
 {
-    public DropItemSO dropItem;
+    public ItemDataSO dropItem;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private MonsterPoolManager poolManager;
-    private Coroutine co;
+    [SerializeField] private PlayerInventory playerInventory;
 
-    private void Update()
+    
+    public void GetItem()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, 1f, playerLayer);
-        if(colliders.Length > 0)
-        {
-            co = StartCoroutine(ItemGet());
-        }
-    }
-    IEnumerator ItemGet()
-    {
-        yield return new WaitForSeconds(0.1f);
         Debug.Log("æ∆¿Ã≈€ »πµÊ");
+        playerInventory.GiveItem(dropItem, 1);
         poolManager.ReturnPool(this);
-        co = null;
     }
-    public void GetDropItemData(DropItemSO dropItem)
+    public void GetDropItemData(ItemDataSO dropItem)
     {
         this.dropItem = dropItem;
     }

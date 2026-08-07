@@ -23,6 +23,6 @@ public class ProductionBuilding : MonoBehaviour
     public RecipeDataSO Recipe => recipe;
     public ItemInventory InputInventory => inputInventory;
     public ItemInventory OutputInventory => outputInventory;
-    public ProductionState State => machine.state;
-    public float Progress => machine.Progress;
+    //public ProductionState State => machine.state;
+    //public float Progress => machine.Progress;
 }
