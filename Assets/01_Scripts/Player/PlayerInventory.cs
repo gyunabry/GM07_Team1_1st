@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
@@ -14,5 +15,9 @@ public class PlayerInventory : MonoBehaviour
     {
         int added = inventory.Add(item, amount);
         Debug.Log($"플레이어에게 {item.ItemName} 지급");
+    }
+    public int GetAmount(ItemDataSO item)
+    {
+        return Inventory.GetAmount(item);
     }
 }
