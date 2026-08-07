@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
@@ -10,6 +11,8 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
 {
     private Camera testCamera;
     private Transform checkoutOperator;
+    private CurrencySystem currencySystem;
+    private TextMeshProUGUI currencyText;
 
     private void Awake()
     {
@@ -40,7 +43,9 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         CustomerController customerTemplate = CreateCustomerTemplate();
         new GameObject("PoolManager").AddComponent<PoolManager>();
         CustomerVisualTestServices testServices = new GameObject("TestServices").AddComponent<CustomerVisualTestServices>();
+        currencySystem = new GameObject("CurrencySystem").AddComponent<CurrencySystem>();
         CustomerSpawnManager spawnManager = new GameObject("CustomerSpawnManager").AddComponent<CustomerSpawnManager>();
+        CreateCurrencyDisplay();
 
         CustomerOrder order = new CustomerOrder
         {
@@ -49,11 +54,56 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
                 new CustomerOrderItem { ItemId = "A", Amount = 3 },
                 new CustomerOrderItem { ItemId = "B", Amount = 5 }
             },
-            Reward = 10
+            Reward = 10,
+            ExperienceReward = 5
         };
 
         spawnManager.Configure(customerTemplate, queue, checkout, entrance, exitTurn, exit, order, 2.5f);
-        spawnManager.BindServices(testServices, testServices);
+        spawnManager.BindServices(testServices, currencySystem);
+    }
+
+    // CustomerVisualTest에서만 사용하는 임시 재화 표시 UI다.
+    private void CreateCurrencyDisplay()
+    {
+        GameObject canvasObject = new GameObject("CurrencyDebugCanvas", typeof(Canvas));
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 100;
+
+        GameObject textObject = new GameObject("CurrencyText", typeof(RectTransform));
+        textObject.transform.SetParent(canvasObject.transform, false);
+
+        currencyText = textObject.AddComponent<TextMeshProUGUI>();
+        currencyText.font = TMP_Settings.defaultFontAsset;
+        currencyText.fontSize = 32f;
+        currencyText.color = Color.white;
+        currencyText.alignment = TextAlignmentOptions.TopLeft;
+
+        RectTransform rectTransform = currencyText.rectTransform;
+        rectTransform.anchorMin = new Vector2(0f, 1f);
+        rectTransform.anchorMax = new Vector2(0f, 1f);
+        rectTransform.pivot = new Vector2(0f, 1f);
+        rectTransform.anchoredPosition = new Vector2(24f, -24f);
+        rectTransform.sizeDelta = new Vector2(360f, 100f);
+
+        currencySystem.CurrencyChanged += RefreshCurrencyText;
+        RefreshCurrencyText(currencySystem.Money, currencySystem.Experience);
+    }
+
+    private void RefreshCurrencyText(int money, int experience)
+    {
+        if (currencyText != null)
+        {
+            currencyText.text = $"Money: {money}\nExperience: {experience}";
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (currencySystem != null)
+        {
+            currencySystem.CurrencyChanged -= RefreshCurrencyText;
+        }
     }
 
     private void Update()
@@ -134,7 +184,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
 }
 
 // 테스트 씬에서만 사용하는 임시 결제 서비스
-public sealed class CustomerVisualTestServices : MonoBehaviour, ICustomerInventory, ICustomerCurrency
+public sealed class CustomerVisualTestServices : MonoBehaviour, ICustomerInventory
 {
     public event Action InventoryChanged;
 
@@ -147,9 +197,5 @@ public sealed class CustomerVisualTestServices : MonoBehaviour, ICustomerInvento
         }
 
         return canConsume;
-    }
-
-    public void Grant(int amount)
-    {
     }
 }
