@@ -1,0 +1,1 @@
+아이템 추가할때 ItemList복사 붙여넣기, CurrencyHud의 ItemUiList와 UiList에 각각 아이템과 아이템과 연동할 ItemList오브젝트 넣기
