@@ -668,68 +668,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 15064886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &752722745
+--- !u!1 &771438446 stripped
 GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 4949845606146816719, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+  m_PrefabInstance: {fileID: 6062762735513863417}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 752722747}
-  - component: {fileID: 752722746}
-  m_Layer: 0
-  m_Name: ParticleManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &752722746
+--- !u!114 &1096219250
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752722745}
+  m_GameObject: {fileID: 771438446}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88f188136b8002b4fb955a56ddf12e66, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ParticleManager
-  monsterPoolManager: {fileID: 6062762735513863418}
-  particleList:
-  - particleID: 0
-    particleName: ChasingSickle
-    particlePrefab: {fileID: 786889566517218709, guid: 452664a513437a247a050dee21d35cfe, type: 3}
-    particleRenderer: {fileID: 786889566517218706, guid: 452664a513437a247a050dee21d35cfe, type: 3}
-  - particleID: 1
-    particleName: FireCircle
-    particlePrefab: {fileID: 6476705285018846835, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
-    particleRenderer: {fileID: 6476705285018846834, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
-  - particleID: 4
-    particleName: FlowerThorns
-    particlePrefab: {fileID: 1267626628714948401, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
-    particleRenderer: {fileID: 1267626628716908123, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
-  - particleID: 3
-    particleName: LightningRay
-    particlePrefab: {fileID: 1941226523401448538, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
-    particleRenderer: {fileID: 1941226523401448537, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
---- !u!4 &752722747
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 752722745}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.13055, y: 1.7, z: -1.90534}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterPoolManager
 --- !u!1 &1152573503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1338,6 +1293,48 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!195 &2087349287
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087349282}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0.5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &2087349288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2087349282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8a39ead994ff949b2a7e54bfda23a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavMeshClickMove
+  mainCamera: {fileID: 1482958244}
+  destinationMarker: {fileID: 115620857}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  sampleDistance: 2
+  interactionController: {fileID: 0}
+  placementSystem: {fileID: 0}
 --- !u!114 &2087349289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1355,13 +1352,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   player: {fileID: 2087349290}
-  poolManager: {fileID: 6062762735513863418}
-  particleManager: {fileID: 752722746}
-  MagicArrowSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
-  FireCircleSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
-  ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
-  LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
-  FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
+  poolManager: {fileID: 0}
+  attackSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  skillSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  skill2SO: {fileID: 0}
+  skill3SO: {fileID: 0}
   isTripleShot: 0
   isMagicArrow: 0
   isFireCircle: 0
@@ -1433,13 +1428,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
+      propertyPath: enemyData
+      value: 
+      objectReference: {fileID: 11400000, guid: c47f3a61920ff6d499576705b2266761, type: 2}
+    - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
       propertyPath: spawnArea
       value: 
       objectReference: {fileID: 1765285693}
     - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
       propertyPath: poolManager
       value: 
-      objectReference: {fileID: 6062762735513863418}
+      objectReference: {fileID: 1096219250}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1659,7 +1658,10 @@ PrefabInstance:
     - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4949845606146816719, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1096219250}
   m_SourcePrefab: {fileID: 100100000, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
 --- !u!114 &6062762735513863418 stripped
 MonoBehaviour:

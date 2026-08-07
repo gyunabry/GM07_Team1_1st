@@ -10,10 +10,12 @@ public class EnemyRunState : IState
     {
         this.enemy = enemy;
     }
+
     public void Enter()
     {
         stateController = enemy.stateController;
     }
+
     public void Execute()
     {
         Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance, enemy.playerLayer);
@@ -33,17 +35,19 @@ public class EnemyRunState : IState
             stateController.ChangeState(stateController.HitRunState);
             enemy.isHit = false;
         }
-        if (enemy.nowHp <= 0)
+        if (enemy.CurrentHp <= 0)
         {
             stateController.ChangeState(stateController.DieState);
         }
     }
+
     public void Exit()
     {
         enemy.agent.ResetPath();
     }
+
     public IEnumerator RandomTime()
     {
-               yield return null;
+        yield return null;
     }
 }
