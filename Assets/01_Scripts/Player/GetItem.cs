@@ -2,10 +2,25 @@ using UnityEngine;
 
 public class GetItem : MonoBehaviour
 {
+    private PlayerInventory playerInventory;
+
+    private void Awake()
+    {
+        playerInventory = GetComponentInParent<PlayerInventory>();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        Dropitem di = other.GetComponent<Dropitem>();
-        if (di == null) return;
-        di.GetItem();
+        if (!other.TryGetComponent(out Dropitem drop))
+        {
+            return;
+        }
+
+        int added = playerInventory.Inventory.Add(drop.Item, drop.Amount);
+
+        if (added > 0)
+        {
+            drop.Collect();
+        }
     }
 }
