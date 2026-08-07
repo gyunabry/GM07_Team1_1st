@@ -21,10 +21,10 @@ public class RecipeDataSO : ScriptableObject
     public ProcessType ProcessType { get; private set; }
 
     [field: SerializeField]
-    public List<ItemAmount> Input { get; private set; } // 재료 아이템 리스트
+    public ItemDataSO Input { get; private set; } // 재료 아이템
 
     [field: SerializeField]
-    public List<ItemAmount> Output { get; private set; }
+    public ItemDataSO Output { get; private set; } // 생산 아이템
 
     [field: SerializeField]
     public float ProductionTime { get; private set; }

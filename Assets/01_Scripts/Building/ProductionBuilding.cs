@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /*
@@ -14,15 +15,95 @@ using UnityEngine;
 
 public class ProductionBuilding : MonoBehaviour
 {
-    [SerializeField] private RecipeDataSO recipe;
+    [SerializeField] private RecipeDataSO initialRecipe;
+
+    [Header("생산 인벤토리")]
     [SerializeField] private ItemInventory inputInventory = new();
+    [Header("출력 인벤토리")]
     [SerializeField] private ItemInventory outputInventory = new();
 
+    // 실제 생산 규칙과 상태를 관리하는 클래스
     private ProductionMachine machine;
 
-    public RecipeDataSO Recipe => recipe;
+    #region 프로퍼티
+    public RecipeDataSO SelectedRecipe => machine.SelectedRecipe;
+    public RecipeDataSO ActiveRecipe => machine.ActiveRecipe;
     public ItemInventory InputInventory => inputInventory;
     public ItemInventory OutputInventory => outputInventory;
-    public ProductionState State => machine.state;
+    public ProductionState State => machine.State;
     public float Progress => machine.Progress;
+    public bool IsBusy => machine.IsBusy;
+    #endregion
+
+    public event Action<ProductionState> StateChanged;
+    public event Action<RecipeDataSO> RecipeChanged;
+    public event Action<RecipeDataSO> ProductionStarted;
+    public Action<RecipeDataSO> ProductionComplete;
+    public event Action<float> ProgressChanged;
+
+    private void Awake()
+    {
+        machine = new ProductionMachine(inputInventory, outputInventory);
+
+        if (initialRecipe != null) machine.TrySetRecipe(initialRecipe);
+    }
+
+    private void OnEnable()
+    {
+        inputInventory.InventoryChanged += HandleInventoryChanged;
+        outputInventory.InventoryChanged += HandleInventoryChanged;
+
+        machine.SetEnable(true);
+    }
+
+    private void OnDisable()
+    {
+        inputInventory.InventoryChanged -= HandleInventoryChanged;
+        outputInventory.InventoryChanged -= HandleInventoryChanged;
+
+        machine.SetEnable(false);
+    }
+
+    private void Update()
+    {
+        // 상태 검사는 ProductionMachine 내부에서 진행
+        machine.Tick(Time.deltaTime);
+    }
+
+    // UI에서 호출할 레시피 선택 메서드
+    public bool TrySetRecipe(RecipeDataSO recipe)
+    {
+        return machine.TrySetRecipe(recipe);
+    }
+
+    // Input 및 Output 변경 검사
+    private void HandleInventoryChanged()
+    {
+        machine.Refresh();
+    }
+
+    private void HandleStateChanged(ProductionState newState)
+    {
+        StateChanged?.Invoke(newState);
+    }
+
+    private void HandleRecipeChanged(RecipeDataSO recipe)
+    {
+        RecipeChanged?.Invoke(recipe);
+    }
+
+    private void HandleProductionStarted(RecipeDataSO recipe)
+    {
+        ProductionStarted?.Invoke(recipe);
+    }
+
+    private void HandleProductionCompleted(RecipeDataSO recipe)
+    {
+        ProductionComplete?.Invoke(recipe);
+    }
+
+    private void HandleProgressChanged(float progress)
+    {
+        ProgressChanged?.Invoke(progress);
+    }
 }
