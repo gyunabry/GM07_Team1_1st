@@ -11,11 +11,18 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     [SerializeField] private Transform exitTurnPoint;
     [SerializeField] private Transform exitPoint;
     [SerializeField] private CustomerOrder order;
+    [SerializeField] private CurrencySystem currencySystem;
     [SerializeField, Min(0.1f)] private float spawnInterval = 5f;
     [SerializeField] private bool spawnOnStart = true;
 
     private ICustomerInventory inventory;
     private ICustomerCurrency currency;
+
+    private void Awake()
+    {
+        // 일반 씬에서는 Inspector에 연결한 CurrencySystem을 손님에게 전달한다.
+        currency = currencySystem;
+    }
 
     private void Start()
     {

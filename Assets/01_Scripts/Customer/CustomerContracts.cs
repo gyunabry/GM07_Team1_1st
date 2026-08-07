@@ -13,7 +13,7 @@ public interface ICustomerInventory
 // 향후 화폐 시스템이 구현할 손님 보상 지급 계약
 public interface ICustomerCurrency
 {
-    void Grant(int amount);
+    void GrantReward(int moneyAmount, int experienceAmount);
 }
 
 // 계산대에서 손님 주문을 처리할 수 있는 플레이어 또는 자동 판매직원 표식
@@ -37,12 +37,13 @@ public struct CustomerOrder
 {
     public List<CustomerOrderItem> Items;
     public int Reward;
+    public int ExperienceReward;
 
     public bool IsValid
     {
         get
         {
-            if (Items == null || Items.Count == 0 || Reward < 0)
+            if (Items == null || Items.Count == 0 || Reward < 0 || ExperienceReward < 0)
             {
                 return false;
             }
