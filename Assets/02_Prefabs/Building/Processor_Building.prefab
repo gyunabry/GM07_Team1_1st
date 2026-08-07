@@ -242,9 +242,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1694295960140826187}
-  - component: {fileID: 8813171667216147514}
   - component: {fileID: 8437319850643907391}
+  - component: {fileID: 8813171667216147514}
   - component: {fileID: 2752481641754463068}
+  - component: {fileID: 5945800676341958782}
   m_Layer: 12
   m_Name: Processor_Building
   m_TagString: Untagged
@@ -270,20 +271,6 @@ Transform:
   - {fileID: 3930410399307874733}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8813171667216147514
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7437105359199679208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1c17b2fbbc1fce9499fc25dfb035690f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
-  constructionObject: {fileID: 5077872487781600508}
-  completedObject: {fileID: 4093891964111609741}
 --- !u!208 &8437319850643907391
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -300,6 +287,20 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 1.5, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &8813171667216147514
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7437105359199679208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c17b2fbbc1fce9499fc25dfb035690f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
+  constructionObject: {fileID: 5077872487781600508}
+  completedObject: {fileID: 4093891964111609741}
 --- !u!114 &2752481641754463068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,3 +317,24 @@ MonoBehaviour:
   interactionPoint: {fileID: 1694295960140826187}
   isEnabled: 1
   outlineObject: {fileID: 5077872487781600508}
+--- !u!114 &5945800676341958782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7437105359199679208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3e3ae099dbebe945b116dcf3be41ff3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProductionBuilding
+  initialRecipe: {fileID: 11400000, guid: 47fdf777250cf67469b7f6925048e66b, type: 2}
+  item: {fileID: 11400000, guid: 617a7d643e0814448853373f3984bd5e, type: 2}
+  inputInventory:
+    capacity: 20
+    entries: []
+  outputInventory:
+    capacity: 20
+    entries: []
+  testAmount: 1
