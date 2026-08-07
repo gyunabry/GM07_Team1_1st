@@ -1813,6 +1813,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3b57d9855313eb42a9cb8e3be575289, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GetItem
+  collectableLayer:
+    serializedVersion: 2
+    m_Bits: 8192
 --- !u!1 &751116348
 GameObject:
   m_ObjectHideFlags: 0
@@ -3756,7 +3759,7 @@ GameObject:
   - component: {fileID: 1652260410}
   - component: {fileID: 1652260414}
   - component: {fileID: 1652260417}
-  m_Layer: 4
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}

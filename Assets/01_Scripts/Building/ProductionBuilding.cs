@@ -25,6 +25,8 @@ public class ProductionBuilding : MonoBehaviour
     // 실제 생산 규칙과 상태를 관리하는 클래스
     private ProductionMachine machine;
 
+    private PlacedBuilding placedBuilding;
+
     #region 프로퍼티
     public RecipeDataSO SelectedRecipe => machine.SelectedRecipe;
     public RecipeDataSO ActiveRecipe => machine.ActiveRecipe;
@@ -33,6 +35,9 @@ public class ProductionBuilding : MonoBehaviour
     public ProductionState State => machine.State;
     public float Progress => machine.Progress;
     public bool IsBusy => machine.IsBusy;
+
+    // 설치 완료 판정
+    public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
     #endregion
 
     public event Action<ProductionState> StateChanged;
@@ -43,6 +48,8 @@ public class ProductionBuilding : MonoBehaviour
 
     private void Awake()
     {
+        placedBuilding = GetComponent<PlacedBuilding>();
+
         machine = new ProductionMachine(inputInventory, outputInventory);
 
         if (initialRecipe != null) machine.TrySetRecipe(initialRecipe);
@@ -50,16 +57,16 @@ public class ProductionBuilding : MonoBehaviour
 
     private void OnEnable()
     {
-        inputInventory.InventoryChanged += HandleInventoryChanged;
-        outputInventory.InventoryChanged += HandleInventoryChanged;
+        SubscribeInventoryEvents();
+        SubscribeMachineEvents();
 
         machine.SetEnable(true);
     }
 
     private void OnDisable()
     {
-        inputInventory.InventoryChanged -= HandleInventoryChanged;
-        outputInventory.InventoryChanged -= HandleInventoryChanged;
+        UnsubscribeInventoryEvents();
+        UnsubscribeMachineEvents();
 
         machine.SetEnable(false);
     }
@@ -75,6 +82,49 @@ public class ProductionBuilding : MonoBehaviour
     {
         return machine.TrySetRecipe(recipe);
     }
+
+    #region 이벤트 구독
+    private void SubscribeInventoryEvents()
+    {
+        inputInventory.InventoryChanged += HandleInventoryChanged;
+        outputInventory.InventoryChanged += HandleInventoryChanged;
+    }
+
+    private void UnsubscribeInventoryEvents()
+    {
+        inputInventory.InventoryChanged -= HandleInventoryChanged;
+        outputInventory.InventoryChanged -= HandleInventoryChanged;
+    }
+
+    //private void SubscribeBuildingEvents()
+    //{
+    //    placedBuilding.OnStateChanged += HandleBuildingStateChanged;
+    //}
+    
+    //private void UnsubscribeBuildingEvents()
+    //{
+    //    placedBuilding.OnStateChanged -= HandleBuildingStateChanged;
+    //}
+
+    private void SubscribeMachineEvents()
+    {
+        machine.StateChanged += HandleStateChanged;
+        machine.RecipeChanged += HandleRecipeChanged;
+        machine.ProductionStarted += HandleProductionStarted;
+        machine.ProductionComplete += HandleProductionCompleted;
+        machine.ProgressChanged += HandleProgressChanged;
+    }
+
+    private void UnsubscribeMachineEvents()
+    {
+        machine.StateChanged -= HandleStateChanged;
+        machine.RecipeChanged -= HandleRecipeChanged;
+        machine.ProductionStarted -= HandleProductionStarted;
+        machine.ProductionComplete -= HandleProductionCompleted;
+        machine.ProgressChanged -= HandleProgressChanged;
+    }
+
+    #endregion
 
     // Input 및 Output 변경 검사
     private void HandleInventoryChanged()

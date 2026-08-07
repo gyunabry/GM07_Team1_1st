@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2397252201853090197}
   - component: {fileID: 5542389478560099072}
   - component: {fileID: 3111163843946996393}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: item
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,9 +125,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 368ed2358914c4d4db00ce1d06233b59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Dropitem
-  dropItem: {fileID: 0}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 16
-  poolManager: {fileID: 1306151101374603641, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
-  playerInventory: {fileID: 5225848352447207080, guid: 3971d3518f00d4b40bc024ca23c733b7, type: 3}
+  <Item>k__BackingField: {fileID: 11400000, guid: 617a7d643e0814448853373f3984bd5e, type: 2}
