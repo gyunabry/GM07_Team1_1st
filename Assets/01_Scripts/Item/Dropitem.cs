@@ -1,23 +1,19 @@
-using System.Collections;
 using UnityEngine;
 
 public class Dropitem : MonoBehaviour
 {
-    public ItemDataSO dropItem;
-    [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private MonsterPoolManager poolManager;
-    [SerializeField] private PlayerInventory playerInventory;
+    [field: SerializeField]
+    public ItemDataSO Item { get; private set; }
+    public int Amount { get; private set; } = 1;
 
-    
-    public void GetItem()
+    public void Initialize(ItemDataSO item, int amount = 1)
     {
-        Debug.Log("æ∆¿Ã≈€ »πµÊ");
-        playerInventory.GiveItem(dropItem, 1);
-        poolManager.ReturnPool(this);
-    }
-    public void GetDropItemData(ItemDataSO dropItem)
-    {
-        this.dropItem = dropItem;
+        Item = item;
+        Amount = amount;
     }
 
+    public void Collect()
+    {
+        MonsterPoolManager.Instance.ReturnPool(this);
+    }
 }
