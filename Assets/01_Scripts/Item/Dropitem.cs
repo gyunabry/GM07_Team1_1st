@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Dropitem : MonoBehaviour
+public class Dropitem : MonoBehaviour, ICollectable
 {
     [field: SerializeField]
     public ItemDataSO Item { get; private set; }
@@ -12,8 +12,24 @@ public class Dropitem : MonoBehaviour
         Amount = amount;
     }
 
-    public void Collect()
+    public bool TryCollect(ItemInventory target)
     {
-        MonsterPoolManager.Instance.ReturnPool(this);
+        if (target == null || Item == null || Amount <= 0)
+        {
+            return false;
+        }
+
+        int added = target.Add(Item, Amount);
+        if (added <= 0) return false;
+
+        Amount -= added;
+        if (Amount <= 0)
+        {
+            Item = null;
+            Amount = 0;
+            MonsterPoolManager.Instance.ReturnPool(this);
+        }
+
+        return true;
     }
 }

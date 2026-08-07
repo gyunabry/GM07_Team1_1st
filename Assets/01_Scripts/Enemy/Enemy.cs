@@ -51,7 +51,7 @@ public class Enemy : MonoBehaviour
     {
         ItemAmount drop = enemyData.Reward.Drop;
         Dropitem dropItem = poolManager.GetPool<Dropitem>();
-        dropItem.Initialize(drop.Item); // 해당 몬스터의 드랍 보상 정보를 주입
+        dropItem.Initialize(drop.Item, drop.Amount); // 해당 몬스터의 드랍 보상 정보를 주입
         dropItem.transform.position = transform.position;
 
         //foreach (var item in enemySO.dropItem)

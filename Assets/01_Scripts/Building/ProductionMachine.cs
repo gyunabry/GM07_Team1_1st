@@ -45,7 +45,7 @@ public class ProductionMachine
     public event Action<ProductionState> StateChanged;
     public event Action<RecipeDataSO> RecipeChanged;
     public event Action<RecipeDataSO> ProductionStarted;
-    public Action<RecipeDataSO> ProductionComplete;
+    public event Action<RecipeDataSO> ProductionComplete;
     public event Action<float> ProgressChanged;
 
     public ProductionMachine(ItemInventory inputInventory, ItemInventory outputInventory)
