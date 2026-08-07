@@ -730,17 +730,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 15064886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1096219248 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5595383204512706265, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+--- !u!1 &771438446 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4949845606146816719, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
   m_PrefabInstance: {fileID: 6062762735513863417}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+--- !u!114 &1096219250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 771438446}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9aeb94ba0d440842a3a7ba637ee8a97, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PoolManager
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterPoolManager
 --- !u!1 &1152573503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1391,6 +1397,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   sampleDistance: 2
+  interactionController: {fileID: 0}
+  placementSystem: {fileID: 0}
 --- !u!114 &2087349289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1408,7 +1416,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   player: {fileID: 2087349290}
-  poolManager: {fileID: 1096219248}
+  poolManager: {fileID: 0}
   attackSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
   skillSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
   skill2SO: {fileID: 0}
@@ -1483,13 +1491,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
+      propertyPath: enemyData
+      value: 
+      objectReference: {fileID: 11400000, guid: c47f3a61920ff6d499576705b2266761, type: 2}
+    - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
       propertyPath: spawnArea
       value: 
       objectReference: {fileID: 1765285693}
     - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
       propertyPath: poolManager
       value: 
-      objectReference: {fileID: 1096219248}
+      objectReference: {fileID: 1096219250}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1680,7 +1692,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4949845606146816719, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1096219250}
   m_SourcePrefab: {fileID: 100100000, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

@@ -10,10 +10,12 @@ public class EnemyRunState : IState
     {
         this.enemy = enemy;
     }
+
     public void Enter()
     {
         stateController = enemy.stateController;
     }
+
     public void Execute()
     {
         Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance, enemy.playerLayer);

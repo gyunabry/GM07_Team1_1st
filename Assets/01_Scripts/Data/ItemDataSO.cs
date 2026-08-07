@@ -39,7 +39,7 @@ public class ItemDataSO : ScriptableObject
     [field: SerializeField]
     public int Exp { get; private set; }
 
-    [field: SerializeField]
+    [field: SerializeField, Min(1)]
     public int MaxStack { get; private set; }
 
     [field: SerializeField]
