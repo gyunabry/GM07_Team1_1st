@@ -10,8 +10,7 @@ public class PlayerInventory : MonoBehaviour
 
     public ItemInventory Inventory => inventory;
 
-    [ContextMenu("테스트 아이템 지급")]
-    private void GiveTestItem()
+    public void GiveItem(ItemDataSO item, int amount)
     {
         int added = inventory.Add(item, amount);
         Debug.Log($"플레이어에게 {item.ItemName} 지급");

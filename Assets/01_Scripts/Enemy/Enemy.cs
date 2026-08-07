@@ -50,6 +50,10 @@ public class Enemy : MonoBehaviour
     public void MonsterDropItem()
     {
         ItemAmount drop = enemyData.Reward.Drop;
+        Dropitem di = poolManager.GetPool<Dropitem>();
+        di.GetDropItemData(drop.Item);
+        di.transform.position = transform.position;
+
 
         //foreach (var item in enemySO.dropItem)
         //{

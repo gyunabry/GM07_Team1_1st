@@ -67,5 +67,4 @@ public class ParticleData
     public int particleID;
     public string particleName;
     public ParticleSystem particlePrefab;
-    public ParticleSystemRenderer particleRenderer;
 }

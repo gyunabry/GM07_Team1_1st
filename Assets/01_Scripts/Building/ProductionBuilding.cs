@@ -2,14 +2,14 @@ using System;
 using UnityEngine;
 
 /*
- [»ı»ê °Ç¹° ÇÁ·Î¼¼½º]
+ [ìƒì‚° ê±´ë¬¼ í”„ë¡œì„¸ìŠ¤]
 
-1. ÇÃ·¹ÀÌ¾î°¡ UI¸¦ ÅëÇØ ·¹½ÃÇÇ ¼±ÅÃ
-2. ÇÃ·¹ÀÌ¾î ÀÎº¥Åä¸®¿¡¼­ »ı»ê °Ç¹°¿¡ ÇØ´ç ·¹½ÃÇÇÀÇ Input Àç·á ÀÚµ¿ ³³Ç°
-3. ·¹½ÃÇÇ ½Ã°£¿¡ ¸ÂÃç °¡°ø ½ÃÀÛ
-4. ½Ã°£ÀÌ ¸ğµÎ Áö³ª¸é °Ç¹° ÀÎº¥Åä¸®¿¡ ¾ÆÀÌÅÛ Ãß°¡ ¹× ½Ã°¢È­
+1. í”Œë ˆì´ì–´ê°€ UIë¥¼ í†µí•´ ë ˆì‹œí”¼ ì„ íƒ
+2. í”Œë ˆì´ì–´ ì¸ë²¤í† ë¦¬ì—ì„œ ìƒì‚° ê±´ë¬¼ì— í•´ë‹¹ ë ˆì‹œí”¼ì˜ Input ì¬ë£Œ ìë™ ë‚©í’ˆ
+3. ë ˆì‹œí”¼ ì‹œê°„ì— ë§ì¶° ê°€ê³µ ì‹œì‘
+4. ì‹œê°„ì´ ëª¨ë‘ ì§€ë‚˜ë©´ ê±´ë¬¼ ì¸ë²¤í† ë¦¬ì— ì•„ì´í…œ ì¶”ê°€ ë° ì‹œê°í™”
 
-- ¸¸¾à »ı»ê Áß ·¹½ÃÇÇ¸¦ º¯°æÇÑ´Ù¸é ÇöÀç ÀÛ¾÷ ÁøÇà ÁßÀÎ ¾ÆÀÌÅÛ °¡°ø ¿Ï·á ÈÄ º¯°æ(¿¹¾à ±â´É)
+- ë§Œì•½ ìƒì‚° ì¤‘ ë ˆì‹œí”¼ë¥¼ ë³€ê²½í•œë‹¤ë©´ í˜„ì¬ ì‘ì—… ì§„í–‰ ì¤‘ì¸ ì•„ì´í…œ ê°€ê³µ ì™„ë£Œ í›„ ë³€ê²½(ì˜ˆì•½ ê¸°ëŠ¥)
 - 
  */
 
@@ -17,15 +17,15 @@ public class ProductionBuilding : MonoBehaviour
 {
     [SerializeField] private RecipeDataSO initialRecipe;
 
-    [Header("»ı»ê ÀÎº¥Åä¸®")]
+    [Header("ìƒì‚° ì¸ë²¤í† ë¦¬")]
     [SerializeField] private ItemInventory inputInventory = new();
-    [Header("Ãâ·Â ÀÎº¥Åä¸®")]
+    [Header("ì¶œë ¥ ì¸ë²¤í† ë¦¬")]
     [SerializeField] private ItemInventory outputInventory = new();
 
-    // ½ÇÁ¦ »ı»ê ±ÔÄ¢°ú »óÅÂ¸¦ °ü¸®ÇÏ´Â Å¬·¡½º
+    // ì‹¤ì œ ìƒì‚° ê·œì¹™ê³¼ ìƒíƒœë¥¼ ê´€ë¦¬í•˜ëŠ” í´ë˜ìŠ¤
     private ProductionMachine machine;
 
-    #region ÇÁ·ÎÆÛÆ¼
+    #region í”„ë¡œí¼í‹°
     public RecipeDataSO SelectedRecipe => machine.SelectedRecipe;
     public RecipeDataSO ActiveRecipe => machine.ActiveRecipe;
     public ItemInventory InputInventory => inputInventory;
@@ -66,17 +66,17 @@ public class ProductionBuilding : MonoBehaviour
 
     private void Update()
     {
-        // »óÅÂ °Ë»ç´Â ProductionMachine ³»ºÎ¿¡¼­ ÁøÇà
+        // ìƒíƒœ ê²€ì‚¬ëŠ” ProductionMachine ë‚´ë¶€ì—ì„œ ì§„í–‰
         machine.Tick(Time.deltaTime);
     }
 
-    // UI¿¡¼­ È£ÃâÇÒ ·¹½ÃÇÇ ¼±ÅÃ ¸Ş¼­µå
+    // UIì—ì„œ í˜¸ì¶œí•  ë ˆì‹œí”¼ ì„ íƒ ë©”ì„œë“œ
     public bool TrySetRecipe(RecipeDataSO recipe)
     {
         return machine.TrySetRecipe(recipe);
     }
 
-    // Input ¹× Output º¯°æ °Ë»ç
+    // Input ë° Output ë³€ê²½ ê²€ì‚¬
     private void HandleInventoryChanged()
     {
         machine.Refresh();

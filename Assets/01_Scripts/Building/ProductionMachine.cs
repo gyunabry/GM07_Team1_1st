@@ -1,14 +1,14 @@
 using System;
 using UnityEngine;
 
-// »ı»ê »óÅÂ 
+// ìƒì‚° ìƒíƒœ 
 public enum ProductionState
 {
-    Disable,                // °Ç¼³ Áß or ºñÈ°¼º »óÅÂ
-    Idle,                   // ·¹½ÃÇÇ ¹Ì¼±ÅÃ
-    WaitingForMaterials,    // Àç·á ºÎÁ·
-    Producing,              // »ı»ê Áß
-    WaitingForOutputSpace   // »ı»ê ½Ã°£ Áö³µÀ¸³ª °á°ú¹° °ø°£ ºÎÁ·
+    Disable,                // ê±´ì„¤ ì¤‘ or ë¹„í™œì„± ìƒíƒœ
+    Idle,                   // ë ˆì‹œí”¼ ë¯¸ì„ íƒ
+    WaitingForMaterials,    // ì¬ë£Œ ë¶€ì¡±
+    Producing,              // ìƒì‚° ì¤‘
+    WaitingForOutputSpace   // ìƒì‚° ì‹œê°„ ì§€ë‚¬ìœ¼ë‚˜ ê²°ê³¼ë¬¼ ê³µê°„ ë¶€ì¡±
 }
 
 public class ProductionMachine
@@ -17,7 +17,7 @@ public class ProductionMachine
     private readonly ItemInventory outputInventory;
 
     private RecipeDataSO selectedRecipe;
-    // »ı»ê Áß ·¹½ÃÇÇ°¡ º¯°æµÆÀ» ¶§¸¦ À§ÇØ ÇöÀç È°¼ºÈ­µÈ ·¹½ÃÇÇ¸¦ ÀúÀå
+    // ìƒì‚° ì¤‘ ë ˆì‹œí”¼ê°€ ë³€ê²½ëì„ ë•Œë¥¼ ìœ„í•´ í˜„ì¬ í™œì„±í™”ëœ ë ˆì‹œí”¼ë¥¼ ì €ì¥
     private RecipeDataSO activeRecipe;
 
     private float elapsedTime;
@@ -56,7 +56,7 @@ public class ProductionMachine
         State = ProductionState.Disable;
     }
 
-    // »ı»êÇÒ ·¹½ÃÇÇ¸¦ º¯°æ
+    // ìƒì‚°í•  ë ˆì‹œí”¼ë¥¼ ë³€ê²½
     public bool TrySetRecipe(RecipeDataSO recipe)
     {
         if (IsBusy) return false;
@@ -85,7 +85,7 @@ public class ProductionMachine
         Refresh();
     }
 
-    // Producing »óÅÂ¿¡¼­¸¸ Tick È£ÃâÇØ »ı»ê ÁøÇà
+    // Producing ìƒíƒœì—ì„œë§Œ Tick í˜¸ì¶œí•´ ìƒì‚° ì§„í–‰
     public void Tick(float deltaTime)
     {
         if (!isEnabled || State != ProductionState.Producing || activeRecipe == null)
@@ -106,7 +106,7 @@ public class ProductionMachine
         }
     }
     
-    // ÇöÀç ÀÎº¥Åä¸®¿Í ÀÛ¾÷ »óÅÂ¸¦ ±âÁØÀ¸·Î °á°ú¹°À» ¸¸µé°í, ´ÙÀ½ »ı»ê ½ÃÀÛÀ» ½Ãµµ
+    // í˜„ì¬ ì¸ë²¤í† ë¦¬ì™€ ì‘ì—… ìƒíƒœë¥¼ ê¸°ì¤€ìœ¼ë¡œ ê²°ê³¼ë¬¼ì„ ë§Œë“¤ê³ , ë‹¤ìŒ ìƒì‚° ì‹œì‘ì„ ì‹œë„
     public void Refresh() 
     {
         if (isRefreshing) return;
@@ -121,7 +121,7 @@ public class ProductionMachine
                 return;
             }
 
-            // activeRecipe¸¦ ¿ì¼± Ã³¸®
+            // activeRecipeë¥¼ ìš°ì„  ì²˜ë¦¬
             if (activeRecipe != null)
             {
                 float duration = Mathf.Max(0.01f, activeRecipe.ProductionTime);
@@ -132,8 +132,8 @@ public class ProductionMachine
                     return;
                 }
 
-                // »ı»ê ½Ã°£ÀÌ ³¡³µ´Ù¸é °á°ú ÀÎº¥Åä¸®¿¡ Ãß°¡ ½Ãµµ
-                // ÀÎº¥Åä¸®°¡ ²ËÂ÷ÀÖ´Ù¸é 0 ¹İÈ¯
+                // ìƒì‚° ì‹œê°„ì´ ëë‚¬ë‹¤ë©´ ê²°ê³¼ ì¸ë²¤í† ë¦¬ì— ì¶”ê°€ ì‹œë„
+                // ì¸ë²¤í† ë¦¬ê°€ ê½‰ì°¨ìˆë‹¤ë©´ 0 ë°˜í™˜
                 int added = outputInventory.Add(activeRecipe.Output, 1);
 
                 if (added != 1)
@@ -165,11 +165,11 @@ public class ProductionMachine
                 return;
             }
 
-            // »ı»ê ½ÃÁ¡¿¡ Àç·á 1°³ ¼Òºñ
-            // ½ÇÁ¦ °¨¼Ò·®ÀÌ ¾ø´Ù¸é 0 ¹İÈ¯
+            // ìƒì‚° ì‹œì ì— ì¬ë£Œ 1ê°œ ì†Œë¹„
+            // ì‹¤ì œ ê°ì†ŒëŸ‰ì´ ì—†ë‹¤ë©´ 0 ë°˜í™˜
             int removed = inputInventory.Remove(selectedRecipe.Input, 1);
 
-            // ¼ÒºñÇÑ Àç·á°¡ 1ÀÌ ¾Æ´Ï¶ó¸é Àç·á º¸Ãæ±îÁö ´ë±â
+            // ì†Œë¹„í•œ ì¬ë£Œê°€ 1ì´ ì•„ë‹ˆë¼ë©´ ì¬ë£Œ ë³´ì¶©ê¹Œì§€ ëŒ€ê¸°
             if (removed != 1)
             {
                 SetState(ProductionState.WaitingForMaterials);
