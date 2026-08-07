@@ -156,68 +156,6 @@ Transform:
   - {fileID: 653804687}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &115620856
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 4.68875
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.98364
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4157899745929140826, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-      propertyPath: m_Name
-      value: Marker
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
---- !u!4 &115620857 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 495705617699840784, guid: d68f7b1f7d41b9848b356dbd6815f4bd, type: 3}
-  m_PrefabInstance: {fileID: 115620856}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &154257464
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,17 +668,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 15064886}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1096219248 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5595383204512706265, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
-  m_PrefabInstance: {fileID: 6062762735513863417}
+--- !u!1 &752722745
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 752722747}
+  - component: {fileID: 752722746}
+  m_Layer: 0
+  m_Name: ParticleManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &752722746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752722745}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9aeb94ba0d440842a3a7ba637ee8a97, type: 3}
+  m_Script: {fileID: 11500000, guid: 88f188136b8002b4fb955a56ddf12e66, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PoolManager
+  m_EditorClassIdentifier: Assembly-CSharp::ParticleManager
+  monsterPoolManager: {fileID: 6062762735513863418}
+  particleList:
+  - particleID: 0
+    particleName: ChasingSickle
+    particlePrefab: {fileID: 786889566517218709, guid: 452664a513437a247a050dee21d35cfe, type: 3}
+    particleRenderer: {fileID: 786889566517218706, guid: 452664a513437a247a050dee21d35cfe, type: 3}
+  - particleID: 1
+    particleName: FireCircle
+    particlePrefab: {fileID: 6476705285018846835, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
+    particleRenderer: {fileID: 6476705285018846834, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
+  - particleID: 4
+    particleName: FlowerThorns
+    particlePrefab: {fileID: 1267626628714948401, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
+    particleRenderer: {fileID: 1267626628716908123, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
+  - particleID: 3
+    particleName: LightningRay
+    particlePrefab: {fileID: 1941226523401448538, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+    particleRenderer: {fileID: 1941226523401448537, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+--- !u!4 &752722747
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 752722745}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 10.13055, y: 1.7, z: -1.90534}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1152573503
 GameObject:
   m_ObjectHideFlags: 0
@@ -1249,8 +1238,6 @@ GameObject:
   - component: {fileID: 2087349283}
   - component: {fileID: 2087349290}
   - component: {fileID: 2087349289}
-  - component: {fileID: 2087349288}
-  - component: {fileID: 2087349287}
   m_Layer: 4
   m_Name: Player
   m_TagString: Untagged
@@ -1351,46 +1338,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!195 &2087349287
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2087349282}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &2087349288
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2087349282}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f8a39ead994ff949b2a7e54bfda23a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NavMeshClickMove
-  mainCamera: {fileID: 1482958244}
-  destinationMarker: {fileID: 115620857}
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 256
-  sampleDistance: 2
 --- !u!114 &2087349289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1408,16 +1355,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   player: {fileID: 2087349290}
-  poolManager: {fileID: 1096219248}
-  attackSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
-  skillSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
-  skill2SO: {fileID: 0}
-  skill3SO: {fileID: 0}
+  poolManager: {fileID: 6062762735513863418}
+  particleManager: {fileID: 752722746}
+  MagicArrowSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  FireCircleSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
+  LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
+  FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
   isTripleShot: 0
-  isAttack: 0
-  isSkill: 1
-  isSkill2: 0
-  isSkill3: 0
+  isMagicArrow: 0
+  isFireCircle: 0
+  isChasingSickle: 0
+  isLightningRay: 1
+  isFlowerThorns: 0
 --- !u!114 &2087349290
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1489,7 +1439,7 @@ PrefabInstance:
     - target: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
       propertyPath: poolManager
       value: 
-      objectReference: {fileID: 1096219248}
+      objectReference: {fileID: 6062762735513863418}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1506,14 +1456,6 @@ PrefabInstance:
     - target: {fileID: 3534760183877599008, guid: e25d8b661c09aba47b9a2431afc4770f, type: 3}
       propertyPath: m_Name
       value: SpawnArea
-      objectReference: {fileID: 0}
-    - target: {fileID: 5890005072862765035, guid: e25d8b661c09aba47b9a2431afc4770f, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 5890005072862765035, guid: e25d8b661c09aba47b9a2431afc4770f, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 5890005072862765035, guid: e25d8b661c09aba47b9a2431afc4770f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1609,13 +1551,49 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
-      propertyPath: attackPointCount
-      value: 50
+      propertyPath: particleCount
+      value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: particlePrefab
+      value: 
+      objectReference: {fileID: 2041328280664646685, guid: eeb4a60935754cf4ba85d5a0293df02e, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: fireCircleCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: fireCirclePrefab
+      value: 
+      objectReference: {fileID: -4297715089572210025, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: attackPointPrefab
       value: 
-      objectReference: {fileID: 342471630181602534, guid: 88698fb895ba1a5438256b4fdfc28a48, type: 3}
+      objectReference: {fileID: 3786625189309287409, guid: bbf3284bd517b9b4283e323b24fd189c, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: flowerThornsCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: lightningRayCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: chasingSickleCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: flowerThornsPrefab
+      value: 
+      objectReference: {fileID: 762729780948256457, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: lightningRayPrefab
+      value: 
+      objectReference: {fileID: 120163664264632565, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: chasingSicklePrefab
+      value: 
+      objectReference: {fileID: 3022906258108465468, guid: 452664a513437a247a050dee21d35cfe, type: 3}
     - target: {fileID: 7119374117894832108, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: m_Name
       value: PoolPreLoader
@@ -1677,11 +1655,23 @@ PrefabInstance:
       propertyPath: m_Name
       value: PoolManager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 0}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+--- !u!114 &6062762735513863418 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1306151101374603641, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+  m_PrefabInstance: {fileID: 6062762735513863417}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9aeb94ba0d440842a3a7ba637ee8a97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterPoolManager
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1695,4 +1685,4 @@ SceneRoots:
   - {fileID: 4740842303492646667}
   - {fileID: 2824255149350228626}
   - {fileID: 2087349286}
-  - {fileID: 115620856}
+  - {fileID: 752722747}

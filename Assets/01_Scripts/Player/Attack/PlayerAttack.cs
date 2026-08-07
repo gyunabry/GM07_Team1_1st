@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerAttack : MonoBehaviour
 {
@@ -9,18 +10,24 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private LayerMask layer;
     [SerializeField] private Player player;
     [SerializeField] private MonsterPoolManager poolManager;
+    [SerializeField] private ParticleManager particleManager;
 
-    [SerializeField] private AttackSO attackSO;
-    [SerializeField] private AttackSO skillSO;
-    [SerializeField] private AttackSO skill2SO;
-    [SerializeField] private AttackSO skill3SO;
+    [SerializeField] private AttackSO MagicArrowSO;
+    [SerializeField] private AttackSO FireCircleSO;
+    [SerializeField] private AttackSO ChasingSickleSO;
+    [SerializeField] private AttackSO LightningRaySO;
+    [SerializeField] private AttackSO FlowerThornsSO;
     
 
     public bool isTripleShot = false;
-    public bool isAttack = false;
-    public bool isSkill = false;
-    public bool isSkill2 = false;
-    public bool isSkill3 = false;
+    public bool isMagicArrow = false;
+    public bool isFireCircle = false;
+    public bool isChasingSickle = false;
+    public bool isLightningRay = false;
+    public bool isFlowerThorns = false;
+
+    Vector3 giz;
+    float dis;
     private void Start()
     {
         attack = new AttackBase();
@@ -33,10 +40,18 @@ public class PlayerAttack : MonoBehaviour
     }
     public void AllAttackStart()
     {
-        if (isAttack) StartCoroutine(AttackCo());
-        if (isSkill) StartCoroutine(SkillCo());
+        StopCoroutine(MagicArrow());
+        StopCoroutine(FireCircle());
+        StopCoroutine(ChasingSickle());
+        StopCoroutine(LightningRay());
+        StopCoroutine(FlowerThorns());
+        if (isMagicArrow) StartCoroutine(MagicArrow());
+        if (isFireCircle) StartCoroutine(FireCircle());
+        if (isChasingSickle) StartCoroutine(ChasingSickle());
+        if (isLightningRay) StartCoroutine(LightningRay());
+        if (isFlowerThorns) StartCoroutine(FlowerThorns());
     }
-    IEnumerator AttackCo()
+    IEnumerator MagicArrow()
     {
         while (true)
         {
@@ -45,20 +60,24 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
             };
             Collider[] enemyIn = Physics.OverlapSphere(transform.position, distance, layer);
-            ad.attackDamage = attackSO.attackDamage;
-            ad.attackSpeed = attackSO.attackSpeed;
-            if (enemyIn.Length > 0) continue;
+            ad.attackDamage = MagicArrowSO.attackDamage;
+            ad.attackSpeed = MagicArrowSO.attackSpeed;
+            if (enemyIn.Length == 0)
+            {
+                yield return null;
+                continue;
+            }
             ad.direction = (enemyIn[0].transform.position - transform.position).normalized;
-            ad.spreadAngle = attackSO.spreadAngle;
+            ad.spreadAngle = MagicArrowSO.spreadAngle;
 
             if (enemyIn.Length > 0)
             {
-                attack.Attack(ad.attackDamage, ad, poolManager, layer);
+                attack.MagicArrow(ad.attackDamage, ad, poolManager, layer);
             }
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator SkillCo()
+    IEnumerator FireCircle()
     {
         while (true)
         {
@@ -66,21 +85,98 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
+            ad.attackDamage = FireCircleSO.attackDamage;
+            ad.attackSpeed = FireCircleSO.attackSpeed;
+            ad.distance = FireCircleSO.distance;
             
+            attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(1, transform.position, transform.rotation);
 
-            ad.attackDamage = skillSO.attackDamage;
-            ad.attackSpeed = skillSO.attackSpeed;
-            ad.distance = skillSO.distance;
-
-            Collider[] enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
-            if (enemyIn.Length > 0)
+            yield return new WaitForSeconds(ad.attackSpeed);
+        }
+    }
+    IEnumerator ChasingSickle()
+    {
+        while (true)
+        {
+            AttackData ad = new AttackData
             {
-                attack.Skill(ad.attackDamage, ad, poolManager, layer);
+                position = transform.position,
+                forward = transform.forward
+            };
+            ad.attackDamage = ChasingSickleSO.attackDamage;
+            ad.attackSpeed = ChasingSickleSO.attackSpeed;
+            ad.distance = ChasingSickleSO.distance;
+            ad.spreadAngle = ChasingSickleSO.spreadAngle;
+
+            attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(0, transform.position, transform.rotation);
+
+            yield return new WaitForSeconds(ad.attackSpeed);
+        }
+    }
+    IEnumerator LightningRay()
+    {
+        while (true)
+        {
+            AttackData ad = new AttackData
+            {
+                position = transform.position,
+            };
+            ad.attackDamage = LightningRaySO.attackDamage;
+            ad.attackSpeed = LightningRaySO.attackSpeed;
+            ad.distance = LightningRaySO.distance;
+            ad.spreadAngle = LightningRaySO.spreadAngle;
+
+            Collider[] enemy = Physics.OverlapSphere(transform.position, ad.distance, layer);
+
+            Collider nearEnemy = null;
+            float minDis = Mathf.Infinity;
+            if (enemy.Length > 0)
+            {
+                foreach (var that in enemy)
+                {
+                    Vector3 enemyPosi = that.transform.position;
+                    float distance = (transform.position - enemyPosi).sqrMagnitude;
+                    if (distance < minDis)
+                    {
+                        minDis = distance;
+                        nearEnemy = that;
+                    }
+                }   
+            Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
+            Quaternion targetRota = Quaternion.LookRotation(dir);
+            attack.LightningRay(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(3, transform.position, targetRota);
             }
+
+            yield return new WaitForSeconds(ad.attackSpeed);
+        }
+    }
+    IEnumerator FlowerThorns()
+    {
+        while (true)
+        {
+            Vector2 randomCircle = Random.insideUnitCircle * FlowerThornsSO.distance;
+            Vector3 randomPosi = new Vector3(transform.position.x + randomCircle.x, transform.position.y, transform.position.z + randomCircle.y);
+            AttackData ad = new AttackData
+            {
+                position = randomPosi,
+            };
+            ad.attackDamage = FlowerThornsSO.attackDamage;
+            ad.attackSpeed = FlowerThornsSO.attackSpeed;
+            ad.distance = FlowerThornsSO.distance;
+            
+            giz = randomPosi;
+            dis = ad.distance;
+            attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
+            particleManager.GetParticle(4, randomPosi, transform.rotation);
+
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
     public void GetTripleShot()
+
     {
         attack = new TripleDeco(attack);
     }
