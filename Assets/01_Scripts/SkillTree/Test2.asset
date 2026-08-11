@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: Test2
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: 2
+  skillName: "\uD14C\uC2A4\uD2B8\uD2B8\uD2B8"
+  skillSprite: {fileID: 0}
+  skillMaxLevel: 3
+  skillNeedSkillPoint: 1
+  skillNeedLevel: 0
+  skillNeedMoney: 0
+  Value:
+  - -0.3
+  - -0.6
+  - -0.9
+  needSkill: {fileID: 11400000, guid: d0c6dfe58b203cd4aa002a39a03bdc21, type: 2}
+  effect: {fileID: 11400000, guid: b93574589f8881243ad49ea4c5a9243b, type: 2}

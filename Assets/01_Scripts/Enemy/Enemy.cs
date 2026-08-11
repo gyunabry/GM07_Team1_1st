@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     private bool isStart = false;
     public bool isHit = false;
 
-    public int CurrentHp { get; set; }
+    public float CurrentHp { get; set; }
    
     private void OnEnable()
     {
@@ -72,7 +72,7 @@ public class Enemy : MonoBehaviour
         int exp = enemyData.Reward.KillExp;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(float damage)
     {
         CurrentHp = CurrentHp - damage;
         isHit = true;

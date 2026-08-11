@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackBase : IAttack
 {
-    public void MagicArrow(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public void MagicArrow(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         for (int i = 0; i < data.projectileCount; i++)
         {
@@ -31,7 +31,7 @@ public class AttackBase : IAttack
             ap.layer = layer;
         }
     }
-    public void FireCircle(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public void FireCircle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
 
@@ -44,7 +44,7 @@ public class AttackBase : IAttack
             }
         }
     }
-    public void ChasingSickle(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public void ChasingSickle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
 
@@ -61,7 +61,7 @@ public class AttackBase : IAttack
             }
         }
     }
-    public void LightningRay(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public void LightningRay(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
 
@@ -87,7 +87,7 @@ public class AttackBase : IAttack
             }
         }
     }
-    public void FlowerThorns(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public void FlowerThorns(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         
 
@@ -103,7 +103,7 @@ public class AttackBase : IAttack
         }
 
     }
-    public void Skill5(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public void Skill5(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
 
     }
@@ -116,34 +116,34 @@ public abstract class AttackDeco : IAttack
     {
         this.attack = attack;
     }
-    public virtual void MagicArrow(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public virtual void MagicArrow(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         this.attack.MagicArrow(AttackDamage, data, poolManager, layer);
     }
-    public virtual void FireCircle(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public virtual void FireCircle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         this.attack.FireCircle(AttackDamage, data, poolManager, layer);
     }
-    public virtual void ChasingSickle(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public virtual void ChasingSickle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         this.attack.ChasingSickle(AttackDamage, data, poolManager, layer);
     }
-    public virtual void LightningRay(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public virtual void LightningRay(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         this.attack.LightningRay(AttackDamage, data, poolManager, layer);
     }
-    public virtual void FlowerThorns(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public virtual void FlowerThorns(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         this.attack.FlowerThorns(AttackDamage, data, poolManager, layer);
     }
-    public virtual void Skill5(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public virtual void Skill5(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         this.attack.Skill5(AttackDamage, data, poolManager, layer);
     }
 }
 public class AttackData
 {
-    public int attackDamage = 5;
+    public float attackDamage = 5;
     public float attackSpeed = 0.5f;
     public Vector3 position;
     public Vector3 forward;
@@ -154,10 +154,10 @@ public class AttackData
 }
 public interface IAttack
 {
-    public void MagicArrow(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
-    public void FireCircle(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
-    public void ChasingSickle(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
-    public void LightningRay(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
-    public void FlowerThorns(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
-    public void Skill5(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void MagicArrow(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void FireCircle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void ChasingSickle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void LightningRay(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void FlowerThorns(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
+    public void Skill5(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer);
 }
