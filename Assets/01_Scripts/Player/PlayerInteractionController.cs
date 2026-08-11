@@ -36,7 +36,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
 
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, interactionLayer, QueryTriggerInteraction.Ignore))
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, interactionLayer, QueryTriggerInteraction.Collide))
         {
             return false;
         }
