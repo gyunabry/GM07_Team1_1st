@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 /*
@@ -15,6 +16,7 @@ using UnityEngine;
 
 public class ProductionBuilding : MonoBehaviour
 {
+    [SerializeField] private List<RecipeDataSO> availableRecipes = new();
     [SerializeField] private RecipeDataSO initialRecipe;
 
     [Header("생산 인벤토리")]
@@ -28,6 +30,7 @@ public class ProductionBuilding : MonoBehaviour
     private PlacedBuilding placedBuilding;
 
     #region 프로퍼티
+    public List<RecipeDataSO> AvailableRecipes => availableRecipes;
     public RecipeDataSO SelectedRecipe => machine.SelectedRecipe;
     public RecipeDataSO ActiveRecipe => machine.ActiveRecipe;
     public ItemInventory InputInventory => inputInventory;
