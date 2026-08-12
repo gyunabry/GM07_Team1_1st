@@ -27,10 +27,6 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         CreateCounter(new Vector3(-2f, 0.75f, 2.5f));
         CreateCounter(new Vector3(2f, 0.75f, 2.5f));
         CreateCounter(new Vector3(6f, 0.75f, 2.5f));
-        Transform checkoutFront1 = CreateMarker("CheckoutFront1", new Vector3(-6f, 0f, 1.5f), Vector3.forward);
-        Transform checkoutFront2 = CreateMarker("CheckoutFront2", new Vector3(-2f, 0f, 1.5f), Vector3.forward);
-        Transform checkoutFront3 = CreateMarker("CheckoutFront3", new Vector3(2f, 0f, 1.5f), Vector3.forward);
-        Transform checkoutFront4 = CreateMarker("CheckoutFront4", new Vector3(6f, 0f, 1.5f), Vector3.forward);
         Transform entrance = CreateMarker("Entrance", new Vector3(0f, 0f, -9f), Vector3.forward);
         // 계산대 옆의 군중을 가로지르지 않도록 바깥쪽 통로를 따라 출구로 이동한다.
         Transform exitTurn = CreateMarker("ExitTurn", new Vector3(8.5f, 0f, 1.5f), Vector3.right);
@@ -39,15 +35,6 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         NavMeshSurface surface = floor.AddComponent<NavMeshSurface>();
         surface.BuildNavMesh();
 
-        ShopCustomerQueue queue1 = CreateQueue("ShopCustomerQueue1", checkoutFront1);
-        ShopCustomerQueue queue2 = CreateQueue("ShopCustomerQueue2", checkoutFront2);
-        ShopCustomerQueue queue3 = CreateQueue("ShopCustomerQueue3", checkoutFront3);
-        ShopCustomerQueue queue4 = CreateQueue("ShopCustomerQueue4", checkoutFront4);
-
-        ShopCheckout checkout1 = CreateCheckout("ShopCheckout1", new Vector3(-6f, 0f, 3.5f));
-        ShopCheckout checkout2 = CreateCheckout("ShopCheckout2", new Vector3(-2f, 0f, 3.5f));
-        ShopCheckout checkout3 = CreateCheckout("ShopCheckout3", new Vector3(2f, 0f, 3.5f));
-        ShopCheckout checkout4 = CreateCheckout("ShopCheckout4", new Vector3(6f, 0f, 3.5f));
         checkoutOperator = CreateCheckoutOperator(new Vector3(0f, -10f, 0f));
 
         CustomerController customerTemplate = CreateCustomerTemplate();
@@ -68,14 +55,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
             ExperienceReward = 5
         };
 
-        CustomerCheckoutStation[] stations =
-        {
-            new CustomerCheckoutStation(queue1, checkout1),
-            new CustomerCheckoutStation(queue2, checkout2),
-            new CustomerCheckoutStation(queue3, checkout3),
-            new CustomerCheckoutStation(queue4, checkout4)
-        };
-        spawnManager.Configure(customerTemplate, stations, entrance, exitTurn, exit, order, 2.5f);
+        spawnManager.Configure(customerTemplate, entrance, exitTurn, exit, order, 2.5f);
         spawnManager.BindServices(testServices, currencySystem);
     }
 
@@ -163,21 +143,30 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         counter.name = "Counter";
         counter.transform.position = position;
         counter.transform.localScale = new Vector3(3f, 1.5f, 1f);
-    }
+        counter.SetActive(false);
 
-    private static ShopCustomerQueue CreateQueue(string queueName, Transform checkoutFront)
-    {
-        ShopCustomerQueue queue = new GameObject(queueName).AddComponent<ShopCustomerQueue>();
+        Transform checkoutFront = CreateCounterMarker(counter.transform, "CheckoutFront", Vector3.back);
+        Transform operatorArea = CreateCounterMarker(counter.transform, "OperatorArea", Vector3.forward);
+
+        ShopCustomerQueue queue = counter.AddComponent<ShopCustomerQueue>();
         queue.Configure(checkoutFront, 1.25f, 5);
-        return queue;
+
+        ShopCheckout checkout = operatorArea.gameObject.AddComponent<ShopCheckout>();
+        checkout.ConfigureZone(new Vector3(2.5f, 2f, 2f));
+
+        CustomerCheckoutStation station = counter.AddComponent<CustomerCheckoutStation>();
+        station.ConfigureReferences(queue, checkout);
+        counter.SetActive(true);
     }
 
-    private static ShopCheckout CreateCheckout(string checkoutName, Vector3 position)
+    private static Transform CreateCounterMarker(Transform parent, string markerName, Vector3 localPosition)
     {
-        ShopCheckout checkout = new GameObject(checkoutName).AddComponent<ShopCheckout>();
-        checkout.transform.position = position;
-        checkout.ConfigureZone(new Vector3(2.5f, 2f, 2f));
-        return checkout;
+        GameObject marker = new GameObject(markerName);
+        Transform markerTransform = marker.transform;
+        markerTransform.SetParent(parent, false);
+        markerTransform.localPosition = localPosition;
+        markerTransform.localRotation = Quaternion.identity;
+        return markerTransform;
     }
 
     private static Transform CreateCheckoutOperator(Vector3 position)

@@ -27,6 +27,7 @@
 | `CustomerStates.cs` | `Visit`, `Order`, `Idle`, `Exit` 상태의 행동을 구현한다. |
 | `ShopCustomerQueue.cs` | 결제 순서를 관리하고, 군중 속 다음 손님을 계산대 정면으로 진입시킨다. |
 | `ShopCheckout.cs` | 계산 담당자가 계산대 뒤쪽 감지 영역에 있는지 확인한다. |
+| `CustomerCheckoutStation.cs` | 프리팹에 명시적으로 배치한 대기열·결제 영역을 검증하고 자동 등록·폐쇄·해제한다. |
 | `CustomerContracts.cs` | 주문 데이터와 재고·재화·계산 담당자 인터페이스를 정의한다. |
 | `../Data/CustomerDataSO.cs` | 손님 유형이 공유하는 이동 속도, 결제 시간, 퇴장 제한 시간, 기본 주문을 보관한다. 최대 대기시간은 아직 정의하지 않는다. |
 | `CustomerRuntimeData.cs` | 풀에서 대여된 손님 한 명의 현재 상태, 선택 대기열·계산대, 확정 주문, 결제 완료 여부를 보관한다. |
@@ -44,9 +45,9 @@
 
 ## 군중과 계산 순서
 
-`CustomerSpawnManager`의 **Checkout Stations** 배열에는 계산대마다 `ShopCustomerQueue`와 `ShopCheckout`을 한 쌍으로 등록한다. 손님 생성 시 정원이 남은 스테이션 중 손님 수가 가장 적은 대기열을 선택하며, 같으면 배열에서 먼저 등록한 스테이션을 선택한다.
+계산대 프리팹은 `CheckoutFront`, `OperatorArea`, `ShopCustomerQueue`, `ShopCheckout`을 명시적으로 포함해야 한다. `CustomerCheckoutStation`은 Inspector에 연결된 참조를 검증하고 스폰 매니저에 등록할 뿐, 자식 오브젝트·컴포넌트·Trigger를 런타임에 생성하거나 위치와 크기를 덮어쓰지 않는다. 비활성화되면 자동으로 폐쇄·해제된다. 손님 생성 시 정원이 남은 활성 계산대 중 손님 수가 가장 적은 대기열을 선택한다.
 
-각 스테이션은 독립된 대기열과 계산 담당자 감지 영역을 사용하므로 여러 계산대에서 동시에 결제할 수 있다. 기존 단일 계산대 씬은 기존 `Shop Queue`, `Checkout` 필드를 그대로 사용하므로 별도 마이그레이션 없이 동작한다.
+각 스테이션은 독립된 대기열과 계산 담당자 감지 영역을 사용하므로 여러 계산대에서 동시에 결제할 수 있다. 활성 계산대가 하나도 없으면 새 손님 스폰은 중단되고, 계산대가 다시 열리면 활성 계산대 총 정원까지 `spawnInterval` 간격으로 보충한다.
 
 대기열은 손님의 위치를 줄 단위로 배정하지 않는다. 모든 손님이 동일한 판매대 정면(`checkoutFront`)을 향하기 때문에 NavMeshAgent 회피에 따라 판매대 앞에 군집을 이룬다.
 
@@ -105,12 +106,49 @@
 
 ## 씬 연결
 
+## 건물·인벤토리·재화 연동 가이드
+
+계산대는 플레이 중에 배치·이동·철거될 수 있으므로, **건물 시스템이 계산대 인스턴스와 위치를 소유**하고 Customer 시스템은 `CustomerCheckoutStation` 컴포넌트를 통해 자동 등록·해제한다. Customer는 건물 시스템을 직접 찾거나 수정하지 않는다.
+
+### 책임 분리
+
+| 영역 | 책임 |
+| --- | --- |
+| 건물 시스템 | 계산대 배치 완료 여부, 이동·회전·철거, NavMesh 갱신, 계산대 프리팹과 직원 위치 제공 |
+| Customer 시스템 | 사용 가능한 계산대 목록 유지, 가장 짧은 줄 선택, 대기열·결제·퇴장 처리 |
+| 인벤토리 시스템 | 주문 재료의 보유량 확인과 **전량 동시 차감** |
+| 재화 시스템 | 결제 성공 뒤 돈·경험치 지급 및 변경 알림 |
+
+### 계산대 건물 연동 순서
+
+1. 계산대 프리팹 루트에 `ShopCustomerQueue`와 `CustomerCheckoutStation`을 붙인다.
+2. 루트의 자식으로 `CheckoutFront`를 만들고, 손님이 계산할 정확한 위치에 배치한다. `ShopCustomerQueue`의 `Checkout Front` 필드에 이 Transform을 연결한다.
+3. 루트의 자식으로 `OperatorArea`를 만들고, 직원이 설 위치에 배치한다. 여기에 `ShopCheckout`을 붙인다. `ShopCheckout`이 자동으로 보장하는 `BoxCollider`는 **Is Trigger**로, `Rigidbody`는 **Is Kinematic**·**Use Gravity 해제**로 설정한다. Collider의 중심과 크기는 프리팹에서 직접 조정한다.
+4. 루트의 `CustomerCheckoutStation` Inspector에서 `Queue`에 `ShopCustomerQueue`, `Checkout`에 `OperatorArea`의 `ShopCheckout`을 명시적으로 연결한다. 컴포넌트를 처음 붙일 때는 `Reset`이 같은 프리팹 안의 후보를 한 번 채워주지만, 저장 전 참조와 위치를 확인한다.
+5. 직원 또는 유저 프리팹에는 기존처럼 `CheckoutOperatorPresence`를 붙인다. `OperatorArea` Trigger 안에 들어오면 해당 계산대 결제가 시작된다.
+6. 계산대 오브젝트가 활성화되면 `CustomerCheckoutStation`이 자동 등록한다. 건설 중 손님을 받지 않아야 하면 오브젝트를 비활성화한 뒤 완공 시 활성화한다.
+7. 이동 또는 회전 전에는 `CloseStation()`을 호출한다. 새 배정은 즉시 닫히고, 대기·접근·결제 대기 손님은 **결제와 보상 없이 전원 퇴장**한다.
+8. 위치·회전 적용과 NavMesh 갱신 후 `OpenStation()`을 호출한다. 오브젝트 비활성화 → 위치 변경 → 활성화 방식은 이 호출을 자동으로 처리한다.
+9. 철거는 `CloseStation()` 후 오브젝트를 비활성화하거나 삭제한다. `OnDisable`이 등록 해제를 수행한다.
+
+건물 시스템이 사용하는 공개 API는 `CustomerCheckoutStation.CloseStation()`과 `OpenStation()`이다. 외부 시스템은 이 두 메서드 또는 오브젝트 활성화만 사용하면 되며, `CustomerSpawnManager` 내부 목록을 직접 수정하지 않는다. `ConfigureReferences()`는 `CustomerVisualTest` 같은 런타임 Factory 전용이며, 건물 프리팹 장착에는 사용하지 않는다.
+
+### 주문 재료·재화 연동
+
+`CurrencySystem`은 이미 `ICustomerCurrency`를 구현하므로 `CustomerSpawnManager.BindServices()`에 그대로 전달할 수 있다. `ItemInventory`는 `InventoryChanged` 이벤트와 아이템 수량 조회·차감 기능을 제공하지만 아직 `ICustomerInventory`는 구현하지 않는다. 인벤토리 담당자는 `ICustomerInventory` 어댑터를 만들어 다음을 보장해야 한다.
+
+1. `CustomerOrder.Items` 전체 보유량을 먼저 검사한다.
+2. 하나라도 부족하면 아무 재료도 차감하지 않고 `false`를 반환한다.
+3. 모두 충분할 때만 전량을 차감하고, 한 번의 변경 알림을 보낸 뒤 `true`를 반환한다.
+
+이 계약을 지키면 Customer 시스템은 구체적인 인벤토리·건물 구현을 몰라도 안전하게 결제를 처리할 수 있다.
+
 필수 구성 요소는 다음과 같다.
 
 - `PoolManager` 1개
 - 손님 프리팹: `NavMeshAgent`, `CustomerStateMachine`, `CustomerController`
 - 베이크된 NavMesh와 입구·판매대 앞·퇴장 통로·출구 Transform
-- `ShopCustomerQueue`와 `ShopCheckout`
+- 계산대 프리팹마다 `CustomerCheckoutStation`, `ShopCustomerQueue`, `CheckoutFront`, `OperatorArea/ShopCheckout` 하나씩
 - 계산 담당자 역할의 오브젝트에 붙일 `CheckoutOperatorPresence`
 - `ICustomerInventory`, `ICustomerCurrency` 구현체
 
@@ -133,3 +171,5 @@ spawnManager.BindServices(inventoryService, currencySystem);
 - 퇴장 경로: 계산대 오른쪽 바깥 통로를 거쳐 출구로 이동
 
 테스트용 계산 담당자 캡슐은 기본적으로 감지 영역 밖에 있다. 마우스를 각 계산대 뒤의 감지 영역 위에 놓으면 캡슐이 그 위치로 이동하고, 해당 줄의 앞 손님만 1.5초 후 결제한다. 마우스를 감지 영역 밖에 두면 결제가 시작되지 않아 네 줄에 손님이 쌓이는 모습을 확인할 수 있다. 테스트용 `CustomerVisualTestServices`는 주문이 항상 처리 가능하다고 가정하는 간이 재고 구현이다.
+
+각 테스트 계산대도 실제 프리팹과 동일한 구조를 런타임에 명시적으로 만든 뒤 `CustomerCheckoutStation`으로 등록한다. 플레이 중 해당 스테이션 오브젝트를 비활성화하면 그 줄 손님이 무보상 퇴장하고, 다시 활성화하면 손님 보충이 재개된다.

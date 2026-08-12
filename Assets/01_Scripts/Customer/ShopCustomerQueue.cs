@@ -11,9 +11,11 @@ public sealed class ShopCustomerQueue : MonoBehaviour
     [SerializeField, Min(0.1f)] private float checkoutAcceptanceRadius = 0.9f;
 
     private readonly List<CustomerController> customers = new List<CustomerController>();
+    private bool isAcceptingCustomers = true;
 
     public int Count => customers.Count;
     public int Capacity => maxCustomers;
+    public bool IsAcceptingCustomers => isAcceptingCustomers;
 
     public void Configure(Transform front, float slotSpacing, int capacity)
     {
@@ -24,7 +26,7 @@ public sealed class ShopCustomerQueue : MonoBehaviour
 
     public bool TryJoin(CustomerController customer)
     {
-        if (customer == null || checkoutFront == null || customers.Contains(customer) || customers.Count >= maxCustomers)
+        if (!isAcceptingCustomers || customer == null || checkoutFront == null || customers.Contains(customer) || customers.Count >= maxCustomers)
         {
             return false;
         }
@@ -50,6 +52,16 @@ public sealed class ShopCustomerQueue : MonoBehaviour
     public bool IsFront(CustomerController customer)
     {
         return customers.Count > 0 && customers[0] == customer;
+    }
+
+    public void SetAcceptingCustomers(bool value)
+    {
+        isAcceptingCustomers = value;
+    }
+
+    public CustomerController[] GetCustomersSnapshot()
+    {
+        return customers.ToArray();
     }
 
     public bool IsInCheckoutRange(CustomerController customer)

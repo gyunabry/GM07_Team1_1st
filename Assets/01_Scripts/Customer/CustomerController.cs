@@ -200,6 +200,17 @@ public sealed class CustomerController : MonoBehaviour
         return true;
     }
 
+    // 계산대 이동·철거로 대기열이 닫힐 때 보상 없이 손님을 퇴장시킨다.
+    public void ForceExitWithoutPayment()
+    {
+        if (RuntimeData.CurrentStateName == "Exit")
+        {
+            return;
+        }
+
+        stateMachine.ChangeState(new CustomerExitState(this));
+    }
+
     public void SubscribeInventoryChanged(System.Action handler)
     {
         if (inventory != null)
