@@ -99,25 +99,39 @@ public sealed class CustomerExitState : ICustomerState
 {
     private readonly CustomerController controller;
     private bool movingToFinalExit;
+    private float exitElapsed;
     public string Name => "Exit";
     public CustomerExitState(CustomerController controller) => this.controller = controller;
     public void Enter()
     {
         controller.Queue?.Leave(controller);
         movingToFinalExit = !controller.HasExitTurnPoint;
+        exitElapsed = 0f;
         bool moveStarted = movingToFinalExit ? controller.MoveToExit() : controller.MoveToExitTurnPoint();
-        if (!moveStarted) controller.ReturnToPool();
+        if (!moveStarted)
+        {
+            controller.FailExit(movingToFinalExit ? "No path to the exit." : "No path to the exit turn point.");
+        }
     }
     public void Update()
     {
+        exitElapsed += UnityEngine.Time.deltaTime;
+        if (exitElapsed >= controller.ExitTimeout)
+        {
+            controller.FailExit($"Exit timed out after {controller.ExitTimeout:0.##} seconds.");
+            return;
+        }
+
         if (!controller.HasArrived()) return;
         if (!movingToFinalExit)
         {
             movingToFinalExit = true;
             if (controller.MoveToExit()) return;
+            controller.FailExit("No path from the exit turn point to the exit.");
+            return;
         }
 
-        controller.ReturnToPoolAfterExit();
+        controller.CompleteExit();
     }
     public void Exit() { }
 }

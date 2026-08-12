@@ -66,7 +66,8 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
         if (customer.OnSpawned(shopQueue, checkout, exitTurnPoint, exitPoint, order, inventory, currency))
         {
-            customer.ExitedShop += OnCustomerExited;
+            customer.ExitCompleted += OnCustomerExitCompleted;
+            customer.ExitFailed += OnCustomerExitFailed;
             return true;
         }
 
@@ -84,9 +85,26 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         }
     }
 
-    private void OnCustomerExited(CustomerController customer)
+    private void OnCustomerExitCompleted(CustomerController customer)
     {
-        customer.ExitedShop -= OnCustomerExited;
+        DespawnAndReplace(customer);
+    }
+
+    private void OnCustomerExitFailed(CustomerController customer, string reason)
+    {
+        DespawnAndReplace(customer);
+    }
+
+    private void DespawnAndReplace(CustomerController customer)
+    {
+        customer.ExitCompleted -= OnCustomerExitCompleted;
+        customer.ExitFailed -= OnCustomerExitFailed;
+
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.ReturnPool(customer);
+        }
+
         SpawnOne();
     }
 }

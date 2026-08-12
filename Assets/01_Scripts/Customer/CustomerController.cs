@@ -13,6 +13,7 @@ public sealed class CustomerController : MonoBehaviour
 
     [SerializeField] private CustomerOrder defaultOrder;
     [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
+    [SerializeField, Min(0.1f)] private float exitTimeout = 10f;
 
     private NavMeshAgent agent;
     private float defaultAgentRadius;
@@ -38,9 +39,11 @@ public sealed class CustomerController : MonoBehaviour
     public bool IsPaymentCompleted => paymentCompleted;
     public bool HasInventoryService => inventory != null;
     public float PaymentDuration => paymentDuration;
+    public float ExitTimeout => exitTimeout;
     public bool HasCheckoutOperator => checkout != null && checkout.HasOperator;
 
-    public event System.Action<CustomerController> ExitedShop;
+    public event System.Action<CustomerController> ExitCompleted;
+    public event System.Action<CustomerController, string> ExitFailed;
 
     private void Awake()
     {
@@ -226,18 +229,15 @@ public sealed class CustomerController : MonoBehaviour
         }
     }
 
-    public void ReturnToPool()
+    public void CompleteExit()
     {
-        if (PoolManager.Instance != null)
-        {
-            PoolManager.Instance.ReturnPool(this);
-        }
+        ExitCompleted?.Invoke(this);
     }
 
-    public void ReturnToPoolAfterExit()
+    public void FailExit(string reason)
     {
-        ReturnToPool();
-        ExitedShop?.Invoke(this);
+        Debug.LogWarning($"Customer exit failed: {reason}. The customer will be despawned.", this);
+        ExitFailed?.Invoke(this, reason);
     }
 
     private void PrepareForExit()
