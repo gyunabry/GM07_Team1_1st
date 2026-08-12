@@ -28,6 +28,8 @@
 | `ShopCustomerQueue.cs` | 결제 순서를 관리하고, 군중 속 다음 손님을 계산대 정면으로 진입시킨다. |
 | `ShopCheckout.cs` | 계산 담당자가 계산대 뒤쪽 감지 영역에 있는지 확인한다. |
 | `CustomerContracts.cs` | 주문 데이터와 재고·재화·계산 담당자 인터페이스를 정의한다. |
+| `../Data/CustomerDataSO.cs` | 손님 유형이 공유하는 이동 속도, 결제 시간, 퇴장 제한 시간, 기본 주문을 보관한다. 최대 대기시간은 아직 정의하지 않는다. |
+| `CustomerRuntimeData.cs` | 풀에서 대여된 손님 한 명의 현재 상태, 선택 대기열·계산대, 확정 주문, 결제 완료 여부를 보관한다. |
 | `CheckoutOperatorPresence.cs` | 플레이어 또는 자동 판매 직원에게 붙여 계산 담당자로 인식시키는 마커다. |
 | `CustomerVisualTestBootstrap.cs` | `CustomerVisualTest` 씬을 런타임에 구성하는 테스트 전용 코드다. |
 
@@ -73,6 +75,12 @@
 
 ## 주문 데이터
 
+## 손님 기본·런타임 데이터
+
+`CustomerDataSO`는 여러 손님이 공유하는 기본값이다. `movementSpeed`, `paymentDuration`, `exitTimeout`, `defaultOrder`를 Inspector에서 설정한다. `CustomerController`에 이 SO를 연결하면 NavMeshAgent 이동 속도와 결제·퇴장 시간이 해당 값으로 적용된다. 연결하지 않은 기존 프리팹과 테스트 씬은 컨트롤러의 기존 기본값으로 동작한다.
+
+`CustomerRuntimeData`는 풀에서 손님이 대여될 때 초기화되고 반납 전 초기화된다. 현재 상태 이름, 가장 짧은 줄 선택 결과(`SelectedQueue`, `SelectedCheckout`), 실제 확정 주문, 결제 완료 여부를 한 손님 단위로 관리한다. 최대 대기시간은 현재 게임 규칙에 포함하지 않는다.
+
 `CustomerOrder`는 여러 `CustomerOrderItem`과 보상으로 구성된다.
 
 - `CustomerOrderItem.ItemId` 필드는 이름과 달리 `ItemDataSO` 참조 타입이다.
@@ -93,7 +101,7 @@
 
 손님이 풀에 반납되어 다음 스폰에 재사용될 때는 기본 Agent 반경, 회피 설정, Collider 상태를 복원한다.
 
-퇴장 경로가 생성되지 않거나 퇴장 시작 후 `exitTimeout`(기본 10초)을 넘기면, 손님은 경고를 남기고 자동으로 풀에 반납된다. 이 경우에도 스폰 매니저가 즉시 다음 손님을 보충하므로 대기열 정원이 줄어들지 않는다.
+퇴장 경로가 생성되지 않거나 퇴장 시작 후 `exitTimeout`(기본 30초)을 넘기면, 손님은 경고를 남기고 자동으로 풀에 반납된다. 이 경우에도 스폰 매니저가 즉시 다음 손님을 보충하므로 대기열 정원이 줄어들지 않는다.
 
 ## 씬 연결
 

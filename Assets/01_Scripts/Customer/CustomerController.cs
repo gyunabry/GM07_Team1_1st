@@ -11,36 +11,38 @@ public sealed class CustomerController : MonoBehaviour
     private const int CheckoutAvoidancePriority = 10;
     private const int ExitAvoidancePriority = 0;
 
+    [SerializeField] private CustomerDataSO customerData;
+    [Header("Legacy Defaults")]
     [SerializeField] private CustomerOrder defaultOrder;
     [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
-    [SerializeField, Min(0.1f)] private float exitTimeout = 10f;
+    [SerializeField, Min(0.1f)] private float exitTimeout = 30f;
 
     private NavMeshAgent agent;
+    private float defaultAgentSpeed;
     private float defaultAgentRadius;
     private ObstacleAvoidanceType defaultObstacleAvoidance;
     private Collider[] colliders;
     private bool[] defaultColliderStates;
     private CustomerStateMachine stateMachine;
-    private ShopCustomerQueue queue;
-    private ShopCheckout checkout;
     private Transform exitTurnPoint;
     private Transform exitPoint;
     private ICustomerInventory inventory;
     private ICustomerCurrency currency;
     private Vector3 queueDestination;
     private bool hasQueueDestination;
-    private bool paymentCompleted;
+    private readonly CustomerRuntimeData runtimeData = new CustomerRuntimeData();
 
-    public CustomerOrder Order { get; private set; }
-    public ShopCustomerQueue Queue => queue;
-    public ShopCheckout Checkout => checkout;
+    public CustomerRuntimeData RuntimeData => runtimeData;
+    public CustomerOrder Order => runtimeData.Order;
+    public ShopCustomerQueue Queue => runtimeData.SelectedQueue;
+    public ShopCheckout Checkout => runtimeData.SelectedCheckout;
     public bool HasExitTurnPoint => exitTurnPoint != null;
     public CustomerStateMachine StateMachine => stateMachine;
-    public bool IsPaymentCompleted => paymentCompleted;
+    public bool IsPaymentCompleted => runtimeData.PaymentCompleted;
     public bool HasInventoryService => inventory != null;
-    public float PaymentDuration => paymentDuration;
-    public float ExitTimeout => exitTimeout;
-    public bool HasCheckoutOperator => checkout != null && checkout.HasOperator;
+    public float PaymentDuration => customerData != null ? customerData.PaymentDuration : paymentDuration;
+    public float ExitTimeout => customerData != null ? customerData.ExitTimeout : exitTimeout;
+    public bool HasCheckoutOperator => Checkout != null && Checkout.HasOperator;
 
     public event System.Action<CustomerController> ExitCompleted;
     public event System.Action<CustomerController, string> ExitFailed;
@@ -48,6 +50,7 @@ public sealed class CustomerController : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        defaultAgentSpeed = agent.speed;
         defaultAgentRadius = agent.radius;
         defaultObstacleAvoidance = agent.obstacleAvoidanceType;
         colliders = GetComponentsInChildren<Collider>(true);
@@ -62,8 +65,7 @@ public sealed class CustomerController : MonoBehaviour
 
     private void OnDisable()
     {
-        queue?.Leave(this);
-        queue = null;
+        Queue?.Leave(this);
         hasQueueDestination = false;
 
         // 풀에 보관하는 동안 마지막 NavMesh 위치를 유지한 채 다시 생성되지 않게 한다.
@@ -86,15 +88,18 @@ public sealed class CustomerController : MonoBehaviour
         }
 
         ResetCustomer();
-        queue = shopQueue;
-        checkout = checkoutService;
         exitTurnPoint = exitTurn;
         exitPoint = exit;
-        Order = order.IsValid ? order : defaultOrder;
+        CustomerOrder fallbackOrder = customerData != null && customerData.DefaultOrder.IsValid
+            ? customerData.DefaultOrder
+            : defaultOrder;
+        CustomerOrder selectedOrder = order.IsValid ? order : fallbackOrder;
+        runtimeData.Initialize(shopQueue, checkoutService, selectedOrder);
         inventory = inventoryService;
         currency = currencyService;
+        agent.speed = customerData != null ? customerData.MovementSpeed : defaultAgentSpeed;
 
-        if (queue == null || checkout == null || exitPoint == null || !Order.IsValid || !queue.TryJoin(this))
+        if (Queue == null || Checkout == null || exitPoint == null || !Order.IsValid || !Queue.TryJoin(this))
         {
             stateMachine.Cancel();
             return false;
@@ -106,21 +111,19 @@ public sealed class CustomerController : MonoBehaviour
 
     public void ResetCustomer()
     {
-        queue?.Leave(this);
-        queue = null;
-        checkout = null;
+        Queue?.Leave(this);
         exitTurnPoint = null;
         inventory = null;
         currency = null;
-        paymentCompleted = false;
         hasQueueDestination = false;
-        Order = default;
+        runtimeData.Reset();
 
         if (agent != null && agent.isOnNavMesh)
         {
             agent.ResetPath();
             agent.isStopped = false;
             agent.avoidancePriority = NormalAvoidancePriority;
+            agent.speed = defaultAgentSpeed;
             agent.radius = defaultAgentRadius;
             agent.obstacleAvoidanceType = defaultObstacleAvoidance;
         }
@@ -186,14 +189,14 @@ public sealed class CustomerController : MonoBehaviour
 
     public bool TryCompletePayment()
     {
-        if (paymentCompleted || checkout == null || !checkout.HasOperator || inventory == null || currency == null || !Order.IsValid || !inventory.TryConsumeAll(Order.Items))
+        if (runtimeData.PaymentCompleted || Checkout == null || !Checkout.HasOperator || inventory == null || currency == null || !Order.IsValid || !inventory.TryConsumeAll(Order.Items))
         {
             return false;
         }
 
         // 주문 재료를 모두 차감한 뒤에만 돈과 경험치를 함께 지급한다.
         currency.GrantReward(Order.Reward, Order.ExperienceReward);
-        paymentCompleted = true;
+        runtimeData.CompletePayment();
         return true;
     }
 
@@ -215,17 +218,17 @@ public sealed class CustomerController : MonoBehaviour
 
     public void SubscribeOperatorPresenceChanged(System.Action handler)
     {
-        if (checkout != null)
+        if (Checkout != null)
         {
-            checkout.OperatorPresenceChanged += handler;
+            Checkout.OperatorPresenceChanged += handler;
         }
     }
 
     public void UnsubscribeOperatorPresenceChanged(System.Action handler)
     {
-        if (checkout != null)
+        if (Checkout != null)
         {
-            checkout.OperatorPresenceChanged -= handler;
+            Checkout.OperatorPresenceChanged -= handler;
         }
     }
 

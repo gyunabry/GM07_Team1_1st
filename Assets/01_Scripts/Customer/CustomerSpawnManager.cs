@@ -23,9 +23,7 @@ public sealed class CustomerCheckoutStation
 public sealed class CustomerSpawnManager : MonoBehaviour
 {
     [SerializeField] private CustomerController customerPrefab;
-    [Header("Multiple Checkout Stations")]
     [SerializeField] private CustomerCheckoutStation[] checkoutStations;
-    [Header("Legacy Single Checkout")]
     [SerializeField] private ShopCustomerQueue shopQueue;
     [SerializeField] private ShopCheckout checkout;
     [SerializeField] private Transform entrancePoint;
