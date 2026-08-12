@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 // 설정된 간격으로 PoolManager에서 손님을 대여해 하나의 상점 대기열에 참가
 public sealed class CustomerSpawnManager : MonoBehaviour
@@ -26,7 +27,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
     private void Start()
     {
-        if (spawnOnStart) StartCoroutine(SpawnRoutine());
+        if (spawnOnStart) StartCoroutine(SpawnInitialCustomers());
     }
 
     // 실제 인벤토리/화폐 구현이 준비되면 구성 루트에서 한 번 주입
@@ -55,17 +56,37 @@ public sealed class CustomerSpawnManager : MonoBehaviour
             return false;
         }
 
+        if (!NavMesh.SamplePosition(entrancePoint.position, out NavMeshHit entranceHit, 2f, NavMesh.AllAreas))
+        {
+            Debug.LogWarning("Customer entrance is not close enough to the NavMesh.", this);
+            return false;
+        }
+
         CustomerController customer = PoolManager.Instance.GetPool(customerPrefab);
-        customer.transform.SetPositionAndRotation(entrancePoint.position, entrancePoint.rotation);
-        if (customer.OnSpawned(shopQueue, checkout, exitTurnPoint, exitPoint, order, inventory, currency)) return true;
+        customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
+        if (customer.OnSpawned(shopQueue, checkout, exitTurnPoint, exitPoint, order, inventory, currency))
+        {
+            customer.ExitedShop += OnCustomerExited;
+            return true;
+        }
 
         PoolManager.Instance.ReturnPool(customer);
         return false;
     }
 
-    private IEnumerator SpawnRoutine()
+    private IEnumerator SpawnInitialCustomers()
     {
         WaitForSeconds wait = new WaitForSeconds(spawnInterval);
-        while (true) { SpawnOne(); yield return wait; }
+        while (shopQueue != null && shopQueue.Count < shopQueue.Capacity)
+        {
+            SpawnOne();
+            yield return wait;
+        }
+    }
+
+    private void OnCustomerExited(CustomerController customer)
+    {
+        customer.ExitedShop -= OnCustomerExited;
+        SpawnOne();
     }
 }

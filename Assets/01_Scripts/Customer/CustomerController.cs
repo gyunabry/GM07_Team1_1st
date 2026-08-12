@@ -6,9 +6,19 @@ using UnityEngine.AI;
 [RequireComponent(typeof(CustomerStateMachine))]
 public sealed class CustomerController : MonoBehaviour
 {
+    private const int NormalAvoidancePriority = 50;
+    private const int CheckoutApproachAvoidancePriority = 5;
+    private const int CheckoutAvoidancePriority = 10;
+    private const int ExitAvoidancePriority = 0;
+
     [SerializeField] private CustomerOrder defaultOrder;
+    [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
 
     private NavMeshAgent agent;
+    private float defaultAgentRadius;
+    private ObstacleAvoidanceType defaultObstacleAvoidance;
+    private Collider[] colliders;
+    private bool[] defaultColliderStates;
     private CustomerStateMachine stateMachine;
     private ShopCustomerQueue queue;
     private ShopCheckout checkout;
@@ -27,10 +37,22 @@ public sealed class CustomerController : MonoBehaviour
     public CustomerStateMachine StateMachine => stateMachine;
     public bool IsPaymentCompleted => paymentCompleted;
     public bool HasInventoryService => inventory != null;
+    public float PaymentDuration => paymentDuration;
+    public bool HasCheckoutOperator => checkout != null && checkout.HasOperator;
+
+    public event System.Action<CustomerController> ExitedShop;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        defaultAgentRadius = agent.radius;
+        defaultObstacleAvoidance = agent.obstacleAvoidanceType;
+        colliders = GetComponentsInChildren<Collider>(true);
+        defaultColliderStates = new bool[colliders.Length];
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            defaultColliderStates[i] = colliders[i].enabled;
+        }
         stateMachine = GetComponent<CustomerStateMachine>();
         stateMachine.Initialize(this);
     }
@@ -40,11 +62,26 @@ public sealed class CustomerController : MonoBehaviour
         queue?.Leave(this);
         queue = null;
         hasQueueDestination = false;
+
+        // 풀에 보관하는 동안 마지막 NavMesh 위치를 유지한 채 다시 생성되지 않게 한다.
+        if (agent != null)
+        {
+            agent.enabled = false;
+        }
     }
 
     // PoolManager에서 대여한 직후 호출
     public bool OnSpawned(ShopCustomerQueue shopQueue, ShopCheckout checkoutService, Transform exitTurn, Transform exit, CustomerOrder order, ICustomerInventory inventoryService, ICustomerCurrency currencyService)
     {
+        if (agent != null && !agent.enabled)
+        {
+            // 입구 가장자리에서는 군중용으로 넓어진 반경(0.65)으로 Agent를 만들 수 없다.
+            // Agent 활성화 전에 프리팹의 기본 반경과 회피 설정을 먼저 복원한다.
+            agent.radius = defaultAgentRadius;
+            agent.obstacleAvoidanceType = defaultObstacleAvoidance;
+            agent.enabled = true;
+        }
+
         ResetCustomer();
         queue = shopQueue;
         checkout = checkoutService;
@@ -80,7 +117,12 @@ public sealed class CustomerController : MonoBehaviour
         {
             agent.ResetPath();
             agent.isStopped = false;
+            agent.avoidancePriority = NormalAvoidancePriority;
+            agent.radius = defaultAgentRadius;
+            agent.obstacleAvoidanceType = defaultObstacleAvoidance;
         }
+
+        RestoreColliders();
     }
 
     public void SetQueueDestination(Vector3 destination)
@@ -90,6 +132,15 @@ public sealed class CustomerController : MonoBehaviour
         TryMoveTo(destination);
     }
 
+    public void SetNavigationRadius(float radius)
+    {
+        if (agent != null)
+        {
+            agent.radius = Mathf.Max(0.05f, radius);
+            agent.obstacleAvoidanceType = defaultObstacleAvoidance;
+        }
+    }
+
     public bool MoveToQueueDestination()
     {
         return hasQueueDestination && TryMoveTo(queueDestination);
@@ -97,17 +148,37 @@ public sealed class CustomerController : MonoBehaviour
 
     public bool MoveToExit()
     {
-        return exitPoint != null && TryMoveTo(exitPoint.position);
+        PrepareForExit();
+        return exitPoint != null && TryMoveTo(exitPoint.position, ExitAvoidancePriority);
+    }
+
+    public bool MoveToCheckout(Vector3 destination, float radius)
+    {
+        SetNavigationRadius(radius);
+        return TryMoveTo(destination, CheckoutApproachAvoidancePriority);
     }
 
     public bool MoveToExitTurnPoint()
     {
-        return exitTurnPoint != null && TryMoveTo(exitTurnPoint.position);
+        PrepareForExit();
+        return exitTurnPoint != null && TryMoveTo(exitTurnPoint.position, ExitAvoidancePriority);
     }
 
     public bool HasArrived()
     {
         return agent != null && agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance;
+    }
+
+    public void StopAtCheckout()
+    {
+        if (agent == null || !agent.isOnNavMesh)
+        {
+            return;
+        }
+
+        // 계산 중인 손님은 최우선 회피 대상으로 두어 뒤 손님에게 밀려나지 않게 한다.
+        agent.isStopped = true;
+        agent.avoidancePriority = CheckoutAvoidancePriority;
     }
 
     public bool TryCompletePayment()
@@ -163,7 +234,52 @@ public sealed class CustomerController : MonoBehaviour
         }
     }
 
-    private bool TryMoveTo(Vector3 destination)
+    public void ReturnToPoolAfterExit()
+    {
+        ReturnToPool();
+        ExitedShop?.Invoke(this);
+    }
+
+    private void PrepareForExit()
+    {
+        if (agent == null)
+        {
+            return;
+        }
+
+        // 퇴장 중에는 군중 회피와 물리 Collider를 끄고, Agent 반경도 최소화한다.
+        agent.radius = 0.05f;
+        agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+        SetCollidersEnabled(false);
+    }
+
+    private void SetCollidersEnabled(bool enabled)
+    {
+        if (colliders == null) return;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i] != null && !colliders[i].isTrigger)
+            {
+                colliders[i].enabled = enabled;
+            }
+        }
+    }
+
+    private void RestoreColliders()
+    {
+        if (colliders == null || defaultColliderStates == null) return;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i] != null)
+            {
+                colliders[i].enabled = defaultColliderStates[i];
+            }
+        }
+    }
+
+    private bool TryMoveTo(Vector3 destination, int avoidancePriority = NormalAvoidancePriority)
     {
         if (agent == null || !agent.isOnNavMesh)
         {
@@ -177,6 +293,7 @@ public sealed class CustomerController : MonoBehaviour
         }
 
         agent.isStopped = false;
+        agent.avoidancePriority = avoidancePriority;
         return agent.SetDestination(destination);
     }
 }

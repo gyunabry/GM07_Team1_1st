@@ -26,19 +26,21 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         CreateCounter();
         Transform checkoutFront = CreateMarker("CheckoutFront", new Vector3(0f, 0f, 1.5f), Vector3.forward);
         Transform entrance = CreateMarker("Entrance", new Vector3(0f, 0f, -9f), Vector3.forward);
-        Transform exitTurn = CreateMarker("ExitTurn", new Vector3(2.5f, 0f, 1.5f), Vector3.right);
-        Transform exit = CreateMarker("Exit", new Vector3(2.5f, 0f, -9f), Vector3.forward);
+        // 계산대 옆의 군중을 가로지르지 않도록 바깥쪽 통로를 따라 출구로 이동한다.
+        Transform exitTurn = CreateMarker("ExitTurn", new Vector3(4f, 0f, 1.5f), Vector3.right);
+        Transform exit = CreateMarker("Exit", new Vector3(4f, 0f, -9f), Vector3.forward);
 
         NavMeshSurface surface = floor.AddComponent<NavMeshSurface>();
         surface.BuildNavMesh();
 
         ShopCustomerQueue queue = new GameObject("ShopCustomerQueue").AddComponent<ShopCustomerQueue>();
-        queue.Configure(checkoutFront, 1.25f, 6);
+        queue.Configure(checkoutFront, 1.25f, 20);
 
         ShopCheckout checkout = new GameObject("ShopCheckout").AddComponent<ShopCheckout>();
-        checkout.transform.position = new Vector3(0f, 0f, 2f);
+        // 손님은 카운터 앞(z=1.5)에 모이고, 계산 담당자 감지 영역은 카운터 뒤쪽에 둔다.
+        checkout.transform.position = new Vector3(0f, 0f, 3.5f);
         checkout.ConfigureZone(new Vector3(3f, 2f, 2f));
-        checkoutOperator = CreateCheckoutOperator(new Vector3(0f, 0f, 2f));
+        checkoutOperator = CreateCheckoutOperator(new Vector3(0f, 0f, 3.5f));
 
         CustomerController customerTemplate = CreateCustomerTemplate();
         new GameObject("PoolManager").AddComponent<PoolManager>();
@@ -51,8 +53,8 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         {
             Items = new List<CustomerOrderItem>
             {
-                new CustomerOrderItem { ItemId = "A", Amount = 3 },
-                new CustomerOrderItem { ItemId = "B", Amount = 5 }
+                new CustomerOrderItem { ItemId = ScriptableObject.CreateInstance<ItemDataSO>(), Amount = 3 },
+                new CustomerOrderItem { ItemId = ScriptableObject.CreateInstance<ItemDataSO>(), Amount = 5 }
             },
             Reward = 10,
             ExperienceReward = 5

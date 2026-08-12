@@ -4,8 +4,21 @@ public sealed class CustomerVisitState : ICustomerState
     private readonly CustomerController controller;
     public string Name => "Visit";
     public CustomerVisitState(CustomerController controller) => this.controller = controller;
-    public void Enter() { if (!controller.MoveToQueueDestination()) controller.StateMachine.Cancel(); }
-    public void Update() { if (controller.HasArrived()) controller.StateMachine.ChangeState(new CustomerOrderState(controller)); }
+    public void Enter()
+    {
+        bool moveStarted = controller.Queue != null && controller.Queue.IsFront(controller)
+            ? controller.Queue.MoveFrontCustomerToCheckout()
+            : controller.MoveToQueueDestination();
+
+        if (!moveStarted) controller.StateMachine.Cancel();
+    }
+    public void Update()
+    {
+        if (controller.Queue != null && controller.Queue.IsInCheckoutRange(controller))
+        {
+            controller.StateMachine.ChangeState(new CustomerOrderState(controller));
+        }
+    }
     public void Exit() { }
 }
 
@@ -18,7 +31,7 @@ public sealed class CustomerOrderState : ICustomerState
     public void Enter() { }
     public void Update()
     {
-        if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.HasArrived())
+        if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.Queue.IsInCheckoutRange(controller))
         {
             controller.StateMachine.ChangeState(new CustomerIdleState(controller));
         }
@@ -32,10 +45,46 @@ public sealed class CustomerIdleState : ICustomerState
     private readonly CustomerController controller;
     private bool inventoryChanged;
     private bool operatorPresenceChanged;
+    private float paymentElapsed;
+    private bool paymentReady;
     public string Name => "Idle";
     public CustomerIdleState(CustomerController controller) => this.controller = controller;
-    public void Enter() { controller.SubscribeInventoryChanged(OnInventoryChanged); controller.SubscribeOperatorPresenceChanged(OnOperatorPresenceChanged); TryAutoPayment(); }
-    public void Update() { if (inventoryChanged || operatorPresenceChanged) { inventoryChanged = false; operatorPresenceChanged = false; TryAutoPayment(); } }
+    public void Enter()
+    {
+        controller.StopAtCheckout();
+        controller.SubscribeInventoryChanged(OnInventoryChanged);
+        controller.SubscribeOperatorPresenceChanged(OnOperatorPresenceChanged);
+        paymentElapsed = 0f;
+        paymentReady = false;
+    }
+    public void Update()
+    {
+        // 계산 담당자가 도착한 순간부터만 계산 시간을 잰다.
+        // 담당자가 자리를 비우면 진행 중인 계산도 취소한다.
+        if (!controller.HasCheckoutOperator)
+        {
+            paymentElapsed = 0f;
+            paymentReady = false;
+            return;
+        }
+
+        if (!paymentReady)
+        {
+            paymentElapsed += UnityEngine.Time.deltaTime;
+            if (paymentElapsed < controller.PaymentDuration) return;
+
+            paymentReady = true;
+            TryAutoPayment();
+            return;
+        }
+
+        if (inventoryChanged || operatorPresenceChanged)
+        {
+            inventoryChanged = false;
+            operatorPresenceChanged = false;
+            TryAutoPayment();
+        }
+    }
     public void Exit() { controller.UnsubscribeInventoryChanged(OnInventoryChanged); controller.UnsubscribeOperatorPresenceChanged(OnOperatorPresenceChanged); }
     private void OnInventoryChanged() { inventoryChanged = true; }
     private void OnOperatorPresenceChanged() { operatorPresenceChanged = true; }
@@ -68,7 +117,7 @@ public sealed class CustomerExitState : ICustomerState
             if (controller.MoveToExit()) return;
         }
 
-        controller.ReturnToPool();
+        controller.ReturnToPoolAfterExit();
     }
     public void Exit() { }
 }
