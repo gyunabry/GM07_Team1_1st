@@ -2,10 +2,30 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
+[System.Serializable]
+public sealed class CustomerCheckoutStation
+{
+    [SerializeField] private ShopCustomerQueue queue;
+    [SerializeField] private ShopCheckout checkout;
+
+    public CustomerCheckoutStation(ShopCustomerQueue queue, ShopCheckout checkout)
+    {
+        this.queue = queue;
+        this.checkout = checkout;
+    }
+
+    public ShopCustomerQueue Queue => queue;
+    public ShopCheckout Checkout => checkout;
+    public bool IsValid => queue != null && checkout != null;
+}
+
 // 설정된 간격으로 PoolManager에서 손님을 대여해 하나의 상점 대기열에 참가
 public sealed class CustomerSpawnManager : MonoBehaviour
 {
     [SerializeField] private CustomerController customerPrefab;
+    [Header("Multiple Checkout Stations")]
+    [SerializeField] private CustomerCheckoutStation[] checkoutStations;
+    [Header("Legacy Single Checkout")]
     [SerializeField] private ShopCustomerQueue shopQueue;
     [SerializeField] private ShopCheckout checkout;
     [SerializeField] private Transform entrancePoint;
@@ -42,6 +62,20 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         customerPrefab = prefab;
         shopQueue = queue;
         checkout = checkoutService;
+        checkoutStations = new[] { new CustomerCheckoutStation(queue, checkoutService) };
+        entrancePoint = entrance;
+        exitTurnPoint = exitTurn;
+        exitPoint = exit;
+        order = customerOrder;
+        spawnInterval = Mathf.Max(0.1f, interval);
+    }
+
+    public void Configure(CustomerController prefab, CustomerCheckoutStation[] stations, Transform entrance, Transform exitTurn, Transform exit, CustomerOrder customerOrder, float interval)
+    {
+        customerPrefab = prefab;
+        checkoutStations = stations;
+        shopQueue = null;
+        checkout = null;
         entrancePoint = entrance;
         exitTurnPoint = exitTurn;
         exitPoint = exit;
@@ -51,7 +85,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
     public bool SpawnOne()
     {
-        if (customerPrefab == null || shopQueue == null || checkout == null || entrancePoint == null || exitPoint == null || PoolManager.Instance == null)
+        if (customerPrefab == null || entrancePoint == null || exitPoint == null || PoolManager.Instance == null || !TryGetShortestStation(out ShopCustomerQueue selectedQueue, out ShopCheckout selectedCheckout))
         {
             return false;
         }
@@ -64,7 +98,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
         CustomerController customer = PoolManager.Instance.GetPool(customerPrefab);
         customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
-        if (customer.OnSpawned(shopQueue, checkout, exitTurnPoint, exitPoint, order, inventory, currency))
+        if (customer.OnSpawned(selectedQueue, selectedCheckout, exitTurnPoint, exitPoint, order, inventory, currency))
         {
             customer.ExitCompleted += OnCustomerExitCompleted;
             customer.ExitFailed += OnCustomerExitFailed;
@@ -78,7 +112,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     private IEnumerator SpawnInitialCustomers()
     {
         WaitForSeconds wait = new WaitForSeconds(spawnInterval);
-        while (shopQueue != null && shopQueue.Count < shopQueue.Capacity)
+        while (GetCustomerCount() < GetCustomerCapacity())
         {
             SpawnOne();
             yield return wait;
@@ -106,5 +140,75 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         }
 
         SpawnOne();
+    }
+
+    private bool TryGetShortestStation(out ShopCustomerQueue selectedQueue, out ShopCheckout selectedCheckout)
+    {
+        selectedQueue = null;
+        selectedCheckout = null;
+
+        if (checkoutStations != null)
+        {
+            for (int i = 0; i < checkoutStations.Length; i++)
+            {
+                CustomerCheckoutStation station = checkoutStations[i];
+                if (station == null || !station.IsValid || station.Queue.Count >= station.Queue.Capacity)
+                {
+                    continue;
+                }
+
+                if (selectedQueue == null || station.Queue.Count < selectedQueue.Count)
+                {
+                    selectedQueue = station.Queue;
+                    selectedCheckout = station.Checkout;
+                }
+            }
+        }
+
+        if (selectedQueue == null && shopQueue != null && checkout != null && shopQueue.Count < shopQueue.Capacity)
+        {
+            selectedQueue = shopQueue;
+            selectedCheckout = checkout;
+        }
+
+        return selectedQueue != null;
+    }
+
+    private int GetCustomerCount()
+    {
+        int count = 0;
+        bool hasValidStation = false;
+        if (checkoutStations != null)
+        {
+            for (int i = 0; i < checkoutStations.Length; i++)
+            {
+                CustomerCheckoutStation station = checkoutStations[i];
+                if (station != null && station.IsValid)
+                {
+                    hasValidStation = true;
+                    count += station.Queue.Count;
+                }
+            }
+        }
+
+        return hasValidStation ? count : shopQueue != null ? shopQueue.Count : 0;
+    }
+
+    private int GetCustomerCapacity()
+    {
+        int capacity = 0;
+        if (checkoutStations != null)
+        {
+            for (int i = 0; i < checkoutStations.Length; i++)
+            {
+                CustomerCheckoutStation station = checkoutStations[i];
+                if (station != null && station.IsValid)
+                {
+                    capacity += station.Queue.Capacity;
+                }
+            }
+        }
+
+        return capacity > 0 ? capacity : shopQueue != null && checkout != null ? shopQueue.Capacity : 0;
     }
 }
