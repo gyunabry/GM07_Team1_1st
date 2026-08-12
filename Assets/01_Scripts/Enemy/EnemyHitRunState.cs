@@ -1,11 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyHitRunState : IState
 {
     private Enemy enemy;
     private EnemyStateController stateController;
     private MonoBehaviour mono;
+    private Player player;
     private bool isRunEnd = false;
     public EnemyHitRunState(Enemy enemy)
     {
@@ -16,18 +18,18 @@ public class EnemyHitRunState : IState
     {
         stateController = enemy.stateController;
         mono.StartCoroutine(RandomTime());
+        Collider[] cPlayer = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance * 30, enemy.playerLayer);
+        player = cPlayer[0].GetComponent<Player>();
     }
     public void Execute()
     {
-        Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance * 30, enemy.playerLayer);
-
-        if (player.Length > 0)
+            Vector3 dirPlayer = enemy.transform.position - player.transform.position;
+        if(Vector3.Distance(player.transform.position, enemy.transform.position) <= enemy.runEndDistance)
         {
-            Vector3 dirPlayer = enemy.transform.position - player[0].transform.position;
             Vector3 runDistance = enemy.transform.position + dirPlayer.normalized * 1f;
             enemy.agent.SetDestination(runDistance);
         }
-        else if (player.Length == 0)
+        else
         {
             stateController.ChangeState(stateController.IdleState);
         }

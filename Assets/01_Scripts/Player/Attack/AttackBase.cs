@@ -1,35 +1,33 @@
 using System;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AttackBase : IAttack
 {
     public void MagicArrow(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
-        for (int i = 0; i < data.projectileCount; i++)
+        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
+
+        
+        AttackPoint ap = poolManager.GetPool<AttackPoint>();
+        if (!(enemy.Length == 0))
         {
-            AttackPoint ap = poolManager.GetPool<AttackPoint>();
-            ap.attackDamage = AttackDamage;
-            ap.transform.position = data.position;
-            Quaternion baseRota = Quaternion.LookRotation(data.direction);
-            baseRota.x = 0f;
-            Quaternion side = Quaternion.Euler(0f, 0f, 0f);
-            if (i == 1)
+            if (enemy[0] != null)
             {
-                side = Quaternion.Euler(0f, -15f, 0f);
+                Enemy thisEnemy = enemy[0].gameObject.GetComponent<Enemy>();
+                ap.enemy = thisEnemy;
             }
-            if (i == 0)
-            {
-                side = Quaternion.Euler(0f, 0f, 0f);
-            }
-            if (i == 2)
-            {
-                side = Quaternion.Euler(0f, 15f, 0f);
-            }
-            ap.transform.rotation = baseRota * side;
-            ap.poolManager = poolManager;
-            ap.layer = layer;
         }
+        ap.attackDamage = AttackDamage;
+        ap.transform.position = data.position;
+        Quaternion baseRota = Quaternion.LookRotation(data.direction);
+        baseRota.x = 0f;
+        Quaternion side = Quaternion.Euler(0f, 0f, 0f);
+        ap.transform.rotation = baseRota * side;
+        ap.poolManager = poolManager;
+        ap.layer = layer;
+        
     }
     public void FireCircle(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {

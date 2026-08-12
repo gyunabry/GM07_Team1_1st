@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8179baaee06256540b310e8bb38a9014, type: 3}
   m_Name: MagicArrow
   m_EditorClassIdentifier: Assembly-CSharp::AttackSO
-  attackCode: 0
+  attackID: 1
   attackDamage: 10
   attackSpeed: 2
   position: {x: 0, y: 0, z: 0}
   direction: {x: 0, y: 0, z: 0}
-  distance: 0
-  projectileCount: 1
+  distance: 5
+  projectileCount: 3
   spreadAngle: 0
+  sprite: {fileID: 0}

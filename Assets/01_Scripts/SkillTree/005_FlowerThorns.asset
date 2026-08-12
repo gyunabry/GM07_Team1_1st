@@ -10,22 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
-  m_Name: Test2
+  m_Name: 005_FlowerThorns
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
-  skillID: 2
-  skillName: "\uD14C\uC2A4\uD2B8\uD2B8\uD2B8"
+  skillID: 5
+  skillName: 
   skillSprite: {fileID: 0}
-  skillMaxLevel: 3
-  skillNeedSkillPoint: 1
+  skillMaxLevel: 0
+  skillNeedSkillPoint: 0
   skillNeedLevel: 0
   skillNeedMoney: 0
   value:
-  - -0.3
-  - -0.6
-  - -0.9
-  multiValue:
-  - value: []
-  - value: []
-  - value: []
-  needSkill: {fileID: 11400000, guid: d0c6dfe58b203cd4aa002a39a03bdc21, type: 2}
-  effect: {fileID: 11400000, guid: b93574589f8881243ad49ea4c5a9243b, type: 2}
+  - 5
+  multiValue: []
+  needSkill: {fileID: 0}
+  effect: {fileID: 11400000, guid: e9d0fc6844b19b243aeb7c3b288ab697, type: 2}
