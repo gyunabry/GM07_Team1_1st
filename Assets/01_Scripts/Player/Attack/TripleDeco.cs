@@ -4,7 +4,7 @@ public class TripleDeco : AttackDeco
 {
     public TripleDeco(IAttack attack) : base(attack){}
     
-    public override void MagicArrow(int AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
+    public override void MagicArrow(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
         data.projectileCount += 2;
         data.spreadAngle += 30;

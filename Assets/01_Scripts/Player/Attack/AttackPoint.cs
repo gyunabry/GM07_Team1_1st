@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AttackPoint : MonoBehaviour
 {
-    public int attackDamage;
+    public float attackDamage;
     public MonsterPoolManager poolManager;
     public LayerMask layer;
 
