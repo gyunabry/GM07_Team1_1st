@@ -68,6 +68,7 @@ public class AttackEquHud : MonoBehaviour
         }
         if(equip == false)
         {
+            Debug.Log("ÀåÂø ÇØÁ¦");
             button.image.sprite = null;
         }
         else

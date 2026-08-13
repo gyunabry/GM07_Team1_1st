@@ -5,6 +5,8 @@ public class SkillDataSO : ScriptableObject
 {
     public int skillID;
     public string skillName;
+    [TextArea]
+    public string skillDesc; 
     public Sprite skillSprite;
     public int skillMaxLevel;
     public int skillNeedSkillPoint;
@@ -12,7 +14,7 @@ public class SkillDataSO : ScriptableObject
     public int skillNeedMoney;
     public float[] value;
     public MultiValue[] multiValue;
-    public SkillDataSO needSkill;
+    public SkillDataSO[] needSkill;
     public SkillEffectSO effect;
 }
 [System.Serializable]

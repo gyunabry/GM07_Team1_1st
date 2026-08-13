@@ -102,6 +102,7 @@ public class PlayerAttack : MonoBehaviour
                     slots[slot].equipAttackID = -1;
                     StopCoroutine(co[id]);
                     co[id] = null;
+                    hud.EquipRefresh(id);
                 }
                 else
                 {
