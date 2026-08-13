@@ -28,6 +28,7 @@ public class ParticleManager : MonoBehaviour
             if(nowParticle.particleName == "ChasingSickle")
             {
                 ChasingSickle cs = monsterPoolManager.GetPool<ChasingSickle>();
+                if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
                 ParticleSystem ps = cs.GetComponent<ParticleSystem>();
@@ -36,6 +37,7 @@ public class ParticleManager : MonoBehaviour
             if(nowParticle.particleName == "FireCircle")
             {
                 FireCircle cs = monsterPoolManager.GetPool<FireCircle>();
+                if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
                 ParticleSystem ps = cs.GetComponent<ParticleSystem>();
@@ -44,6 +46,7 @@ public class ParticleManager : MonoBehaviour
             if(nowParticle.particleName == "FlowerThorns")
             {
                 FlowerThorns cs = monsterPoolManager.GetPool<FlowerThorns>();
+                if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
                 ParticleSystem ps = cs.GetComponent<ParticleSystem>();
@@ -52,6 +55,7 @@ public class ParticleManager : MonoBehaviour
             if(nowParticle.particleName == "LightningRay")
             {
                 LightningRay cs = monsterPoolManager.GetPool<LightningRay>();
+                if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
                 ParticleSystem ps = cs.GetComponent<ParticleSystem>();

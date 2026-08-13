@@ -12,6 +12,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     [SerializeField] private Transform exitPoint;
     [SerializeField] private CustomerOrder order;
     [SerializeField] private CurrencySystem currencySystem;
+    [SerializeField] private CounterInventory counterInventory;
     [SerializeField, Min(0.1f)] private float spawnInterval = 5f;
     [SerializeField] private bool spawnOnStart = true;
 
@@ -33,6 +34,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
         Instance = this;
         currency = currencySystem;
+        inventory = counterInventory;
     }
 
     private void Start()

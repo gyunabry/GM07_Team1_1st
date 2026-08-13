@@ -5,7 +5,7 @@ public class AttackSpeedEffectSO : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-        float attackSpeed = skillData.Value[nowLevel - 1];
+        float attackSpeed = skillData.value[nowLevel - 1];
         context.player.AttackSpeed += attackSpeed;
     }
 }

@@ -43,24 +43,24 @@ public class InputManager : MonoBehaviour
     public bool IsPointerOverUI()
         => EventSystem.current.IsPointerOverGameObject();
 
-    public Vector3 GetWorldPosition()
+    public bool TryGetWorldPosition(out Vector3 worldPosition)
     {
+        worldPosition = default;
+
         if (mainCamera == null || Mouse.current == null)
         {
-            return Vector3.zero;
+            return false;
         }
 
-        Vector3 mousePos = Mouse.current.position.ReadValue();
-
+        Vector2 mousePos = Mouse.current.position.ReadValue();
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayer))
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, groundLayer, QueryTriggerInteraction.Ignore))
         {
-            return Vector3.zero;
+            return false;
         }
 
-        lastPos = hit.point;
-
-        return lastPos;
+        worldPosition = hit.point;
+        return true;
     }
 }

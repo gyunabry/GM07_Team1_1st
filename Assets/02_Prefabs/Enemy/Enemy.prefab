@@ -136,7 +136,7 @@ NavMeshAgent:
   m_AutoRepath: 1
   m_Height: 2
   m_BaseOffset: 1
-  m_WalkableMask: 4294967295
+  m_WalkableMask: 7
   m_ObstacleAvoidanceType: 4
 --- !u!114 &7106573620643557139
 MonoBehaviour:
@@ -150,11 +150,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8a064ae358c2494e842b64ec056ad27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  enemySO: {fileID: 0}
+  agent: {fileID: 6227291396024206101}
+  enemyData: {fileID: 0}
   playerLayer:
     serializedVersion: 2
-    m_Bits: 16
-  agent: {fileID: 6227291396024206101}
+    m_Bits: 8
   runStartDistance: 0
   runEndDistance: 0
   enemySpawn: {fileID: 0}
