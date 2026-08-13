@@ -9,15 +9,32 @@ public class AttackEquHud : MonoBehaviour
     [SerializeField] GameObject layoutWidth;
     public int equAttackID;
     public bool equip;
+    public int slotIndex;
 
     private void Awake()
     {
         button = GetComponent<Button>();
         layoutWidth.SetActive(false);
     }
+    public void OnOffButton()
+    {
+        if (layoutWidth.activeSelf == true)
+        {
+            AttackEquPrefab[] childButton = GetComponentsInChildren<AttackEquPrefab>();
+            foreach(var button in childButton)
+            {
+                monsterPoolManager.ReturnPool(button);
+            }
+            layoutWidth.SetActive(false);
+        }
+        else
+        {
+            layoutWidth.SetActive(true);
+            SelectAttack();
+        }
+    }
     public void SelectAttack()
     {
-        layoutWidth.SetActive(true);
         foreach(var attackData in playerAttack.attackUnlockDatas)
         {
             if(attackData.unlock == true)
@@ -27,22 +44,25 @@ public class AttackEquHud : MonoBehaviour
                 prefabButton.attackEquHud = this;
                 prefabImage.image.sprite = attackData.sprite;
                 prefabButton.transform.SetParent(layoutWidth.transform);
-                prefabButton.monsterPoolManager = monsterPoolManager;
                 prefabButton.equID = equAttackID;
+                prefabButton.slotIndex = slotIndex;
                 prefabButton.playerAttack = playerAttack;
                 prefabButton.attackID = attackData.attackID;
             }
         }
     }
+    public void EquipSlot(int id)
+    {
+        playerAttack.StartAndStopAttackCo(slotIndex, id, this);
+    }
     public void EquipRefresh(int id)
     {
         equAttackID = id;
         equip = false;
-        foreach(var attackData in playerAttack.attackUnlockDatas)
+        foreach(var playerAttackSlot in playerAttack.slots)
         {
-            if(attackData.attackID == equAttackID)
+            if(playerAttackSlot.equipAttackID == id)
             {
-                button.image.sprite = attackData.sprite;
                 equip = true;
             }
         }
@@ -50,6 +70,15 @@ public class AttackEquHud : MonoBehaviour
         {
             button.image.sprite = null;
         }
-        playerAttack.AttackRefresh();
+        else
+        {
+            foreach(var unlockData in playerAttack.attackUnlockDatas)
+            {
+                if(unlockData.attackID == id)
+                {
+                    button.image.sprite = unlockData.sprite;
+                }
+            }
+        }
     }
 }

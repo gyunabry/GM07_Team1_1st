@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
@@ -19,29 +20,31 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private AttackSO FlowerThornsSO;
 
     [SerializeField] public List<AttackUnlockData> attackUnlockDatas = new List<AttackUnlockData>();
-    private List<IEnumerator> coroutineDelegate = new List<IEnumerator>();
 
     public bool isTripleShot = false;
-    public bool isMagicArrow = false;
-    public bool isFireCircle = false;
-    public bool isChasingSickle = false;
-    public bool isLightningRay = false;
-    public bool isFlowerThorns = false;
+    
 
     Coroutine[] co;
-    
+    public AttackSlotData[] slots = new AttackSlotData[5];
 
     Vector3 giz;
     float dis;
     private void Awake()
     {
+        for (int i = 0; i < slots.Length; i++) 
+        { 
+            slots[i] = new AttackSlotData();
+            slots[i].slotIndex = i;
+            slots[i].equipAttackID = -1;
+        }
+        
         co = new Coroutine[20];
         attackUnlockDatas.Clear();
         foreach(var attackData in attackSOData)
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = false;
+            aud.unlock = true;
             aud.equip = false;
             if(attackData.sprite != null)
             {
@@ -49,98 +52,93 @@ public class PlayerAttack : MonoBehaviour
             }
             attackUnlockDatas.Add(aud);
         }
-        coroutineDelegate.Add(MagicArrow());
-        coroutineDelegate.Add(FireCircle());
-        coroutineDelegate.Add(ChasingSickle());
-        coroutineDelegate.Add(LightningRay());
-        coroutineDelegate.Add(FlowerThorns());
+        
     }
     private void Start()
     {
         attack = new AttackBase();
         if(isTripleShot) GetTripleShot();
-        AttackRefresh();
     }
-    
     public void AttackRefresh()
     {
-        int i = 0;
-        foreach(var equip in attackUnlockDatas)
+        foreach (var slot in slots)
         {
-            if(equip.equip == true)
+            if (slot.equipAttackID != -1)
             {
-                if (co[i] != null) continue;
-                co[i] = StartCoroutine(coroutineDelegate[i]);
-            }
-            else if(equip.equip == false)
-            {
-                if (co[i] != null)
+                if (co[slot.equipAttackID] == null)
                 {
-                    StopCoroutine(co[i]);
-                    co[i] = null;
+                    switch (slot.equipAttackID)
+                    {
+                        case 0:
+                            co[slot.equipAttackID] = StartCoroutine(MagicArrow()); break;
+                        case 1:
+                            co[slot.equipAttackID] = StartCoroutine(FireCircle()); break;
+                        case 2:
+                            co[slot.equipAttackID] = StartCoroutine(ChasingSickle()); break;
+                        case 3:
+                            co[slot.equipAttackID] = StartCoroutine(LightningRay()); break;
+                        case 4:
+                            co[slot.equipAttackID] = StartCoroutine(FlowerThorns()); break;
+                        default: break;
+                    }
                 }
             }
-            i++;
+            else
+            {
+                StopCoroutine(co[slot.equipAttackID]);
+            }
         }
     }
-    public void StartAndStopAttackCo(int id)
+    public void StartAndStopAttackCo(int slot, int id,AttackEquHud hud)
     {
-        switch(id){
-            case 1:
-                if (co != null)
+        int nowId = slots[slot].equipAttackID;
+        bool change = false;
+        foreach (var nowSlot in slots)
+        {
+            if (nowSlot.equipAttackID == id)
+            {
+                if (nowId == id)
                 {
-                    co[1] = StartCoroutine(MagicArrow());
+                    slots[slot].equipAttackID = -1;
+                    StopCoroutine(co[id]);
+                    co[id] = null;
                 }
                 else
                 {
-                    StopCoroutine(co[1]);
+                    Debug.Log("다른 슬롯에 장착되어 있습니다.");
                 }
-                    break;
-            case 2:
-                if (co != null)
+                change = true;
+            }
+        }
+        if(!change)
+        {
+            if(nowId != -1)
+            {
+                if (co[nowId] != null)
                 {
-                    co[2] = StartCoroutine(FireCircle());
+                    StopCoroutine(co[nowId]);
+                    co[nowId] = null;
                 }
-                else
-                {
-                    StopCoroutine(co[2]);
-                }
-                break;
-            case 3:
-                if (co != null)
-                {
-                    co[3] = StartCoroutine(ChasingSickle());
-                }
-                else
-                {
-                    StopCoroutine(co[3]);
-                }
-                break;
-            case 4:
-                if (co != null)
-                {
-                    co[4] = StartCoroutine(LightningRay());
-                }
-                else
-                {
-                    StopCoroutine(co[4]);
-                }
-                break;
-            case 5:
-                if (co != null)
-                {
-                    co[5] = StartCoroutine(FlowerThorns());
-                }
-                else
-                {
-                    StopCoroutine(co[5]);
-                }
-                break;
-            default: break;
-
+            }
+            slots[slot].equipAttackID = id;
+            switch (id)
+            {
+                case 0:
+                    co[id] = StartCoroutine(MagicArrow()); break;
+                case 1:
+                    co[id] = StartCoroutine(FireCircle()); break;
+                case 2:
+                    co[id] = StartCoroutine(ChasingSickle()); break;
+                case 3:
+                    co[id] = StartCoroutine(LightningRay()); break;
+                case 4:
+                    co[id] = StartCoroutine(FlowerThorns()); break;
+                default: break;
+            }
+            hud.EquipRefresh(id);
         }
     }
-    IEnumerator MagicArrow() // 코드 1
+    IEnumerator MagicArrow() // 코드 0
     {
         Collider[] enemyIn;
         
@@ -185,7 +183,7 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator FireCircle()// 코드 2
+    IEnumerator FireCircle()// 코드 1
     {
         while (true)
         {
@@ -203,7 +201,7 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator ChasingSickle()// 코드 3
+    IEnumerator ChasingSickle()// 코드 2
     {
         while (true)
         {
@@ -223,7 +221,7 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator LightningRay()// 코드 4
+    IEnumerator LightningRay()// 코드 3
     {
         while (true)
         {
@@ -265,7 +263,7 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator FlowerThorns()// 코드 5
+    IEnumerator FlowerThorns()// 코드 4
     {
         while (true)
         {
@@ -287,29 +285,15 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    public void OnOffMagicArrow()
-    {
-        isMagicArrow = !isMagicArrow;
-    }
-    public void OnOffFireCircle()
-    {
-        isFireCircle = !isFireCircle;
-    }
-    public void OnOffChasingSickle()
-    {
-        isChasingSickle = !isChasingSickle;
-    }
-    public void OnOffFlowerThorns()
-    {
-        isFlowerThorns = !isFlowerThorns;
-    }
-    public void OnOffLightningRay()
-    {
-        isLightningRay = !isLightningRay;
-    }
     public void GetTripleShot()
 
     {
         attack = new TripleDeco(attack);
     }
+}
+[System.Serializable]
+public class AttackSlotData
+{
+    public int slotIndex;
+    public int equipAttackID;
 }
