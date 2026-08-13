@@ -33,6 +33,7 @@ public sealed class CustomerStateMachine : MonoBehaviour
 
         currentState?.Exit();
         currentState = nextState;
+        controller.RuntimeData.SetState(currentState.Name);
         currentState.Enter();
     }
 
@@ -50,5 +51,6 @@ public sealed class CustomerStateMachine : MonoBehaviour
     {
         currentState?.Exit();
         currentState = null;
+        controller?.RuntimeData.SetState(string.Empty);
     }
 }

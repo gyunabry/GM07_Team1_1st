@@ -25,10 +25,10 @@ public interface IShopCheckoutOperator
 [Serializable]
 public struct CustomerOrderItem
 {
-    public string ItemId;
+    public ItemDataSO ItemId;
     public int Amount;
 
-    public bool IsValid => !string.IsNullOrWhiteSpace(ItemId) && Amount > 0;
+    public bool IsValid => ItemId != null && Amount > 0;
 }
 
 // 손님의 복수 재료 주문과 보상 정보
@@ -48,7 +48,7 @@ public struct CustomerOrder
                 return false;
             }
 
-            HashSet<string> itemIds = new HashSet<string>();
+            HashSet<ItemDataSO> itemIds = new HashSet<ItemDataSO>();
             for (int i = 0; i < Items.Count; i++)
             {
                 CustomerOrderItem item = Items[i];
