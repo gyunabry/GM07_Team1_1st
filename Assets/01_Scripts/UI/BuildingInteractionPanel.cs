@@ -27,9 +27,6 @@ public class BuildingInteractionPanel : MonoBehaviour
 
     private ProductionBuilding currentBuilding;
 
-    // 마지막으로 갱신된 진행률 퍼센트
-    private int lastProgressPercent = -1;
-
     private void Awake()
     {
 
