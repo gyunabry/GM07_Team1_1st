@@ -5,7 +5,7 @@ public class AttackDamageEffectSO : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-        float damage = skillData.Value[nowLevel - 1];
+        float damage = skillData.value[nowLevel - 1];
         context.player.AttackDamage += damage;
     }
 }

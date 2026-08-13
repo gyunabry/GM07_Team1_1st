@@ -65,21 +65,29 @@ public class SkillTreeManager : MonoBehaviour
                 {
                     if(skillID.skillID == skill.skillID)
                     {
-                        if (skillID.needSkill == null)
+                        if (skillID.needSkill == null || skillID.needSkill.Length == 0)
                         {
                             skill.Locked = false;
                         }
                         else
                         {
+                            int skillUnlocked = 0;
                             foreach(var lockSkill in skillRuntimeStates)
                             {
-                                if(lockSkill.skillID == skillID.needSkill.skillID)
+                                foreach(var s in skillID.needSkill)
                                 {
-                                    if(lockSkill.skillLevel > 0)
+                                    if(lockSkill.skillID == s.skillID)
                                     {
-                                        skill.Locked = false;
+                                        if(lockSkill.skillLevel > 0)
+                                        {
+                                            skillUnlocked++;
+                                        }
                                     }
                                 }
+                            }
+                            if (skillUnlocked >= skillID.needSkill.Length)
+                            {
+                                skill.Locked = false;
                             }
                         }
                     }

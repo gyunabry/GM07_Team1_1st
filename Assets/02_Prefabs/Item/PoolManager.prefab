@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4148221279432526529}
   - component: {fileID: 1306151101374603641}
+  - component: {fileID: 699175747004910647}
   m_Layer: 0
   m_Name: PoolManager
   m_TagString: Untagged
@@ -44,3 +45,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9aeb94ba0d440842a3a7ba637ee8a97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MonsterPoolManager
+--- !u!114 &699175747004910647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4949845606146816719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88f188136b8002b4fb955a56ddf12e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MonsterPoolManager
+  monsterPoolManager: {fileID: 1306151101374603641}
+  particleList:
+  - particleID: 0
+    particleName: MagicArrow
+    particlePrefab: {fileID: 3995925170779068671, guid: bbf3284bd517b9b4283e323b24fd189c, type: 3}
+  - particleID: 1
+    particleName: FireCircle
+    particlePrefab: {fileID: 6476705285018846835, guid: 63e25e55f492a4a479d4be47f28ca2e7, type: 3}
+  - particleID: 2
+    particleName: ChasingSickle
+    particlePrefab: {fileID: 786889566517218709, guid: 452664a513437a247a050dee21d35cfe, type: 3}
+  - particleID: 3
+    particleName: LightningRay
+    particlePrefab: {fileID: 1941226523401448538, guid: ba54e95cd53c71b4aace72f36264fd6c, type: 3}
+  - particleID: 4
+    particleName: FlowerThorns
+    particlePrefab: {fileID: 1267626628714948401, guid: 808d3b18d5d12d84e86413fcd822f3f0, type: 3}

@@ -25,7 +25,6 @@ public class EnemyStateController
         if (nowState != null) nowState.Exit();
         nowState = newState;
         nowState.Enter();
-        IEnumerator stateRoutine = nowState.RandomTime();
         
     }
     public void UpdateExcute()

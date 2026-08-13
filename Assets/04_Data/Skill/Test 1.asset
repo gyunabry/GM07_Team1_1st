@@ -10,15 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
-  m_Name: TestMoney
+  m_Name: Test 1
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
-  skillID: 3
-  skillName: "\uB3C8 \uD14C\uC2A4\uD2B8"
+  skillID: 101
+  skillName: "\uACF5\uACA9\uB825 \uC0C1\uC2B9"
+  skillDesc: "\uACF5\uACA9\uB825\uC774 5/10/15\uC0C1\uC2B9\uD55C\uB2E4"
   skillSprite: {fileID: 0}
-  skillMaxLevel: 10
-  skillNeedSkillPoint: 0
+  skillMaxLevel: 3
+  skillNeedSkillPoint: 1
   skillNeedLevel: 0
-  skillNeedMoney: 100
-  Value: []
+  skillNeedMoney: 0
+  value:
+  - 5
+  - 10
+  - 15
+  multiValue: []
   needSkill: {fileID: 0}
-  effect: {fileID: 0}
+  effect: {fileID: 11400000, guid: 28149231e0eb7474691301e462652131, type: 2}

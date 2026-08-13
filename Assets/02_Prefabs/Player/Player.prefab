@@ -15,7 +15,9 @@ GameObject:
   - component: {fileID: 4651420549717157852}
   - component: {fileID: 6381337615462025471}
   - component: {fileID: 5225848352447207080}
-  m_Layer: 4
+  - component: {fileID: 4374602228983388732}
+  - component: {fileID: 8530812470400278461}
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,6 +130,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b45b1cc173c1546bfda0795cd12193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  skillPoint: 5
+  baseAttackDamage: 0
+  baseAttackSpeed: 0
+  AttackDamage: 0
+  AttackSpeed: 0
 --- !u!114 &6381337615462025471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,24 +147,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 899e1fc8f5f58c346b47ecc67b92283a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
-  distance: 8
   layer:
     serializedVersion: 2
     m_Bits: 512
   player: {fileID: 4651420549717157852}
   poolManager: {fileID: 0}
   particleManager: {fileID: 0}
+  attackSOData:
+  - {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  - {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  - {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
+  - {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
+  - {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
   MagicArrowSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
   FireCircleSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
   ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
   LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
   FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
   isTripleShot: 0
-  isMagicArrow: 1
-  isFireCircle: 0
-  isChasingSickle: 0
-  isLightningRay: 0
-  isFlowerThorns: 0
+  slots:
+  - slotIndex: 0
+    equipAttackID: 0
+  - slotIndex: 0
+    equipAttackID: 0
+  - slotIndex: 0
+    equipAttackID: 0
+  - slotIndex: 0
+    equipAttackID: 0
+  - slotIndex: 0
+    equipAttackID: 0
 --- !u!114 &5225848352447207080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,6 +193,48 @@ MonoBehaviour:
     entries: []
   item: {fileID: 0}
   amount: 10
+--- !u!114 &4374602228983388732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617444938309502314}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8a39ead994ff949b2a7e54bfda23a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NavMeshClickMove
+  mainCamera: {fileID: 0}
+  destinationMarker: {fileID: 0}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 256
+  sampleDistance: 2
+  interactionController: {fileID: 0}
+  placementSystem: {fileID: 0}
+--- !u!195 &8530812470400278461
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617444938309502314}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1
+  m_BaseOffset: 0.5
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &2955520575127101346
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,7 +246,8 @@ GameObject:
   - component: {fileID: 3577796480055884347}
   - component: {fileID: 6458214693599970962}
   - component: {fileID: 8145819781692924310}
-  m_Layer: 0
+  - component: {fileID: 5631355582923556307}
+  m_Layer: 3
   m_Name: GetItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,3 +302,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3b57d9855313eb42a9cb8e3be575289, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GetItem
+  collectableLayer:
+    serializedVersion: 2
+    m_Bits: 0
+--- !u!54 &5631355582923556307
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2955520575127101346}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0

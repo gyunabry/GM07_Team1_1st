@@ -5,6 +5,7 @@ public class EnemyRunState : IState
 {
     private Enemy enemy;
     private EnemyStateController stateController;
+    private Player player;
 
     public EnemyRunState(Enemy enemy)
     {
@@ -14,19 +15,19 @@ public class EnemyRunState : IState
     public void Enter()
     {
         stateController = enemy.stateController;
+        Collider[] cPlayer = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance, enemy.playerLayer);
+        player = cPlayer[0].GetComponent<Player>();
     }
 
     public void Execute()
     {
-        Collider[] player = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance, enemy.playerLayer);
-        
-        if(player.Length > 0)
+            Vector3 dirPlayer = enemy.transform.position - player.transform.position;
+        if(Vector3.Distance(player.transform.position, enemy.transform.position) <= enemy.runEndDistance)
         {
-            Vector3 dirPlayer = enemy.transform.position - player[0].transform.position;
             Vector3 runDistance = enemy.transform.position + dirPlayer.normalized * 1f;
             enemy.agent.SetDestination(runDistance);
         }
-        else if(player.Length == 0)
+        else
         {
             stateController.ChangeState(stateController.IdleState);
         }

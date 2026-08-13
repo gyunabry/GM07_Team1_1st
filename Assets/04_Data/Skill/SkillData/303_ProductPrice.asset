@@ -10,18 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
-  m_Name: Test
+  m_Name: 303_ProductPrice
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
-  skillID: 1
-  skillName: "\uD14C\uC2A4\uD2B8\uC6A9"
+  skillID: 303
+  skillName: ProductPrice
+  skillDesc: 
   skillSprite: {fileID: 0}
-  skillMaxLevel: 3
-  skillNeedSkillPoint: 1
+  skillMaxLevel: 0
+  skillNeedSkillPoint: 0
   skillNeedLevel: 0
   skillNeedMoney: 0
-  Value:
-  - 5
-  - 10
-  - 15
-  needSkill: {fileID: 0}
-  effect: {fileID: 11400000, guid: 28149231e0eb7474691301e462652131, type: 2}
+  value: []
+  multiValue: []
+  needSkill: []
+  effect: {fileID: 11400000, guid: 4124fb4ac0915674cb1aaa769b8dd731, type: 2}
