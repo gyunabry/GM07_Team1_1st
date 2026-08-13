@@ -6,7 +6,7 @@ public class CustomerAnimationController : MonoBehaviour
     {
         Idle, Walk
     }
-    private static readonly int StateHash = Animator.StringToHash("State");
+    private static readonly int IsWalkHash = Animator.StringToHash("IsWalk");
 
     [SerializeField] private Animator animator;
 
@@ -14,13 +14,18 @@ public class CustomerAnimationController : MonoBehaviour
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 
     public void SetState(CustomerAnimState newState)
     {
         if (currentState == newState) return;
         currentState = newState;
-        animator.SetInteger(StateHash, (int)newState);
+
+        bool isWalking = (currentState == CustomerAnimState.Walk);
+        animator.SetBool(IsWalkHash, isWalking);
     }
 }

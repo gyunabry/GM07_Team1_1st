@@ -1,5 +1,6 @@
 using UnityEngine;
 
+//플레이어 AnimationController, NavMeshClickMove와 연결.
 public class PlayerAnimationController : MonoBehaviour
 {
     public enum PlayerAnimState
@@ -14,7 +15,10 @@ public class PlayerAnimationController : MonoBehaviour
 
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
     }
 
     public void SetState(PlayerAnimState newState)
