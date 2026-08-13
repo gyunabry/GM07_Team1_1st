@@ -32,10 +32,25 @@ public class SalesCounter : MonoBehaviour
 
     public bool IsOpen => checkoutStation != null && checkoutStation.IsAvailable;
 
+    public event Action StateChanged;
+
     private void Awake()
     {
         placedBuilding = GetComponent<PlacedBuilding>();
         checkoutStation = GetComponentInChildren<CustomerCheckoutStation>(true);
+
+        if (placedBuilding != null)
+        {
+            placedBuilding.OnStateChanged += HandleBuildingStateChanged;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (placedBuilding != null)
+        {
+            placedBuilding.OnStateChanged -= HandleBuildingStateChanged;
+        }
     }
 
     private void Start()
@@ -61,7 +76,14 @@ public class SalesCounter : MonoBehaviour
     // 판매대 이동, 회전, 철거 전에 호출
     public void CloseCounter()
     {
+        bool wasOpen = IsOpen;
+
         checkoutStation?.CloseStation();
+
+        if (wasOpen != IsOpen)
+        {
+            StateChanged?.Invoke();
+        }
     }
 
     // 이동, 회전, NavMesh 반영이 끝나고 호출
@@ -72,12 +94,25 @@ public class SalesCounter : MonoBehaviour
             return false;
         }
 
+        bool wasOpen = IsOpen;
+
         checkoutStation.OpenStation();
+
+        if (wasOpen != IsOpen)
+        {
+            StateChanged?.Invoke();
+        }
+
         return true;
     }
 
     private void Reset()
     {
         checkoutStation = GetComponentInChildren<CustomerCheckoutStation>(true);
+    }
+
+    private void HandleBuildingStateChanged()
+    {
+        StateChanged?.Invoke();
     }
 }
