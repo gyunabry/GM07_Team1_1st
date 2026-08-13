@@ -4,7 +4,7 @@ using UnityEngine;
 public class AttackSO : ScriptableObject
 {
     public int attackCode;
-    public int attackDamage = 5;
+    public float attackDamage = 5;
     public float attackSpeed = 0.5f;
     public Vector3 position;
     public Vector3 direction;

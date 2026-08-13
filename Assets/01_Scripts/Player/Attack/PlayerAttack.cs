@@ -17,7 +17,6 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private AttackSO ChasingSickleSO;
     [SerializeField] private AttackSO LightningRaySO;
     [SerializeField] private AttackSO FlowerThornsSO;
-    
 
     public bool isTripleShot = false;
     public bool isMagicArrow = false;
@@ -25,6 +24,8 @@ public class PlayerAttack : MonoBehaviour
     public bool isChasingSickle = false;
     public bool isLightningRay = false;
     public bool isFlowerThorns = false;
+
+    Coroutine co;
 
     Vector3 giz;
     float dis;
@@ -40,16 +41,14 @@ public class PlayerAttack : MonoBehaviour
     }
     public void AllAttackStart()
     {
-        StopCoroutine(MagicArrow());
-        StopCoroutine(FireCircle());
-        StopCoroutine(ChasingSickle());
-        StopCoroutine(LightningRay());
-        StopCoroutine(FlowerThorns());
-        if (isMagicArrow) StartCoroutine(MagicArrow());
-        if (isFireCircle) StartCoroutine(FireCircle());
-        if (isChasingSickle) StartCoroutine(ChasingSickle());
-        if (isLightningRay) StartCoroutine(LightningRay());
-        if (isFlowerThorns) StartCoroutine(FlowerThorns());
+        if(co != null) StopCoroutine(co);
+        co = null;
+        if (isMagicArrow) co = StartCoroutine(MagicArrow());
+        if (isFireCircle) co = StartCoroutine(FireCircle());
+        if (isChasingSickle) co = StartCoroutine(ChasingSickle());
+        if (isLightningRay) co = StartCoroutine(LightningRay());
+        if (isFlowerThorns) co = StartCoroutine(FlowerThorns());
+        
     }
     IEnumerator MagicArrow()
     {
@@ -60,8 +59,8 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
             };
             Collider[] enemyIn = Physics.OverlapSphere(transform.position, distance, layer);
-            ad.attackDamage = MagicArrowSO.attackDamage;
-            ad.attackSpeed = MagicArrowSO.attackSpeed;
+            ad.attackDamage = MagicArrowSO.attackDamage + player.AttackDamage;
+            ad.attackSpeed = MagicArrowSO.attackSpeed + player.AttackSpeed;
             if (enemyIn.Length == 0)
             {
                 yield return null;
@@ -85,8 +84,8 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = FireCircleSO.attackDamage;
-            ad.attackSpeed = FireCircleSO.attackSpeed;
+            ad.attackDamage = FireCircleSO.attackDamage + player.AttackDamage;
+            ad.attackSpeed = FireCircleSO.attackSpeed + player.AttackSpeed;
             ad.distance = FireCircleSO.distance;
             
             attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
@@ -104,8 +103,8 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
                 forward = transform.forward
             };
-            ad.attackDamage = ChasingSickleSO.attackDamage;
-            ad.attackSpeed = ChasingSickleSO.attackSpeed;
+            ad.attackDamage = ChasingSickleSO.attackDamage + player.AttackDamage;
+            ad.attackSpeed = ChasingSickleSO.attackSpeed + player.AttackSpeed;
             ad.distance = ChasingSickleSO.distance;
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
@@ -123,8 +122,8 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = LightningRaySO.attackDamage;
-            ad.attackSpeed = LightningRaySO.attackSpeed;
+            ad.attackDamage = LightningRaySO.attackDamage + player.AttackDamage;
+            ad.attackSpeed = LightningRaySO.attackSpeed + player.AttackSpeed;
             ad.distance = LightningRaySO.distance;
             ad.spreadAngle = LightningRaySO.spreadAngle;
 
@@ -149,7 +148,11 @@ public class PlayerAttack : MonoBehaviour
             attack.LightningRay(ad.attackDamage, ad, poolManager, layer);
             particleManager.GetParticle(3, transform.position, targetRota);
             }
-
+            else
+            {
+                yield return null;
+                continue;
+            }
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
@@ -163,8 +166,8 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = randomPosi,
             };
-            ad.attackDamage = FlowerThornsSO.attackDamage;
-            ad.attackSpeed = FlowerThornsSO.attackSpeed;
+            ad.attackDamage = FlowerThornsSO.attackDamage + player.AttackDamage;
+            ad.attackSpeed = FlowerThornsSO.attackSpeed + player.AttackSpeed;
             ad.distance = FlowerThornsSO.distance;
             
             giz = randomPosi;
