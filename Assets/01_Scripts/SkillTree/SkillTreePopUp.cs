@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SkillTreePopUp : MonoBehaviour
 {
@@ -15,8 +16,8 @@ public class SkillTreePopUp : MonoBehaviour
     }
     public void SetSprite(Sprite sprite)
     {
-        Sprite descSprite = this.descSprite.GetComponent<Sprite>(); 
-        descSprite = sprite;
+        Image image = descSprite.GetComponent<Image>();
+        image.sprite = sprite;
     }
     public void SetName(string name, int level)
     {
