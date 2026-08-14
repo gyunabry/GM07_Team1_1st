@@ -14,6 +14,7 @@ public class NavMeshClickMove : MonoBehaviour
     [Header("참조")]
     [SerializeField] private PlayerInteractionController interactionController;
     [SerializeField] private PlacementSystem placementSystem;
+    [SerializeField] private PlayerAnimationController animationController;
 
     private NavMeshAgent agent;
     private NavMeshPath calculatePath;
@@ -30,6 +31,7 @@ public class NavMeshClickMove : MonoBehaviour
     private void Update() //(최적화 고려 : 코루틴, 이벤트 등)
     {
         MouseInput();
+        UpdateAnimation();
     }
 
     private void MouseInput()
@@ -114,5 +116,23 @@ public class NavMeshClickMove : MonoBehaviour
         if (agent.isOnOffMeshLink) return;
 
         CalculateApplyPath(currentDestination);
+    }
+
+    //캐릭터 애니메이션
+    private void UpdateAnimation()
+    {
+        if (animationController == null) return;
+
+        PlayerAnimationController.PlayerAnimState nextState;
+
+        if(agent.velocity.magnitude == 0)
+        {
+            nextState = PlayerAnimationController.PlayerAnimState.Idle;
+        }
+        else
+        {
+            nextState = PlayerAnimationController.PlayerAnimState.Walk;
+        }
+        animationController.SetState(nextState);
     }
 }

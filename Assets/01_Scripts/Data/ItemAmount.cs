@@ -13,5 +13,11 @@ public struct ItemAmount
     public ItemDataSO Item => item;
     public int Amount => amount;
 
+    public ItemAmount(ItemDataSO item, int amount)
+    {
+        this.item = item;
+        this.amount = Mathf.Max(1, amount);
+    }
+
     public bool IsValid => item != null && amount > 0;
 }

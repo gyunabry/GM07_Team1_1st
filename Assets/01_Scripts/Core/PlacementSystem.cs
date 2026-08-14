@@ -15,6 +15,7 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private BuildableArea buildableArea;
     [SerializeField] private Transform buildingContainer;
 
     // 셀별로 어떤 건물이 점유 중인지 저장
@@ -128,14 +129,18 @@ public class PlacementSystem : MonoBehaviour
             return;
         }
 
-        previewObject.SetActive(true);
+        if (!inputManager.TryGetWorldPosition(out Vector3 worldPos))
+        {
+            previewObject.SetActive(false);
+            canPlace = false;
+            return;
+        }
 
-        // 현재 마우스가 위치한 월드 위치 저장
-        Vector3 worldPos = inputManager.GetWorldPosition();
+        previewObject.SetActive(true);
 
         // 해당 월드 위치가 어떤 셀에 있는지 저장
         currentCell = grid.WorldToCell(worldPos);
-        currentCell.y = 0;
+        currentCell.z = 0;
 
         Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 
@@ -213,11 +218,19 @@ public class PlacementSystem : MonoBehaviour
     // 건물이 차지할 모든 셀이 비어있는지 검사
     private bool IsCellsAvailable(Vector3Int originCell, Vector2Int size)
     {
+        if (buildableArea == null) return false;
+
         for (int x = 0; x < size.x; x++)
         {
             for (int z = 0; z < size.y; z++)
             {
-                Vector3Int cell = originCell + new Vector3Int(x, 0, z);
+                Vector3Int cell = originCell + new Vector3Int(x, z, 0);
+
+                // 공방 밖이면 배치 불가
+                if (!buildableArea.IsBuildable(cell))
+                {
+                    return false;
+                }
 
                 // 해당 셀이 이미 등록되어 있다면 false 반환
                 if (occupiedCells.ContainsKey(cell))
@@ -240,7 +253,7 @@ public class PlacementSystem : MonoBehaviour
         {
             for (int z = 0; z < size.y; z++)
             {
-                cells.Add(originCell + new Vector3Int(x, 0, z));
+                cells.Add(originCell + new Vector3Int(x, z, 0));
             }
         }
 
@@ -250,13 +263,15 @@ public class PlacementSystem : MonoBehaviour
     // 건물이 차지하는 전체 셀 영역의 중앙 위치를 반환
     private Vector3 GetBuildingCenter(Vector3Int originCell, Vector2Int size)
     {
-        Vector3Int lastCell = originCell + new Vector3Int(size.x - 1, 0, size.y - 1);
+        Vector3Int lastCell = originCell + new Vector3Int(size.x - 1, size.y - 1, 0);
 
         Vector3 firstCenter = grid.GetCellCenterWorld(originCell);
-
         Vector3 lastCenter = grid.GetCellCenterWorld(lastCell);
 
-        return (firstCenter + lastCenter) * 0.5f;
+        Vector3 center = (firstCenter + lastCenter) * 0.5f;
+        center.y = 0f;
+
+        return center;
     }
 
     // 건물에 회전을 적용했을 때 차지하는 크기
@@ -290,7 +305,7 @@ public class PlacementSystem : MonoBehaviour
     // 해당 셀이 이미 점유된 상태인지 반환
     public bool IsCellOccupied(Vector3Int cell)
     {
-        cell.y = 0;
+        cell.z = 0;
         return occupiedCells.ContainsKey(cell);
     }
 
