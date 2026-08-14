@@ -17,7 +17,6 @@ using UnityEngine;
 public class ProductionBuilding : MonoBehaviour
 {
     [SerializeField] private List<RecipeDataSO> availableRecipes = new();
-    [SerializeField] private RecipeDataSO initialRecipe;
 
     [Header("생산 인벤토리")]
     [SerializeField] private ItemInventory inputInventory = new();
@@ -54,8 +53,6 @@ public class ProductionBuilding : MonoBehaviour
         placedBuilding = GetComponent<PlacedBuilding>();
 
         machine = new ProductionMachine(inputInventory, outputInventory);
-
-        if (initialRecipe != null) machine.TrySetRecipe(initialRecipe);
     }
 
     private void OnEnable()

@@ -7,6 +7,7 @@ public class BuildModeController : MonoBehaviour
 {
     [SerializeField] private RectTransform buildMenu;
     [SerializeField] private Canvas buildMenuCanvas;
+    [SerializeField] private GameObject gridView;
     [SerializeField] private InputManager inputManager;
 
     [Header("이벤트")]
@@ -26,6 +27,8 @@ public class BuildModeController : MonoBehaviour
 
     private void Awake()
     {
+        gridView.SetActive(false);
+
         // 에디터에 배치한 위치를 최종 위치로 사용
         visiblePos = buildMenu.anchoredPosition;
 
@@ -77,6 +80,8 @@ public class BuildModeController : MonoBehaviour
             Join(buildMenu.DOAnchorPos(visiblePos, duration)
             .SetEase(openEase))
             .SetUpdate(true);
+
+        gridView.SetActive(true);
     }
 
     public void CloseBuildMode()
@@ -100,5 +105,7 @@ public class BuildModeController : MonoBehaviour
                 anim = null;
             })
             .SetUpdate(true);
+
+        gridView.SetActive(false);
     }
 }
