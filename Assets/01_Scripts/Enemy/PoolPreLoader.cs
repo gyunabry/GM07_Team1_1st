@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PoolPreLoader : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private FireCircle fireCirclePrefab;
     [SerializeField] private FlowerThorns flowerThornsPrefab;
     [SerializeField] private LightningRay lightningRayPrefab;
+    [SerializeField] private AttackEquPrefab buttonPrefab;
+    [SerializeField] private SkillTreePopUp skillTreePopUpPrefab;
 
     [Header("생성 개수")]
     [SerializeField] private int enemyCount;
@@ -19,9 +22,14 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private int fireCircleCount;
     [SerializeField] private int flowerThornsCount;
     [SerializeField] private int lightningRayCount;
+    [SerializeField] private int buttonCount;
+    [SerializeField] private int skillTreePopUpCount;
+
+    private bool setup = false;
 
     private void Start()
     {
+        if (setup) return;
         MonsterPoolManager.Instance.PreLoadPool(enemyPrefab, enemyCount);
         MonsterPoolManager.Instance.PreLoadPool(dropItemPrefab, dropItemCount);
         MonsterPoolManager.Instance.PreLoadPool(attackPointPrefab, attackPointCount);
@@ -29,5 +37,9 @@ public class PoolPreLoader : MonoBehaviour
         MonsterPoolManager.Instance.PreLoadPool(fireCirclePrefab, fireCircleCount);
         MonsterPoolManager.Instance.PreLoadPool(flowerThornsPrefab, flowerThornsCount);
         MonsterPoolManager.Instance.PreLoadPool(lightningRayPrefab, lightningRayCount);
+        MonsterPoolManager.Instance.PreLoadPool(buttonPrefab, buttonCount);
+        MonsterPoolManager.Instance.PreLoadPool(skillTreePopUpPrefab, skillTreePopUpCount);
+        setup = true;
     }
+
 }

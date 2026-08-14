@@ -5,14 +5,22 @@ public class SkillDataSO : ScriptableObject
 {
     public int skillID;
     public string skillName;
+    [TextArea]
+    public string skillDesc; 
     public Sprite skillSprite;
     public int skillMaxLevel;
     public int skillNeedSkillPoint;
     public int skillNeedLevel;
     public int skillNeedMoney;
-    public float[] Value;
-    public SkillDataSO needSkill;
+    public float[] value;
+    public MultiValue[] multiValue;
+    public SkillDataSO[] needSkill;
     public SkillEffectSO effect;
+}
+[System.Serializable]
+public class MultiValue
+{
+    public float[] value;
 }
 public abstract class SkillEffectSO : ScriptableObject
 {
