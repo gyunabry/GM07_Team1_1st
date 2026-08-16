@@ -27,7 +27,7 @@ public class Dropitem : MonoBehaviour, ICollectable
         {
             Item = null;
             Amount = 0;
-            PoolManager.Instance.ReturnPool(this);
+            MonsterPoolManager.Instance.ReturnPool(this);
         }
 
         return true;
