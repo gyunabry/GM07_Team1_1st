@@ -35,7 +35,7 @@ EmployeeManager
 - `Building Id`는 건물 데이터의 `BuildingId`와 정확히 일치해야 합니다.
 - `Employee Data`에는 해당 직원 직군의 `EmployeeDataSO`를 연결합니다.
 - 등록되지 않은 건물은 직원 건물로 처리하지 않으며, 고용 API는 `false`를 반환합니다.
-- 현재 단계에서는 직원 프리팹, 외형, 능력치, 인벤토리, 작업 대상과 직군별 AI를 구성하지 않습니다.
+- 판매 직원 구성은 `Sales/README.md`를 참고합니다.
 
 ## 건물 시스템 연동
 
@@ -52,7 +52,7 @@ employeeManager.TryUnregisterBuilding(placedBuilding);
 - `TryRegisterBuilding`은 같은 건물의 중복 등록을 허용하지 않습니다.
 - 등록에 성공하면 프로필의 `Automatic Hire Count`만큼 직원을 자동 고용합니다.
 - `TryUnregisterBuilding`은 해당 건물에 소속된 모든 직원을 제거합니다.
-- 건물 연동 호출은 건물 담당 영역에서 수행하며, 직원 시스템은 건물·배치 코드를 직접 수정하지 않습니다.
+- 일반 직원 건물 연동 호출은 건물 담당 영역에서 수행한다. 단, 판매대는 `SalesEmployeeCheckoutOperator`가 완성·파괴 생명주기에 맞춰 직접 처리한다.
 
 ## 고용 및 상태 처리
 

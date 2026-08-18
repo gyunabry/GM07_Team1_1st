@@ -13,6 +13,7 @@ public sealed class EmployeeManager : MonoBehaviour
 
     private readonly Dictionary<int, RegisteredBuilding> registeredBuildings = new();
     private int nextEmployeeId = 1;
+    private EmployeeDataSO runtimeSalesEmployeeData;
 
     public event Action<EmployeeRuntimeData> EmployeeHired;
     public event Action<EmployeeRuntimeData> EmployeeRemoved;
@@ -28,21 +29,21 @@ public sealed class EmployeeManager : MonoBehaviour
             return false;
         }
 
-        int buildingKey = building.GetInstanceID();
-        if (registeredBuildings.ContainsKey(buildingKey) || !TryGetProfile(building.Data.BuildingId, out EmployeeBuildingProfile profile))
+        if (!TryGetProfile(building.Data.BuildingId, out EmployeeBuildingProfile profile))
         {
             return false;
         }
 
-        RegisteredBuilding registeredBuilding = new(building, profile);
-        registeredBuildings.Add(buildingKey, registeredBuilding);
+        return TryRegisterBuilding(building, profile.EmployeeData, profile.MaxEmployees, profile.AutomaticHireCount);
+    }
 
-        for (int i = 0; i < profile.AutomaticHireCount; i++)
-        {
-            Hire(registeredBuilding);
-        }
-
-        return true;
+    /// <summary>
+    /// 판매대에 고정된 판매 직원 한 명을 등록합니다.
+    /// 판매 직원은 별도 Inspector 프로필 없이 런타임 데이터로 관리합니다.
+    /// </summary>
+    public bool TryRegisterSalesBuilding(PlacedBuilding building)
+    {
+        return TryRegisterBuilding(building, GetOrCreateRuntimeSalesEmployeeData(), 1, 1);
     }
 
     /// <summary>
@@ -70,7 +71,7 @@ public sealed class EmployeeManager : MonoBehaviour
     public bool TryHireAdditional(PlacedBuilding building, out EmployeeRuntimeData employee)
     {
         employee = null;
-        if (!TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) || registeredBuilding.Employees.Count >= registeredBuilding.Profile.MaxEmployees)
+        if (!TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) || registeredBuilding.Employees.Count >= registeredBuilding.MaxEmployees)
         {
             return false;
         }
@@ -127,7 +128,7 @@ public sealed class EmployeeManager : MonoBehaviour
 
     private EmployeeRuntimeData Hire(RegisteredBuilding registeredBuilding)
     {
-        EmployeeRuntimeData employee = new(nextEmployeeId++, registeredBuilding.Profile.EmployeeData, registeredBuilding.Building);
+        EmployeeRuntimeData employee = new(nextEmployeeId++, registeredBuilding.EmployeeData, registeredBuilding.Building);
         registeredBuilding.Employees.Add(employee);
         EmployeeHired?.Invoke(employee);
         return employee;
@@ -160,16 +161,47 @@ public sealed class EmployeeManager : MonoBehaviour
         return false;
     }
 
+    private bool TryRegisterBuilding(PlacedBuilding building, EmployeeDataSO employeeData, int maxEmployees, int automaticHireCount)
+    {
+        if (building == null || employeeData == null || registeredBuildings.ContainsKey(building.GetInstanceID()))
+        {
+            return false;
+        }
+
+        RegisteredBuilding registeredBuilding = new(building, employeeData, maxEmployees);
+        registeredBuildings.Add(building.GetInstanceID(), registeredBuilding);
+
+        int hireCount = Mathf.Clamp(automaticHireCount, 0, registeredBuilding.MaxEmployees);
+        for (int i = 0; i < hireCount; i++)
+        {
+            Hire(registeredBuilding);
+        }
+
+        return true;
+    }
+
+    private EmployeeDataSO GetOrCreateRuntimeSalesEmployeeData()
+    {
+        if (runtimeSalesEmployeeData == null)
+        {
+            runtimeSalesEmployeeData = EmployeeDataSO.CreateRuntime("runtime-sales-employee", "판매 직원", EmployeeRole.Sales);
+        }
+
+        return runtimeSalesEmployeeData;
+    }
+
     private sealed class RegisteredBuilding
     {
         public PlacedBuilding Building { get; }
-        public EmployeeBuildingProfile Profile { get; }
+        public EmployeeDataSO EmployeeData { get; }
+        public int MaxEmployees { get; }
         public List<EmployeeRuntimeData> Employees { get; } = new();
 
-        public RegisteredBuilding(PlacedBuilding building, EmployeeBuildingProfile profile)
+        public RegisteredBuilding(PlacedBuilding building, EmployeeDataSO employeeData, int maxEmployees)
         {
             Building = building;
-            Profile = profile;
+            EmployeeData = employeeData;
+            MaxEmployees = Mathf.Max(1, maxEmployees);
         }
     }
 }

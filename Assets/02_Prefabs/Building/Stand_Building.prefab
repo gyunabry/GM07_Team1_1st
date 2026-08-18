@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 83976435556464181}
   - component: {fileID: 1849921812129018527}
   - component: {fileID: 8943603778101854687}
+  - component: {fileID: 6300147198081467721}
   m_Layer: 12
   m_Name: Stand_Building
   m_TagString: Untagged
@@ -133,6 +134,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SalesCounter
   checkoutStation: {fileID: 8943603778101854687}
   salesEmployee: {fileID: 0}
+--- !u!114 &6300147198081467721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893231529864045393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3a1043605cb42ee840713818e489db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SalesEmployeeCheckoutOperator
+  salesEmployeePrefab: {fileID: 805410001, guid: 83b5dc5f24f842c3a1e5647b9b046d5e, type: 3}
 --- !u!114 &1849921812129018527
 MonoBehaviour:
   m_ObjectHideFlags: 0

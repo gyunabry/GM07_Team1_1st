@@ -10,4 +10,13 @@ public sealed class EmployeeDataSO : ScriptableObject
     [field: SerializeField] public string EmployeeId { get; private set; }
     [field: SerializeField] public string EmployeeName { get; private set; }
     [field: SerializeField] public EmployeeRole Role { get; private set; }
+
+    public static EmployeeDataSO CreateRuntime(string employeeId, string employeeName, EmployeeRole role)
+    {
+        EmployeeDataSO data = CreateInstance<EmployeeDataSO>();
+        data.EmployeeId = employeeId;
+        data.EmployeeName = employeeName;
+        data.Role = role;
+        return data;
+    }
 }
