@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInventory : MonoBehaviour
+public class PlayerInventory : MonoBehaviour, IInventoryProvider
 {
     [SerializeField] private ItemInventory inventory = new();
 

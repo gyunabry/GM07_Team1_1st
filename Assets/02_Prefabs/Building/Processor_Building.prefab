@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4093891964111609741
+--- !u!1 &2001254261843002515
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,46 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 69064450223858443}
-  - component: {fileID: 6751127588307279945}
-  - component: {fileID: 7842031495136043954}
-  m_Layer: 12
+  - component: {fileID: 7182863776599312249}
+  - component: {fileID: 4042040346767287453}
+  - component: {fileID: 7233193131866372536}
+  m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &69064450223858443
+--- !u!4 &7182863776599312249
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4093891964111609741}
+  m_GameObject: {fileID: 2001254261843002515}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0.73, z: 0}
+  m_LocalScale: {x: 150, y: 150, z: 150}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1694295960140826187}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6751127588307279945
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
+--- !u!33 &4042040346767287453
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4093891964111609741}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &7842031495136043954
+  m_GameObject: {fileID: 2001254261843002515}
+  m_Mesh: {fileID: 7158796146257112550, guid: 7f1e9676be897cc428d02159f42da620, type: 3}
+--- !u!23 &7233193131866372536
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4093891964111609741}
+  m_GameObject: {fileID: 2001254261843002515}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5ea816b347d29cc4eb9214f0b58510e9, type: 2}
+  - {fileID: 2100000, guid: 69fe059622dba734eb3bae0074a0e104, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -116,13 +116,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5077872487781600508}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
-  m_ConstrainProportionsScale: 0
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0.7071068, w: 0}
+  m_LocalPosition: {x: 0, y: 0.73, z: 0}
+  m_LocalScale: {x: 150, y: 150, z: 150}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1694295960140826187}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 180}
 --- !u!33 &8440924516964943380
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -130,7 +130,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5077872487781600508}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 7158796146257112550, guid: 7f1e9676be897cc428d02159f42da620, type: 3}
 --- !u!23 &4973401326190006303
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -284,7 +284,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 69064450223858443}
+  - {fileID: 7182863776599312249}
   - {fileID: 5502004402615702700}
   - {fileID: 3930410399307874733}
   m_Father: {fileID: 0}
@@ -318,7 +318,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
   constructionObject: {fileID: 5077872487781600508}
-  completedObject: {fileID: 4093891964111609741}
+  completedObject: {fileID: 2001254261843002515}
 --- !u!114 &2752481641754463068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,7 +354,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 609cadeb163d7634ea03ffed06a34199, type: 2}
   - {fileID: 11400000, guid: 1d2c2d7a88393e84ab05a570fc732178, type: 2}
   - {fileID: 11400000, guid: 2316e3fee05d4104db8b71da7b14e75b, type: 2}
-  initialRecipe: {fileID: 11400000, guid: 47fdf777250cf67469b7f6925048e66b, type: 2}
   inputInventory:
     capacity: 20
     entries: []
