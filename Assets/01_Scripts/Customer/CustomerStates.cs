@@ -1,6 +1,10 @@
 // 계산대 대기열의 현재 슬롯으로 이동
+using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
+
 public sealed class CustomerVisitState : ICustomerState
 {
+    [SerializeField] private CustomerAnimationController animationController; //Animation 추가
     private readonly CustomerController controller;
     public string Name => "Visit";
     public CustomerVisitState(CustomerController controller) => this.controller = controller;
@@ -30,6 +34,7 @@ public sealed class CustomerVisitState : ICustomerState
 // 줄의 맨 앞에 도착할 때까지 기다린 뒤 주문을 확정
 public sealed class CustomerOrderState : ICustomerState
 {
+    [SerializeField] private CustomerAnimationController animationController; //Animator 추가
     private readonly CustomerController controller;
     public string Name => "Order";
     public CustomerOrderState(CustomerController controller) => this.controller = controller;
@@ -47,6 +52,7 @@ public sealed class CustomerOrderState : ICustomerState
 // 재료 변경 이벤트를 구독하고, 자동 결제가 가능해지면 한 번만 결제
 public sealed class CustomerIdleState : ICustomerState
 {
+    [SerializeField] private CustomerAnimationController animationController; //Animator 추가
     private readonly CustomerController controller;
     private bool inventoryChanged;
     private bool operatorPresenceChanged;
@@ -61,6 +67,10 @@ public sealed class CustomerIdleState : ICustomerState
         controller.SubscribeOperatorPresenceChanged(OnOperatorPresenceChanged);
         paymentElapsed = 0f;
         paymentReady = false;
+
+        //Animation 추가
+        if (animationController == null) return;
+        animationController.SetState(CustomerAnimationController.CustomerAnimState.Idle);
     }
     public void Update()
     {
@@ -102,6 +112,7 @@ public sealed class CustomerIdleState : ICustomerState
 // 대기열에서 제거된 손님을 출구까지 이동시키고 PoolManager에 반환
 public sealed class CustomerExitState : ICustomerState
 {
+    [SerializeField] private CustomerAnimationController animationController; //Animator 추가
     private readonly CustomerController controller;
     private bool movingToFinalExit;
     private float exitElapsed;
@@ -117,6 +128,10 @@ public sealed class CustomerExitState : ICustomerState
         {
             controller.FailExit(movingToFinalExit ? "No path to the exit." : "No path to the exit turn point.");
         }
+
+        //Animation 추가
+        if (animationController == null) return;
+        animationController.SetState(CustomerAnimationController.CustomerAnimState.Walk);
     }
     public void Update()
     {

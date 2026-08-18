@@ -7,6 +7,8 @@ public class AttackPoint : MonoBehaviour
     public float attackDamage;
     public MonsterPoolManager poolManager;
     public LayerMask layer;
+    public Enemy enemy;
+
 
     private void OnEnable()
     {
@@ -14,7 +16,14 @@ public class AttackPoint : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        transform.Translate(transform.forward * Time.deltaTime * 10f, Space.World);
+        if(enemy != null)
+        {
+            if(!(enemy.stateController.nowState == enemy.stateController.DieState))
+            {
+                transform.LookAt(enemy.transform.position);
+            }
+        }
+            transform.Translate(transform.forward * Time.deltaTime * 10f, Space.World);
     }
     private void OnCollisionEnter(Collision other)
     {

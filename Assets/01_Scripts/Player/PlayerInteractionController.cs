@@ -9,6 +9,8 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     [SerializeField] private PlayerInteractionDetector detector;
     [SerializeField] private BuildingInteractionPanel buildingPanel;
 
+    private IInteractable activeInteractable;
+
     private void Awake()
     {
         if (mainCamera == null)
@@ -19,6 +21,22 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
         if (detector == null)
         {
             detector = GetComponentInChildren<PlayerInteractionDetector>();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (detector != null)
+        {
+            detector.InteractableExited += HandleInteractableExited;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (detector != null)
+        {
+            detector.InteractableExited -= HandleInteractableExited;
         }
     }
 
@@ -65,6 +83,23 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     {
         if (building == null) return;
 
+        // 시설 UI를 열때 현재 시설로 저장
+        if (building is Component buildingComponent)
+        {
+            activeInteractable = buildingComponent.GetComponent<IInteractable>();
+        }
+
         buildingPanel.ShowPanel(building);
+    }
+
+    private void HandleInteractableExited(IInteractable exitedInteractable)
+    {
+        if (!ReferenceEquals(activeInteractable, exitedInteractable))
+        {
+            return;
+        }
+
+        buildingPanel.HidePanel();
+        activeInteractable = null;
     }
 }
