@@ -7,6 +7,9 @@ public class AttackEquHud : MonoBehaviour
     [SerializeField] PlayerAttack playerAttack;
     [SerializeField] MonsterPoolManager monsterPoolManager;
     [SerializeField] GameObject layoutWidth;
+
+    [SerializeField] AttackEquHud closeButton1;
+    [SerializeField] AttackEquHud closeButton2;
     public int equAttackID;
     public bool equip;
     public int slotIndex;
@@ -30,6 +33,14 @@ public class AttackEquHud : MonoBehaviour
         else
         {
             layoutWidth.SetActive(true);
+            if(closeButton1.layoutWidth.activeSelf == true)
+            {
+                closeButton1.OnOffButton();
+            }
+            if (closeButton2.layoutWidth.activeSelf == true)
+            {
+                closeButton2.OnOffButton();
+            }
             SelectAttack();
         }
     }
