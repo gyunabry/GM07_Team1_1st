@@ -149,7 +149,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         Transform operatorArea = CreateCounterMarker(counter.transform, "OperatorArea", Vector3.forward);
 
         ShopCustomerQueue queue = counter.AddComponent<ShopCustomerQueue>();
-        queue.Configure(checkoutFront, 1.25f, 5);
+        queue.Configure(checkoutFront, 1.25f, 20);
 
         ShopCheckout checkout = operatorArea.gameObject.AddComponent<ShopCheckout>();
         checkout.ConfigureZone(new Vector3(2.5f, 2f, 2f));
