@@ -4,13 +4,13 @@ using TMPro;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.InputSystem;
 
 // 손님 이동과 대기열을 눈으로 확인하기 위한 전용 테스트 씬 구성 요소
 public sealed class CustomerVisualTestBootstrap : MonoBehaviour
 {
+    [SerializeField] private BuildingDataSO salesCounterData;
+
     private Camera testCamera;
-    private Transform checkoutOperator;
     private CurrencySystem currencySystem;
     private TextMeshProUGUI currencyText;
 
@@ -23,10 +23,13 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         floor.name = "Floor";
         floor.transform.localScale = new Vector3(2f, 1f, 2f);
 
-        CreateCounter(new Vector3(-6f, 0.75f, 2.5f));
-        CreateCounter(new Vector3(-2f, 0.75f, 2.5f));
-        CreateCounter(new Vector3(2f, 0.75f, 2.5f));
-        CreateCounter(new Vector3(6f, 0.75f, 2.5f));
+        new GameObject("EmployeeManager").AddComponent<EmployeeManager>();
+        new GameObject("TestCounterInventory").AddComponent<CounterInventory>();
+
+        CreateCounter(new Vector3(-6f, 0f, 2.5f));
+        CreateCounter(new Vector3(-2f, 0f, 2.5f));
+        CreateCounter(new Vector3(2f, 0f, 2.5f));
+        CreateCounter(new Vector3(6f, 0f, 2.5f));
         Transform entrance = CreateMarker("Entrance", new Vector3(0f, 0f, -9f), Vector3.forward);
         // 계산대 옆의 군중을 가로지르지 않도록 바깥쪽 통로를 따라 출구로 이동한다.
         Transform exitTurn = CreateMarker("ExitTurn", new Vector3(8.5f, 0f, 1.5f), Vector3.right);
@@ -34,8 +37,6 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
 
         NavMeshSurface surface = floor.AddComponent<NavMeshSurface>();
         surface.BuildNavMesh();
-
-        checkoutOperator = CreateCheckoutOperator(new Vector3(0f, -10f, 0f));
 
         CustomerController customerTemplate = CreateCustomerTemplate();
         new GameObject("PoolManager").AddComponent<PoolManager>();
@@ -103,21 +104,6 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (testCamera == null || checkoutOperator == null || Mouse.current == null)
-        {
-            return;
-        }
-
-        Ray ray = testCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        Plane floorPlane = new Plane(Vector3.up, Vector3.zero);
-        if (floorPlane.Raycast(ray, out float distance))
-        {
-            checkoutOperator.position = ray.GetPoint(distance);
-        }
-    }
-
     private static CustomerController CreateCustomerTemplate()
     {
         GameObject customer = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -137,45 +123,28 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         return controller;
     }
 
-    private static void CreateCounter(Vector3 position)
+    private void CreateCounter(Vector3 position)
     {
-        GameObject counter = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        counter.name = "Counter";
-        counter.transform.position = position;
-        counter.transform.localScale = new Vector3(3f, 1.5f, 1f);
-        counter.SetActive(false);
+        if (salesCounterData == null || salesCounterData.BuildingPrefab == null)
+        {
+            Debug.LogError("CustomerVisualTestBootstrap requires the sales counter building data.", this);
+            return;
+        }
 
-        Transform checkoutFront = CreateCounterMarker(counter.transform, "CheckoutFront", Vector3.back);
-        Transform operatorArea = CreateCounterMarker(counter.transform, "OperatorArea", Vector3.forward);
+        GameObject counter = Instantiate(salesCounterData.BuildingPrefab, position, Quaternion.identity);
+        counter.name = salesCounterData.BuildingName;
 
-        ShopCustomerQueue queue = counter.AddComponent<ShopCustomerQueue>();
-        queue.Configure(checkoutFront, 1.25f, 20);
+        PlacedBuilding placedBuilding = counter.GetComponent<PlacedBuilding>();
+        if (placedBuilding == null)
+        {
+            Debug.LogError("Sales counter prefab requires PlacedBuilding.", counter);
+            Destroy(counter);
+            return;
+        }
 
-        ShopCheckout checkout = operatorArea.gameObject.AddComponent<ShopCheckout>();
-        checkout.ConfigureZone(new Vector3(2.5f, 2f, 2f));
-
-        CustomerCheckoutStation station = counter.AddComponent<CustomerCheckoutStation>();
-        station.ConfigureReferences(queue, checkout);
-        counter.SetActive(true);
-    }
-
-    private static Transform CreateCounterMarker(Transform parent, string markerName, Vector3 localPosition)
-    {
-        GameObject marker = new GameObject(markerName);
-        Transform markerTransform = marker.transform;
-        markerTransform.SetParent(parent, false);
-        markerTransform.localPosition = localPosition;
-        markerTransform.localRotation = Quaternion.identity;
-        return markerTransform;
-    }
-
-    private static Transform CreateCheckoutOperator(Vector3 position)
-    {
-        GameObject checkoutOperator = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        checkoutOperator.name = "TestCheckoutOperator";
-        checkoutOperator.transform.position = position;
-        checkoutOperator.AddComponent<CheckoutOperatorPresence>();
-        return checkoutOperator.transform;
+        Vector3Int cell = Vector3Int.RoundToInt(position);
+        placedBuilding.Initialize(salesCounterData, cell, 0, new[] { cell });
+        placedBuilding.BeginConstruction();
     }
 
     private static Transform CreateMarker(string markerName, Vector3 position, Vector3 forward)
