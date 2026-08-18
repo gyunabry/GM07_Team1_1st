@@ -52,6 +52,7 @@ GameObject:
   - component: {fileID: 7012853964508467644}
   - component: {fileID: 4534994864522753387}
   - component: {fileID: 3635524991964755764}
+  - component: {fileID: -1372638808735414482}
   m_Layer: 3
   m_Name: MainPlayer
   m_TagString: Untagged
@@ -369,16 +370,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   layer:
     serializedVersion: 2
-    m_Bits: 512
-  player: {fileID: 0}
-  poolManager: {fileID: 0}
-  particleManager: {fileID: 0}
-  attackSOData: []
-  MagicArrowSO: {fileID: 0}
-  FireCircleSO: {fileID: 0}
-  ChasingSickleSO: {fileID: 0}
-  LightningRaySO: {fileID: 0}
-  FlowerThornsSO: {fileID: 0}
+    m_Bits: 32768
+  player: {fileID: -1372638808735414482}
+  poolManager: {fileID: 1306151101374603641, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+  particleManager: {fileID: 699175747004910647, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+  attackSOData:
+  - {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  - {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  - {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
+  - {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
+  - {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
+  MagicArrowSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
+  FireCircleSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
+  ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
+  LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
+  FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
   isTripleShot: 0
   slots:
   - slotIndex: 0
@@ -403,6 +409,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d1f2b785b904dbd9f3b16f379bbe48b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckoutOperatorPresence
+--- !u!114 &-1372638808735414482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6372182821648462478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26b45b1cc173c1546bfda0795cd12193, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player
+  skillPoint: 0
+  baseAttackDamage: 0
+  baseAttackSpeed: 0
+  AttackDamage: 0
+  AttackSpeed: 0
 --- !u!1 &7323610448573131821
 GameObject:
   m_ObjectHideFlags: 0

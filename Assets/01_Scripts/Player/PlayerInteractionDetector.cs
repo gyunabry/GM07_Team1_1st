@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /*
@@ -9,7 +9,9 @@ using UnityEngine;
 
 public class PlayerInteractionDetector : MonoBehaviour
 {
-    private readonly HashSet<IInteractable> detectedInteractables = new();
+    private readonly Dictionary<IInteractable, HashSet<Collider>> detectedInteractables = new();
+
+    public event Action<IInteractable> InteractableExited;
 
     public int DetectedCount => detectedInteractables.Count;
 
@@ -20,13 +22,15 @@ public class PlayerInteractionDetector : MonoBehaviour
         if (interactable == null) return;
 
         // 이미 등록된 대상이면 리턴
-        if (!detectedInteractables.Add(interactable))
+        if (!detectedInteractables.TryGetValue(interactable, out HashSet<Collider> colliders))
         {
-            return;
+            colliders = new HashSet<Collider>();
+            detectedInteractables.Add(interactable, colliders);
         }
 
-        // 강조 표시
-        if (interactable is IHighlightable highlightable)
+        if (!colliders.Add(other)) return;
+
+        if (colliders.Count == 1 && interactable is IHighlightable highlightable)
         {
             highlightable.SetHighlighted(true);
         }
@@ -39,20 +43,28 @@ public class PlayerInteractionDetector : MonoBehaviour
         if (interactable == null) return;
 
         // 이미 등록된 대상이 아니라면 리턴
-        if (!detectedInteractables.Remove(interactable))
+        if (!detectedInteractables.TryGetValue(interactable, out HashSet<Collider> colliders))
         {
             return;
         }
+
+        if (!colliders.Remove(other)) return;
+
+        if (colliders.Count > 0) return;
+
+        detectedInteractables.Remove(interactable);
 
         // 강조 표시 해제
         if (interactable is IHighlightable highlightable)
         {
             highlightable.SetHighlighted(false);
         }
+
+        InteractableExited?.Invoke(interactable);
     }
 
     public bool Contains(IInteractable interactable)
     {
-        return interactable != null && detectedInteractables.Contains(interactable);
+        return interactable != null && detectedInteractables.ContainsKey(interactable);
     }
 }

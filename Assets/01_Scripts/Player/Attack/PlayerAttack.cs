@@ -59,12 +59,24 @@ public class PlayerAttack : MonoBehaviour
         attack = new AttackBase();
         if(isTripleShot) GetTripleShot();
     }
+    public void AttackPause()
+    {
+        int i = 0;
+        foreach(var cor in co)
+        {
+            StopCoroutine(cor);
+            co[i] = null;
+            i++;
+        }
+    }
     public void AttackRefresh()
     {
         foreach (var slot in slots)
         {
             if (slot.equipAttackID != -1)
             {
+                StopCoroutine(co[slot.equipAttackID]);
+                co[slot.equipAttackID] = null;
                 if (co[slot.equipAttackID] == null)
                 {
                     switch (slot.equipAttackID)
@@ -82,10 +94,6 @@ public class PlayerAttack : MonoBehaviour
                         default: break;
                     }
                 }
-            }
-            else
-            {
-                StopCoroutine(co[slot.equipAttackID]);
             }
         }
     }
@@ -217,7 +225,7 @@ public class PlayerAttack : MonoBehaviour
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
             attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(0, transform.position, transform.rotation);
+            particleManager.GetParticle(2, transform.position, transform.rotation);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
