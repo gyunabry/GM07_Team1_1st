@@ -36,6 +36,9 @@ public sealed class CustomerController : MonoBehaviour
 
     public CustomerRuntimeData RuntimeData => runtimeData;
     public CustomerOrder Order => runtimeData.Order;
+    public CustomerOrder DefaultOrder => customerData != null && customerData.DefaultOrder.IsValid
+        ? customerData.DefaultOrder
+        : defaultOrder;
     public ShopCustomerQueue Queue => runtimeData.SelectedQueue;
     public ShopCheckout Checkout => runtimeData.SelectedCheckout;
     public bool HasExitTurnPoint => exitTurnPoint != null;
@@ -101,10 +104,7 @@ public sealed class CustomerController : MonoBehaviour
         ResetCustomer();
         exitTurnPoint = exitTurn;
         exitPoint = exit;
-        CustomerOrder fallbackOrder = customerData != null && customerData.DefaultOrder.IsValid
-            ? customerData.DefaultOrder
-            : defaultOrder;
-        CustomerOrder selectedOrder = order.IsValid ? order : fallbackOrder;
+        CustomerOrder selectedOrder = order.IsValid ? order : DefaultOrder;
         runtimeData.Initialize(shopQueue, checkoutService, selectedOrder);
         inventory = inventoryService;
         currency = currencyService;
@@ -141,6 +141,12 @@ public sealed class CustomerController : MonoBehaviour
         }
 
         RestoreColliders();
+    }
+
+    // 데이터 에셋이 없는 런타임 테스트에서만 기본 주문을 주입한다.
+    public void ConfigureDefaultOrder(CustomerOrder order)
+    {
+        defaultOrder = order;
     }
 
     public void SetNavigationRadius(float radius)

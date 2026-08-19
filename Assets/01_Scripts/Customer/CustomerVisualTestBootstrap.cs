@@ -39,13 +39,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         surface.BuildNavMesh();
 
         CustomerController customerTemplate = CreateCustomerTemplate();
-        new GameObject("PoolManager").AddComponent<PoolManager>();
-        CustomerVisualTestServices testServices = new GameObject("TestServices").AddComponent<CustomerVisualTestServices>();
-        currencySystem = new GameObject("CurrencySystem").AddComponent<CurrencySystem>();
-        CustomerSpawnManager spawnManager = new GameObject("CustomerSpawnManager").AddComponent<CustomerSpawnManager>();
-        CreateCurrencyDisplay();
-
-        CustomerOrder order = new CustomerOrder
+        customerTemplate.ConfigureDefaultOrder(new CustomerOrder
         {
             Items = new List<CustomerOrderItem>
             {
@@ -54,9 +48,14 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
             },
             Reward = 10,
             ExperienceReward = 5
-        };
+        });
+        new GameObject("PoolManager").AddComponent<PoolManager>();
+        CustomerVisualTestServices testServices = new GameObject("TestServices").AddComponent<CustomerVisualTestServices>();
+        currencySystem = new GameObject("CurrencySystem").AddComponent<CurrencySystem>();
+        CustomerSpawnManager spawnManager = new GameObject("CustomerSpawnManager").AddComponent<CustomerSpawnManager>();
+        CreateCurrencyDisplay();
 
-        spawnManager.Configure(customerTemplate, entrance, exitTurn, exit, order, 2.5f);
+        spawnManager.Configure(customerTemplate, entrance, exitTurn, exit, 2.5f);
         spawnManager.BindServices(testServices, currencySystem);
     }
 

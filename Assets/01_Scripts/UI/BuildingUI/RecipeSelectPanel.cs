@@ -7,16 +7,15 @@ public class RecipeSelectPanel : MonoBehaviour
     [SerializeField] private Canvas targetCanvas;
     [SerializeField] private GraphicRaycaster graphicRaycaster;
 
-    [Header("·¹½ÃÇÇ ¸®½ºÆ®")]
+    [Header("ë ˆì‹œí”¼ ë¦¬ìŠ¤íŠ¸")]
     [SerializeField] private Transform contentRoot;
-
-    [Header("ÀÓ½Ã ÇØ±İ ·¹½ÃÇÇ µ¥ÀÌÅÍ")]
-    [SerializeField] private List<RecipeDataSO> unlockedRecipes = new();
+    [SerializeField] private RecipeUnlockManager recipeUnlockManager;
 
     private readonly List<RecipeDataSO> visibleRecipes = new();
 
     private RecipeButtonView[] buttonViews;
     private ProductionBuilding currentBuilding;
+    private bool isSubscribedToUnlockChanges;
 
     private void Awake()
     {
@@ -25,18 +24,31 @@ public class RecipeSelectPanel : MonoBehaviour
         SetVisible(false);
     }
 
+    private void OnEnable()
+    {
+        ResolveUnlockManager();
+        SubscribeToUnlockChanges();
+    }
+
+    private void OnDisable()
+    {
+        UnsubscribeFromUnlockChanges();
+    }
+
     public void Show(ProductionBuilding building)
     {
         if (building == null) return;
 
         currentBuilding = building;
 
+        ResolveUnlockManager();
+        SubscribeToUnlockChanges();
         CollectUnlockedRecipes();
         RefreshButtons();
         SetVisible(true);
     }
 
-    // ÇØ±İµÈ ·¹½ÃÇÇ¸¦ ¼öÁıÇÏ´Â ¸Ş¼­µå
+    // í•´ê¸ˆëœ ë ˆì‹œí”¼ë¥¼ ìˆ˜ì§‘í•˜ëŠ” ë©”ì„œë“œ
     private void CollectUnlockedRecipes()
     {
         visibleRecipes.Clear();
@@ -45,7 +57,7 @@ public class RecipeSelectPanel : MonoBehaviour
         {
             if (recipe == null) continue;
             
-            if (unlockedRecipes.Contains(recipe))
+            if (recipeUnlockManager != null && recipeUnlockManager.IsUnlocked(recipe))
             {
                 visibleRecipes.Add(recipe);
             }
@@ -98,5 +110,42 @@ public class RecipeSelectPanel : MonoBehaviour
     {
         targetCanvas.enabled = visible;
         graphicRaycaster.enabled = visible;
+    }
+
+    private void ResolveUnlockManager()
+    {
+        if (recipeUnlockManager == null)
+        {
+            recipeUnlockManager = RecipeUnlockManager.Instance;
+        }
+    }
+
+    private void SubscribeToUnlockChanges()
+    {
+        if (recipeUnlockManager != null && !isSubscribedToUnlockChanges)
+        {
+            recipeUnlockManager.UnlockedRecipesChanged += HandleUnlockedRecipesChanged;
+            isSubscribedToUnlockChanges = true;
+        }
+    }
+
+    private void UnsubscribeFromUnlockChanges()
+    {
+        if (recipeUnlockManager != null && isSubscribedToUnlockChanges)
+        {
+            recipeUnlockManager.UnlockedRecipesChanged -= HandleUnlockedRecipesChanged;
+            isSubscribedToUnlockChanges = false;
+        }
+    }
+
+    private void HandleUnlockedRecipesChanged()
+    {
+        if (currentBuilding == null)
+        {
+            return;
+        }
+
+        CollectUnlockedRecipes();
+        RefreshButtons();
     }
 }

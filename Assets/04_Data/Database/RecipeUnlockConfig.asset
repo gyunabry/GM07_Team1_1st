@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fb0e910ab7840d9a1e6444d01e38c6f, type: 3}
+  m_Name: RecipeUnlockConfig
+  m_EditorClassIdentifier: Assembly-CSharp::RecipeUnlockConfigSO
+  initialUnlockedRecipes:
+  - {fileID: 11400000, guid: 47fdf777250cf67469b7f6925048e66b, type: 2}
+  - {fileID: 11400000, guid: 849e4e889d5c95041bb4523c40c10127, type: 2}
+  - {fileID: 11400000, guid: 1d2c2d7a88393e84ab05a570fc732178, type: 2}
