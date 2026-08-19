@@ -10,19 +10,16 @@ public class SkillTreePopUp : MonoBehaviour
     [SerializeField] GameObject descDesc;
     [SerializeField] MonsterPoolManager monsterPoolManager;
 
-    public void MouseExit()
-    {
-        monsterPoolManager.ReturnPool(this);
-    }
+    
     public void SetSprite(Sprite sprite)
     {
         Image image = descSprite.GetComponent<Image>();
         image.sprite = sprite;
     }
-    public void SetName(string name, int level)
+    public void SetName(string name, int level, int maxLevel)
     {
         TextMeshProUGUI text = descName.GetComponent<TextMeshProUGUI>();
-        text.text = $"{name}({level})";
+        text.text = $"{name}({level}/{maxLevel})";
     }
     public void SetNeed(float needPoint, float needMoney)
     {

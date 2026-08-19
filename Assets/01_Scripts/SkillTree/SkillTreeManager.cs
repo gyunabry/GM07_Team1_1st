@@ -40,6 +40,7 @@ public class SkillTreeManager : MonoBehaviour
                         {
                             effectContext.player.skillPoint -= skill.skillNeedSkillPoint;
                             state.skillLevel++;
+                            skill.effect.SkillEffect(effectContext, skill, state.skillLevel);
                         }
                     }
                     else if (!(skill.skillNeedMoney == 0))
@@ -76,6 +77,10 @@ public class SkillTreeManager : MonoBehaviour
                             {
                                 foreach(var s in skillID.needSkill)
                                 {
+                                    if(s == null)
+                                    {
+                                        break;
+                                    }
                                     if(lockSkill.skillID == s.skillID)
                                     {
                                         if(lockSkill.skillLevel > 0)
@@ -96,6 +101,7 @@ public class SkillTreeManager : MonoBehaviour
         }
         OnSkillChange?.Invoke();
     }
+    
     public void SkillRefresh() //모든 스킬 값 초기화 후 재적용
     {
         ResetEffect();
@@ -131,11 +137,13 @@ public class SkillTreeManager : MonoBehaviour
         {
             if (state.skillID == skill.skillID) return state;
         }
+        Debug.Log("Null반환됨");
         return null;
     }
     public void ResetEffect()
     {
         effectContext.player.AttackDamage = 0;
         effectContext.player.AttackSpeed = 0;
+        
     }
 }

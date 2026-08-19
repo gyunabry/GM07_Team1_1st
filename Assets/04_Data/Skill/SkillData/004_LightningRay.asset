@@ -13,15 +13,14 @@ MonoBehaviour:
   m_Name: 004_LightningRay
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: 4
-  skillName: 
+  skillName: LightningRay
   skillDesc: 
   skillSprite: {fileID: 0}
-  skillMaxLevel: 0
-  skillNeedSkillPoint: 0
+  skillMaxLevel: 1
+  skillNeedSkillPoint: 1
   skillNeedLevel: 0
   skillNeedMoney: 0
   value: []
   multiValue: []
-  needSkill:
-  - {fileID: 0}
+  needSkill: []
   effect: {fileID: 11400000, guid: 6bac982bd592cb742ad6232bf0179287, type: 2}

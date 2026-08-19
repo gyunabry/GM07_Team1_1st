@@ -28,23 +28,22 @@ public class SkillTreeButton : MonoBehaviour
     }
     public void MouserEnter()
     {
-        Vector2 localPoint;
-        Vector2 mousePosition = Mouse.current.position.ReadValue();
         popUp = monsterPoolManager.GetPool<SkillTreePopUp>();
-        popUp.transform.SetParent(canvas.transform);
+        popUp.transform.SetParent(transform);
         RectTransform rect = popUp.GetComponent<RectTransform>();
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform,
-            new Vector2(mousePosition.x, mousePosition.y + 20f),
-            canvas.worldCamera,
-            out localPoint
-            );
-        rect.anchoredPosition = localPoint;
+        rect.anchoredPosition = new Vector2(0f, 170f);
         popUp.SetSprite(skillData.skillSprite);
-        popUp.SetName(skillData.name, skillData.skillNeedLevel);
+        popUp.SetName(skillData.name, skillData.skillNeedLevel, skillData.skillMaxLevel);
         popUp.SetNeed(skillData.skillNeedSkillPoint, skillData.skillNeedMoney);
         popUp.SetDesc(skillData.skillDesc);
     }
-    
+    public void MouseExit()
+    {
+        if(popUp != null)
+        {
+            monsterPoolManager.ReturnPool(popUp);
+        }
+    }
     private void OnEnable()
     {
         co = StartCoroutine(StartButton());
@@ -77,20 +76,20 @@ public class SkillTreeButton : MonoBehaviour
     public void SkillUnlock()
     {
         button.image.color = Color.white;
-        text.text = "UnLock";
+        text.text = $"{skillData.skillName}";
     }
     public void SkillActivate()
     {
         button.image.color = Color.green;
-        text.text = $"Upgrade : {state.skillLevel}";
+        text.text = $"{skillData.skillName}({state.skillLevel}/{skillData.skillMaxLevel})";
     }
 
     IEnumerator StartButton()
     {
         yield return new WaitForSeconds(0.05f);
+        button.onClick.AddListener(clickAction);
         state = skillTreeManager.GetState(skillData);
         skillTreeManager.OnSkillChange += SkillTreeManager_OnSkillChange;
-        button.onClick.AddListener(clickAction);
         skillTreeManager.SkillUnlockCheck();
         co = null;
     }

@@ -5,6 +5,12 @@ public class ChasingSickle_003 : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        foreach (var unlock in context.playerAttack.attackUnlockDatas)
+        {
+            if (unlock.attackID == skillData.skillID)
+            {
+                unlock.unlock = true;
+            }
+        }
     }
 }

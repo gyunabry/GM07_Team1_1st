@@ -6,6 +6,7 @@ public class ParticleManager : MonoBehaviour
 {
     [SerializeField] private MonsterPoolManager monsterPoolManager;
     [SerializeField] private List<ParticleData> particleList;
+    [SerializeField] private Player player;
     private Dictionary<int, ParticleData> particleDic = new Dictionary<int, ParticleData>();
     private ParticleData nowParticle;
 
@@ -19,7 +20,7 @@ public class ParticleManager : MonoBehaviour
             }
         }
     }
-    public void GetParticle(int code, Vector3 position, Quaternion rotation)
+    public void GetParticle(int code, Vector3 position, Quaternion rotation, float damage)
     {
         particleDic.TryGetValue(code, out nowParticle);
 
@@ -40,6 +41,7 @@ public class ParticleManager : MonoBehaviour
                 if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
+                cs.transform.SetParent(player.transform);
                 ParticleSystem ps = cs.GetComponent<ParticleSystem>();
                 ps.Play();
             }
@@ -56,7 +58,9 @@ public class ParticleManager : MonoBehaviour
             {
                 LightningRay cs = monsterPoolManager.GetPool<LightningRay>();
                 if (cs == null) return;
+                cs.damage = damage;
                 cs.transform.position = position;
+                cs.transform.localPosition = new Vector3(cs.transform.position.x, -3f, cs.transform.position.z);
                 cs.transform.rotation = rotation;
                 ParticleSystem ps = cs.GetComponent<ParticleSystem>();
                 ps.Play();

@@ -21,14 +21,14 @@ public class PlayerAttack : MonoBehaviour
 
     [SerializeField] public List<AttackUnlockData> attackUnlockDatas = new List<AttackUnlockData>();
 
-    public bool isTripleShot = false;
-    
 
     Coroutine[] co;
-    public AttackSlotData[] slots = new AttackSlotData[5];
+    public AttackSlotData[] slots = new AttackSlotData[6];
+    public PlayerAttackUpgrade[] upgrade = new PlayerAttackUpgrade[6];
 
     Vector3 giz;
     float dis;
+    private bool inVillage = true;
     private void Awake()
     {
         for (int i = 0; i < slots.Length; i++) 
@@ -44,7 +44,7 @@ public class PlayerAttack : MonoBehaviour
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = true;
+            aud.unlock = false;
             aud.equip = false;
             if(attackData.sprite != null)
             {
@@ -57,17 +57,20 @@ public class PlayerAttack : MonoBehaviour
     private void Start()
     {
         attack = new AttackBase();
-        if(isTripleShot) GetTripleShot();
     }
     public void AttackPause()
     {
         int i = 0;
         foreach(var cor in co)
         {
-            StopCoroutine(cor);
+            if(cor != null)
+            {
+                StopCoroutine(cor);
+            }
             co[i] = null;
             i++;
         }
+        inVillage = true;
     }
     public void AttackRefresh()
     {
@@ -75,27 +78,31 @@ public class PlayerAttack : MonoBehaviour
         {
             if (slot.equipAttackID != -1)
             {
-                StopCoroutine(co[slot.equipAttackID]);
+                if (co[slot.equipAttackID] != null)
+                {
+                    StopCoroutine(co[slot.equipAttackID]);
+                }
                 co[slot.equipAttackID] = null;
                 if (co[slot.equipAttackID] == null)
                 {
                     switch (slot.equipAttackID)
                     {
-                        case 0:
-                            co[slot.equipAttackID] = StartCoroutine(MagicArrow()); break;
                         case 1:
-                            co[slot.equipAttackID] = StartCoroutine(FireCircle()); break;
+                            co[slot.equipAttackID] = StartCoroutine(MagicArrow()); break;
                         case 2:
-                            co[slot.equipAttackID] = StartCoroutine(ChasingSickle()); break;
+                            co[slot.equipAttackID] = StartCoroutine(FireCircle()); break;
                         case 3:
-                            co[slot.equipAttackID] = StartCoroutine(LightningRay()); break;
+                            co[slot.equipAttackID] = StartCoroutine(ChasingSickle()); break;
                         case 4:
+                            co[slot.equipAttackID] = StartCoroutine(LightningRay()); break;
+                        case 5:
                             co[slot.equipAttackID] = StartCoroutine(FlowerThorns()); break;
                         default: break;
                     }
                 }
             }
         }
+        inVillage = false;
     }
     public void StartAndStopAttackCo(int slot, int id,AttackEquHud hud)
     {
@@ -108,7 +115,10 @@ public class PlayerAttack : MonoBehaviour
                 if (nowId == id)
                 {
                     slots[slot].equipAttackID = -1;
-                    StopCoroutine(co[id]);
+                    if (co[id] != null)
+                    {
+                        StopCoroutine(co[id]);
+                    }
                     co[id] = null;
                     hud.EquipRefresh(id);
                 }
@@ -130,24 +140,27 @@ public class PlayerAttack : MonoBehaviour
                 }
             }
             slots[slot].equipAttackID = id;
-            switch (id)
+            if (inVillage == false)
             {
-                case 0:
-                    co[id] = StartCoroutine(MagicArrow()); break;
-                case 1:
-                    co[id] = StartCoroutine(FireCircle()); break;
-                case 2:
-                    co[id] = StartCoroutine(ChasingSickle()); break;
-                case 3:
-                    co[id] = StartCoroutine(LightningRay()); break;
-                case 4:
-                    co[id] = StartCoroutine(FlowerThorns()); break;
-                default: break;
+                switch (id)
+                {
+                    case 1:
+                        co[id] = StartCoroutine(MagicArrow()); break;
+                    case 2:
+                        co[id] = StartCoroutine(FireCircle()); break;
+                    case 3:
+                        co[id] = StartCoroutine(ChasingSickle()); break;
+                    case 4:
+                        co[id] = StartCoroutine(LightningRay()); break;
+                    case 5:
+                        co[id] = StartCoroutine(FlowerThorns()); break;
+                    default: break;
+                }
             }
             hud.EquipRefresh(id);
         }
     }
-    IEnumerator MagicArrow() // 内靛 0
+    IEnumerator MagicArrow() // 内靛 1
     {
         Collider[] enemyIn;
         
@@ -159,9 +172,9 @@ public class PlayerAttack : MonoBehaviour
             };
             ad.distance = MagicArrowSO.distance;
             enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
-            ad.attackDamage = MagicArrowSO.attackDamage + player.AttackDamage;
-            ad.attackSpeed = MagicArrowSO.attackSpeed + player.AttackSpeed;
-            ad.projectileCount = MagicArrowSO.projectileCount;
+            ad.attackDamage = (MagicArrowSO.attackDamage + upgrade[1].damage) * player.AttackDamage;
+            ad.attackSpeed = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed) + player.AttackSpeed;
+            ad.projectileCount = MagicArrowSO.projectileCount + upgrade[1].projectileCount;
             if(enemyIn == null)
             {
                 yield return null;
@@ -192,7 +205,7 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator FireCircle()// 内靛 1
+    IEnumerator FireCircle()// 内靛 2
     {
         while (true)
         {
@@ -200,17 +213,17 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = FireCircleSO.attackDamage + player.AttackDamage;
-            ad.attackSpeed = FireCircleSO.attackSpeed + player.AttackSpeed;
-            ad.distance = FireCircleSO.distance;
+            ad.attackDamage = (FireCircleSO.attackDamage + upgrade[2].damage) * player.AttackDamage;
+            ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed) + player.AttackSpeed;
+            ad.distance = FireCircleSO.distance + upgrade[2].distance;
             
             attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(1, transform.position, transform.rotation);
+            particleManager.GetParticle(1, transform.position, transform.rotation, 0);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator ChasingSickle()// 内靛 2
+    IEnumerator ChasingSickle()// 内靛 3
     {
         while (true)
         {
@@ -219,18 +232,18 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
                 forward = transform.forward
             };
-            ad.attackDamage = ChasingSickleSO.attackDamage + player.AttackDamage;
-            ad.attackSpeed = ChasingSickleSO.attackSpeed + player.AttackSpeed;
-            ad.distance = ChasingSickleSO.distance;
+            ad.attackDamage = (ChasingSickleSO.attackDamage + upgrade[3].damage) * player.AttackDamage;
+            ad.attackSpeed = (ChasingSickleSO.attackSpeed + upgrade[3].attackSpeed) + player.AttackSpeed;
+            ad.distance = ChasingSickleSO.distance + upgrade[3].distance;
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
             attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(2, transform.position, transform.rotation);
+            particleManager.GetParticle(2, transform.position, transform.rotation, 0);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator LightningRay()// 内靛 3
+    IEnumerator LightningRay()// 内靛 4
     {
         while (true)
         {
@@ -238,9 +251,9 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = LightningRaySO.attackDamage + player.AttackDamage;
-            ad.attackSpeed = LightningRaySO.attackSpeed + player.AttackSpeed;
-            ad.distance = LightningRaySO.distance;
+            ad.attackDamage = (LightningRaySO.attackDamage + upgrade[4].damage) * player.AttackDamage;
+            ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[4].attackSpeed) + player.AttackSpeed;
+            ad.distance = LightningRaySO.distance + upgrade[4].distance;
             ad.spreadAngle = LightningRaySO.spreadAngle;
 
             Collider[] enemy = Physics.OverlapSphere(transform.position, ad.distance, layer);
@@ -261,8 +274,7 @@ public class PlayerAttack : MonoBehaviour
                 }   
             Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
             Quaternion targetRota = Quaternion.LookRotation(dir);
-            attack.LightningRay(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(3, transform.position, targetRota);
+            particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage);
             }
             else
             {
@@ -272,7 +284,7 @@ public class PlayerAttack : MonoBehaviour
             yield return new WaitForSeconds(ad.attackSpeed);
         }
     }
-    IEnumerator FlowerThorns()// 内靛 4
+    IEnumerator FlowerThorns()// 内靛 5
     {
         while (true)
         {
@@ -282,22 +294,17 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = randomPosi,
             };
-            ad.attackDamage = FlowerThornsSO.attackDamage + player.AttackDamage;
-            ad.attackSpeed = FlowerThornsSO.attackSpeed + player.AttackSpeed;
-            ad.distance = FlowerThornsSO.distance;
+            ad.attackDamage = (FlowerThornsSO.attackDamage + upgrade[5].damage) * player.AttackDamage;
+            ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[5].attackSpeed) + player.AttackSpeed;
+            ad.distance = FlowerThornsSO.distance + upgrade[5].distance;
             
             giz = randomPosi;
             dis = ad.distance;
             attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(4, randomPosi, transform.rotation);
+            particleManager.GetParticle(4, randomPosi, transform.rotation, 0);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
-    }
-    public void GetTripleShot()
-
-    {
-        attack = new TripleDeco(attack);
     }
 }
 [System.Serializable]
