@@ -25,7 +25,10 @@ public class BuildingDataSO : ScriptableObject
     public string BuildingName { get; private set; }
     [field: SerializeField]
     public string BuildingId { get; private set; } // ÀúÀå¿ë ID
-    [field:SerializeField] 
+    [field: SerializeField]
+    public string Description { get; private set; }
+    [field:SerializeField]
+    [TextArea]
     public PlacementAreaMask AllowedAreas { get; private set; }
 
     [field: SerializeField]

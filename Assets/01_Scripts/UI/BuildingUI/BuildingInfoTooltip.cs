@@ -14,6 +14,8 @@ public class BuildingInfoTooltip : MonoBehaviour
     [SerializeField] private Image buildingIcon;
     [SerializeField] private TMP_Text buildingName;
     [SerializeField] private TMP_Text buildingPrice;
+    [SerializeField] private TMP_Text buildingCount;
+    [SerializeField] private TMP_Text buildingDescription;
     [SerializeField] private TMP_Text buildingType;
 
     private RectTransform tooltipRect;
@@ -47,14 +49,39 @@ public class BuildingInfoTooltip : MonoBehaviour
         {
             // buildingIcon.sprite = data.BuildingIcon;
         }
+
         if (buildingName != null)
         {
             buildingName.text = data.BuildingName;
         }
+
         if (buildingPrice != null)
         {
-            // buildingPrice.text = data.BuildingPrice;
+            buildingPrice.text = $"{data.BuildCost:N0}G";
         }
+
+        if (buildingDescription != null)
+        {
+            buildingDescription.text = data.Description;
+        }
+
+        if (buildingCount != null)
+        {
+            FacilityManager manager = FacilityManager.Instance;
+
+            if (manager != null)
+            {
+                int currentCount = manager.GetPlacedCount(data);
+                int maxCount = 3; // TODO: 추후 시설별 최대 배치 가능 수 정의 필요
+
+                buildingCount.text = $"{currentCount} / {maxCount}";
+            }
+            else
+            {
+                buildingCount.text = "- / -";
+            }
+        }
+
         if (buildingType != null)
         {
             // buildingType.text = data.BuildingType.ToString();
