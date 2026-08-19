@@ -10,7 +10,6 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     [SerializeField] private Transform entrancePoint;
     [SerializeField] private Transform exitTurnPoint;
     [SerializeField] private Transform exitPoint;
-    [SerializeField] private CustomerOrder order;
     [SerializeField] private CurrencySystem currencySystem;
     [SerializeField] private CounterInventory counterInventory;
     [SerializeField, Min(0.1f)] private float spawnInterval = 5f;
@@ -60,13 +59,12 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     }
 
     // 전역 입·출구와 주문만 구성한다. 계산대는 CustomerCheckoutStation이 자동 등록한다.
-    public void Configure(CustomerController prefab, Transform entrance, Transform exitTurn, Transform exit, CustomerOrder customerOrder, float interval)
+    public void Configure(CustomerController prefab, Transform entrance, Transform exitTurn, Transform exit, float interval)
     {
         customerPrefab = prefab;
         entrancePoint = entrance;
         exitTurnPoint = exitTurn;
         exitPoint = exit;
-        order = customerOrder;
         spawnInterval = Mathf.Max(0.1f, interval);
     }
 
@@ -120,6 +118,13 @@ public sealed class CustomerSpawnManager : MonoBehaviour
             return false;
         }
 
+        CustomerOrder order = CreateOrder();
+        if (!order.IsValid)
+        {
+            Debug.LogWarning("Customer spawn skipped because no valid customer order is available.", this);
+            return false;
+        }
+
         CustomerController customer = PoolManager.Instance.GetPool(customerPrefab);
         customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
         if (customer.OnSpawned(station.Queue, station.Checkout, exitTurnPoint, exitPoint, order, inventory, currency))
@@ -169,6 +174,22 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         {
             customers[i]?.ForceExitWithoutPayment();
         }
+    }
+
+    private CustomerOrder CreateOrder()
+    {
+        CustomerOrder fallbackOrder = customerPrefab != null ? customerPrefab.DefaultOrder : default;
+        RecipeUnlockManager unlockManager = RecipeUnlockManager.Instance;
+        if (unlockManager != null)
+        {
+            CustomerOrderGenerator generator = new CustomerOrderGenerator(unlockManager);
+            if (generator.TryCreateOrder(fallbackOrder, out CustomerOrder generatedOrder))
+            {
+                return generatedOrder;
+            }
+        }
+
+        return fallbackOrder;
     }
 
     private void RequestReplenishment()
