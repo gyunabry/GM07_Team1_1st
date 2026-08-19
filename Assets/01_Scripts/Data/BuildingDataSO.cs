@@ -1,9 +1,22 @@
 using UnityEngine;
 
-//public enum BuildingType
-//{
-    
-//}
+/// <summary>
+/// 설치 가능 위치
+/// </summary>
+public enum PlacementAreaType
+{
+    Workshop,       // 공방
+    HuntingField    // 사냥터
+}
+
+[System.Flags]
+public enum PlacementAreaMask
+{
+    None,
+    Workshop = 1 << 0,
+    HuntingField = 1 << 1,
+    All = Workshop | HuntingField
+}
 
 [CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Tycoon/Building Data")]
 public class BuildingDataSO : ScriptableObject
@@ -12,6 +25,8 @@ public class BuildingDataSO : ScriptableObject
     public string BuildingName { get; private set; }
     [field: SerializeField]
     public string BuildingId { get; private set; } // 저장용 ID
+    [field:SerializeField] 
+    public PlacementAreaMask AllowedAreas { get; private set; }
 
     [field: SerializeField]
     public GameObject BuildingPrefab { get; private set; }

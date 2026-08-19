@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,9 +8,15 @@ using UnityEngine.UI;
 
 public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private Button button;
-    [SerializeField] private BuildingDataSO buildingData;
+    [Header("툴팁 설정")]
     [SerializeField] private BuildingInfoTooltip tooltip;
+    [SerializeField] private BuildingDataSO buildingData;
+
+    [Header("버튼 설정")]
+    [SerializeField] private Button button;
+    [SerializeField] private TMP_Text facilityName;
+    [SerializeField] private TMP_Text facilityCount;
+    [SerializeField] private TMP_Text facilityPrice;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
