@@ -74,6 +74,7 @@ public sealed class CustomerCheckoutStation : MonoBehaviour
     {
         if (isOpen && HasRequiredReferences() && CustomerSpawnManager.Instance != null)
         {
+            queue.PrepareCrowdSlots();
             CustomerSpawnManager.Instance.RegisterStation(this);
         }
     }

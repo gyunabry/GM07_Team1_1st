@@ -10,21 +10,22 @@ public sealed class CustomerVisitState : ICustomerState
     public CustomerVisitState(CustomerController controller) => this.controller = controller;
     public void Enter()
     {
-        bool moveStarted = controller.Queue != null && controller.Queue.IsFront(controller)
-            ? controller.Queue.MoveFrontCustomerToCheckout()
-            : controller.MoveToQueueDestination();
-
-        if (!moveStarted) controller.StateMachine.Cancel();
-
-        //Animation 추가
-        if (animationController == null) return;
-        animationController.SetState(CustomerAnimationController.CustomerAnimState.Walk);
+        if (controller.Queue == null)
+        {
+            controller.StateMachine.Cancel();
+        }
     }
     public void Update()
     {
-        if (controller.Queue != null && controller.Queue.IsInCheckoutRange(controller))
+        if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.Queue.IsInCheckoutRange(controller))
         {
             controller.StateMachine.ChangeState(new CustomerOrderState(controller));
+            return;
+        }
+
+        if (controller.Queue != null && !controller.Queue.IsFront(controller) && controller.HasArrived())
+        {
+            controller.StopInQueue();
         }
     }
     public void Exit() { }
