@@ -7,7 +7,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     [SerializeField] private Camera mainCamera;
     [SerializeField] private LayerMask interactionLayer;
     [SerializeField] private PlayerInteractionDetector detector;
-    [SerializeField] private BuildingInteractionPanel buildingPanel;
+    [SerializeField] private BuildingUIRouter buildingUIRouter;
 
     private IInteractable activeInteractable;
 
@@ -89,7 +89,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             activeInteractable = buildingComponent.GetComponent<IInteractable>();
         }
 
-        buildingPanel.ShowPanel(building);
+        buildingUIRouter.Open(building);
     }
 
     private void HandleInteractableExited(IInteractable exitedInteractable)
@@ -99,7 +99,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             return;
         }
 
-        buildingPanel.HidePanel();
+        buildingUIRouter.Close();
         activeInteractable = null;
     }
 }

@@ -32,6 +32,8 @@ public class ItemDataSO : ScriptableObject
 
     [field: SerializeField]
     public ItemType ItemType { get; private set; }
+    [field: SerializeField]
+    public ProcessType ProcessType { get; private set; }
 
     [field: SerializeField]
     public int SellPrice { get; private set; }

@@ -21,24 +21,44 @@ public class ProductionMachine
     private RecipeDataSO activeRecipe;
 
     private float elapsedTime;
+
+    // 스킬 효과가 반영된 생산 시간 
+    private float effectiveDuration;
     private bool isEnabled;
     private bool isRefreshing;
+
+    // 0 : 감소 X
+    // 0.2 : 생산시간 20% 감소
+    private float productionTimeReductionRatio;
 
     public ProductionState State { get; private set; }
 
     public RecipeDataSO SelectedRecipe => selectedRecipe;
     public RecipeDataSO ActiveRecipe => activeRecipe;
 
+    public float EffectiveDuration => effectiveDuration;
+
     public bool IsBusy => activeRecipe != null;
+
+    public float RemainingTime
+    {
+        get
+        {
+            if (activeRecipe == null) return 0f;
+            if (State == ProductionState.WaitingForOutputSpace) return 0f;
+
+            return Mathf.Max(0f, effectiveDuration - elapsedTime);
+        }
+    }
+
     public float Progress
     {
         get
         {
             if (activeRecipe == null) return 0f;
-
             if (State == ProductionState.WaitingForOutputSpace) return 1f;
 
-            return Mathf.Clamp01(elapsedTime / activeRecipe.ProductionTime);
+            return Mathf.Clamp01(elapsedTime / Mathf.Max(0.01f, effectiveDuration));
         }
     }
 
@@ -93,14 +113,12 @@ public class ProductionMachine
             return;
         }
 
-        float duration = Mathf.Max(0.01f, activeRecipe.ProductionTime);
-
         elapsedTime += Mathf.Max(0f, deltaTime);
-        elapsedTime = Mathf.Min(elapsedTime, duration);
+        elapsedTime = Mathf.Min(elapsedTime, effectiveDuration);
 
         ProgressChanged?.Invoke(Progress);
 
-        if (elapsedTime >= duration)
+        if (elapsedTime >= effectiveDuration)
         {
             Refresh();
         }
@@ -124,9 +142,7 @@ public class ProductionMachine
             // activeRecipe를 우선 처리
             if (activeRecipe != null)
             {
-                float duration = Mathf.Max(0.01f, activeRecipe.ProductionTime);
-
-                if (elapsedTime < duration)
+                if (elapsedTime < effectiveDuration)
                 {
                     SetState(ProductionState.Producing);
                     return;
@@ -146,6 +162,7 @@ public class ProductionMachine
 
                 activeRecipe = null;
                 elapsedTime = 0f;
+                effectiveDuration = 0f;
 
                 ProgressChanged?.Invoke(0f);
                 ProductionComplete?.Invoke(completedRecipe);
@@ -177,6 +194,8 @@ public class ProductionMachine
             }
 
             activeRecipe = selectedRecipe;
+            // 현재 생산 중인 레시피에 스킬 효과를 적용
+            effectiveDuration = GetEffectiveDuration(activeRecipe);
             elapsedTime = 0f;
 
             SetState(ProductionState.Producing);
@@ -196,5 +215,22 @@ public class ProductionMachine
 
         State = newState;
         StateChanged?.Invoke(State);
+    }
+
+    public void SetProductionSpeedMultiplier(float reductionRatio)
+    {
+        // 최대 95%까지만 감소 가능
+        productionTimeReductionRatio = Mathf.Clamp(reductionRatio, 0f, 0.95f);
+    }
+
+    public float GetEffectiveDuration(RecipeDataSO recipe)
+    {
+        if (recipe == null) return 0;
+
+        // ex) ratio = 0.2 -> durationMultiplier = 0.8
+        float durationMultiplier = 1f - productionTimeReductionRatio;
+
+        // ex) 6초 * 0.8 = 5초
+        return Mathf.Max(0.01f, recipe.ProductionTime * durationMultiplier);
     }
 }

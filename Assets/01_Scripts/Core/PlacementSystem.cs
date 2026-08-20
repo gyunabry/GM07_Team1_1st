@@ -18,6 +18,7 @@ public class PlacementSystem : MonoBehaviour
     // [SerializeField] private BuildableArea buildableArea;
     [SerializeField] private List<BuildableArea> buildableAreas = new();
     [SerializeField] private Transform buildingContainer;
+    [SerializeField] private EconomyModifierService economyModifier;
 
     private BuildableArea currentArea;
 
@@ -183,6 +184,12 @@ public class PlacementSystem : MonoBehaviour
     {
         if (currentArea == null || !canPlace || previewObject == null)
             return;
+
+        int finalCost = economyModifier.GetBuildCost(selectedBuildingData);
+        if (!CurrencySystem.Instance.TrySpendMoney(finalCost))
+        {
+            return;
+        }
 
         Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 

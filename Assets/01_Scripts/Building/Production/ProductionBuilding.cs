@@ -38,6 +38,10 @@ public class ProductionBuilding : MonoBehaviour
     public float Progress => machine.Progress;
     public bool IsBusy => machine.IsBusy;
 
+    public float ReaminingTime => machine.RemainingTime;
+    public float EffectiveDuration => machine.EffectiveDuration;
+    public float SelectedRecipeEffectiveDuration => machine.GetEffectiveDuration(SelectedRecipe);
+
     // 설치 완료 판정
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
     #endregion
@@ -77,9 +81,23 @@ public class ProductionBuilding : MonoBehaviour
         machine.Tick(Time.deltaTime);
     }
 
+    // 해당 시설에서 레시피를 사용 가능한지 검사
+    public bool CanProcess(RecipeDataSO recipe)
+    {
+        if (recipe == null || placedBuilding == null || placedBuilding.Data == null)
+        {
+            return false;
+        }
+
+        return availableRecipes.Contains(recipe) 
+            && recipe.ProcessType == placedBuilding.Data.SupportedProcessType;
+    }
+
     // UI에서 호출할 레시피 선택 메서드
     public bool TrySetRecipe(RecipeDataSO recipe)
     {
+        if (!CanProcess(recipe)) return false;
+
         return machine.TrySetRecipe(recipe);
     }
 

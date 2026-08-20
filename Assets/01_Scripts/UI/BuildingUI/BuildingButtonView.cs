@@ -28,7 +28,7 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
     private void Awake()
     {
         if (facilityName != null) defaultNameColor = facilityName.color;
-        if (facilityPrice != null) defaultNameColor = facilityPrice.color;
+        if (facilityPrice != null) defaultPriceColor = facilityPrice.color;
     }
 
     private void Start()

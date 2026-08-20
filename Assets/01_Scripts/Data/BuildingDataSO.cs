@@ -43,4 +43,7 @@ public class BuildingDataSO : ScriptableObject
     public int BuildCost { get; private set; } = 100;
     [field: SerializeField]
     public float BuildTime { get; private set; } = 5f;
+
+    [field: SerializeField]
+    public ProcessType SupportedProcessType { get; private set; }
 }
