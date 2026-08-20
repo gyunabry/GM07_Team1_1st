@@ -19,6 +19,15 @@ public sealed class EmployeeManager : MonoBehaviour
     public event Action<EmployeeRuntimeData> EmployeeRemoved;
     public event Action<EmployeeRuntimeData> EmployeeWorkStateChanged;
 
+    // HUD는 운반 직원 건물 설치 전에도 전역 명령 서비스를 조회할 수 있어야 합니다.
+    private void Awake()
+    {
+        if (GetComponent<CarrierCommandService>() == null)
+        {
+            gameObject.AddComponent<CarrierCommandService>();
+        }
+    }
+
     /// <summary>
     /// 직원 건물을 등록하고 프로필에 지정된 기본 인원을 자동 고용합니다.
     /// </summary>
