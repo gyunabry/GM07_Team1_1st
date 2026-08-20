@@ -32,6 +32,7 @@ public class NavMeshClickMove : MonoBehaviour
     {
         MouseInput();
         UpdateAnimation();
+        UpdateMarker();
     }
 
     private void MouseInput()
@@ -134,5 +135,42 @@ public class NavMeshClickMove : MonoBehaviour
             nextState = PlayerAnimationController.PlayerAnimState.Walk;
         }
         animationController.SetState(nextState);
+    }
+
+    // 목적지 마커 갱신
+    private void UpdateMarker()
+    {
+        if (!hasDestination) return;
+
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            hasDestination = false;
+            destinationMarker.gameObject.SetActive(false);
+            return;
+        }
+
+        bool cannotMove = agent.isStopped && !agent.isOnOffMeshLink;
+
+        if (cannotMove)
+        {
+            hasDestination = false;
+            destinationMarker.gameObject.SetActive(false);
+            return;
+        }
+
+        // 경로 계산 완료 전까지는 도착 여부 판단 X
+        if (agent.pathPending) return;
+
+        if (!agent.hasPath || agent.pathStatus != NavMeshPathStatus.PathComplete)
+        {
+            hasDestination = false;
+            destinationMarker.gameObject.SetActive(false);
+        }
+
+        if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            hasDestination = false;
+            destinationMarker.gameObject.SetActive(false);
+        }
     }
 }

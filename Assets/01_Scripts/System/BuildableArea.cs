@@ -4,7 +4,7 @@ using UnityEngine;
 public class BuildableArea : MonoBehaviour
 {
     [SerializeField] private string areaId;
-    [SerializeField] private PlacementAreaType areaType;
+    [SerializeField] private AreaType areaType;
     [SerializeField] private Grid grid;
     [SerializeField] private Collider placementSurface;
     [SerializeField] private Transform buildingContainer;
@@ -15,7 +15,7 @@ public class BuildableArea : MonoBehaviour
     [SerializeField] private List<RectInt> blockedAreas = new();
 
     public string AreaId => areaId;
-    public PlacementAreaType AreaType => areaType;
+    public AreaType AreaType => areaType;
     public Grid Grid => grid;
     public Collider PlacementSurface => placementSurface;
     public Transform BuildingContainer => buildingContainer;
@@ -27,9 +27,9 @@ public class BuildableArea : MonoBehaviour
         {
             return areaType switch
             {
-                PlacementAreaType.Workshop => PlacementAreaMask.Workshop,
+                AreaType.Workshop => PlacementAreaMask.Workshop,
 
-                PlacementAreaType.HuntingField => PlacementAreaMask.HuntingField,
+                AreaType.HuntingField => PlacementAreaMask.HuntingField,
 
                 _ => PlacementAreaMask.None
             };

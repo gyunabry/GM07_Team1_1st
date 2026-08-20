@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 설치 가능 위치
 /// </summary>
-public enum PlacementAreaType
+public enum AreaType
 {
     Workshop,       // 공방
     HuntingField    // 사냥터
@@ -18,32 +18,42 @@ public enum PlacementAreaMask
     All = Workshop | HuntingField
 }
 
+public enum SellableType
+{
+    Impossible = 0,
+    Possible,
+    Patial
+}
+
 [CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Tycoon/Building Data")]
 public class BuildingDataSO : ScriptableObject
 {
-    [field: SerializeField]
-    public string BuildingName { get; private set; }
-    [field: SerializeField]
-    public string BuildingId { get; private set; } // 저장용 ID
-    [field: SerializeField]
-    public string Description { get; private set; }
-    [field:SerializeField]
-    [TextArea]
-    public PlacementAreaMask AllowedAreas { get; private set; }
+    [SerializeField] private string buildingId;
+    [SerializeField] private string buildingName;
+    [SerializeField, TextArea] private string discription;
+    [SerializeField] private PlacementAreaMask allowedAreas;
+    [SerializeField] private SellableType sellable;
+    [SerializeField] private int buildCost;
+    [SerializeField] private float buildTime;
 
-    [field: SerializeField]
-    public GameObject BuildingPrefab { get; private set; }
-    [field: SerializeField]
-    public GameObject PreviewPrefab { get; private set; }
+    [SerializeField] private Vector2Int size;
+    [SerializeField] private ProcessType supportedProcessType;
+    [SerializeField] private GameObject buildingPrefab;
+    [SerializeField] private GameObject buildingPreview;
 
-    [field: SerializeField]
-    public Vector2Int Size { get; private set; } = Vector2Int.one;
 
-    [field: SerializeField]
-    public int BuildCost { get; private set; } = 100;
-    [field: SerializeField]
-    public float BuildTime { get; private set; } = 5f;
+    public string BuildingName => buildingName;
+    public string BuildingId => buildingId;
+    public string Description => discription;
+    public PlacementAreaMask AllowedAreas => allowedAreas;
+    public SellableType Sellable => sellable;
+    public int BuildCost => buildCost;
 
-    [field: SerializeField]
+    public float BuildTime => buildTime;
+
+    public Vector2Int Size => size;
+
     public ProcessType SupportedProcessType { get; private set; }
+    public GameObject BuildingPrefab => buildingPrefab;
+    public GameObject PreviewPrefab => buildingPreview;
 }

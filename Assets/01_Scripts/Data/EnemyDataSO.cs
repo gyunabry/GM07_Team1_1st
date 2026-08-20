@@ -12,33 +12,30 @@ public class EnemyDataSO : ScriptableObject
     //public float runEndDis;
     //public List<DropItemSO> dropItem;
 
+    [SerializeField] private string enemyId;
+    [SerializeField] private string enemyName;
+    [SerializeField] private string discription;
+    [SerializeField] private int hp;
+    [SerializeField] private float patrolSpeed;
+    [SerializeField] private float runSpeed;
+    [SerializeField] private EnemyReward reward;
+
     [Header("기본 정보")]
-    [field: SerializeField]
-    public string EnemyId { get; private set; }
-
-    [field: SerializeField]
-    public string EnemyName { get; private set; }
-
-    [field: SerializeField]
-    public string Description { get; private set; }
+    public string EnemyId => enemyId;
+    public string EnemyName => enemyName;
+    public string Description => discription;
 
     [Header("능력치")]
-    [field: SerializeField]
-    public int Hp { get; private set; }
+    public int Hp => hp;
 
-    [field: SerializeField]
-    public float PatrolSpeed { get; private set; }
+    public float PatrolSpeed => patrolSpeed;
 
-    [field: SerializeField]
-    public float RunSpeed { get; private set; }
+    public float RunSpeed => runSpeed;
 
-    [field: SerializeField]
     public float RunStartDistance { get; private set; }
 
-    [field: SerializeField]
     public float RunEndDistance { get; private set; }
 
     [Header("처치 보상")]
-    [field: SerializeField]
-    public EnemyReward Reward { get; private set; }
+    public EnemyReward Reward => reward;
 }
