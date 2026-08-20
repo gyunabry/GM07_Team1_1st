@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: S11_StorageBigUpgrade
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: S11
+  skillName: StorageBigUpgrade
+  skillDesc: 
+  skillSprite: {fileID: 0}
+  skillMaxLevel: 1
+  skillNeedSkillPoint: 0
+  skillNeedLevel: 0
+  skillNeedMoney: 2000
+  value:
+  - 1000
+  needSkill:
+  - {fileID: 11400000, guid: f48c5da0905011c4dac9714ac2ab4204, type: 2}
+  - {fileID: 11400000, guid: 52c72edf67d6d2540850faa752740b89, type: 2}
+  effect: {fileID: 11400000, guid: 27d3ae1aef0050048bc6d835f6e1ac15, type: 2}

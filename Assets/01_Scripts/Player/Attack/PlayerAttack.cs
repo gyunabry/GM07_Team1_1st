@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -23,8 +24,8 @@ public class PlayerAttack : MonoBehaviour
 
 
     Coroutine[] co;
-    public AttackSlotData[] slots = new AttackSlotData[6];
-    public PlayerAttackUpgrade[] upgrade = new PlayerAttackUpgrade[6];
+    public AttackSlotData[] slots = new AttackSlotData[60];
+    public PlayerAttackUpgrade[] upgrade = new PlayerAttackUpgrade[60];
 
     Vector3 giz;
     float dis;
@@ -35,16 +36,23 @@ public class PlayerAttack : MonoBehaviour
         { 
             slots[i] = new AttackSlotData();
             slots[i].slotIndex = i;
-            slots[i].equipAttackID = -1;
+            slots[i].equipAttackID = null;
         }
-        
-        co = new Coroutine[20];
+        for (int i = 0; i < upgrade.Length; i++) 
+        {
+            upgrade[i] = new PlayerAttackUpgrade();
+            upgrade[i].damage = 0f;
+            upgrade[i].attackSpeed = 0f;
+            upgrade[i].distance = 0f;
+            upgrade[i].projectileCount = 0;
+        }
+        co = new Coroutine[60];
         attackUnlockDatas.Clear();
         foreach(var attackData in attackSOData)
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = false;
+            aud.unlock = true;
             aud.equip = false;
             if(attackData.sprite != null)
             {
@@ -76,27 +84,29 @@ public class PlayerAttack : MonoBehaviour
     {
         foreach (var slot in slots)
         {
-            if (slot.equipAttackID != -1)
+            if (slot.equipAttackID != null)
             {
-                if (co[slot.equipAttackID] != null)
+                string idd = slot.equipAttackID.Replace("S", "");
+                if (int.TryParse(idd, out var i)) { }
+                if (co[i] != null)
                 {
-                    StopCoroutine(co[slot.equipAttackID]);
+                    StopCoroutine(co[i]);
                 }
-                co[slot.equipAttackID] = null;
-                if (co[slot.equipAttackID] == null)
+                co[i] = null;
+                if (co[i] == null)
                 {
-                    switch (slot.equipAttackID)
+                    switch (i)
                     {
                         case 1:
-                            co[slot.equipAttackID] = StartCoroutine(MagicArrow()); break;
+                            co[i] = StartCoroutine(MagicArrow()); break;
                         case 2:
-                            co[slot.equipAttackID] = StartCoroutine(FireCircle()); break;
+                            co[i] = StartCoroutine(FireCircle()); break;
                         case 3:
-                            co[slot.equipAttackID] = StartCoroutine(ChasingSickle()); break;
+                            co[i] = StartCoroutine(ChasingSickle()); break;
                         case 4:
-                            co[slot.equipAttackID] = StartCoroutine(LightningRay()); break;
+                            co[i] = StartCoroutine(LightningRay()); break;
                         case 5:
-                            co[slot.equipAttackID] = StartCoroutine(FlowerThorns()); break;
+                            co[i] = StartCoroutine(FlowerThorns()); break;
                         default: break;
                     }
                 }
@@ -104,9 +114,14 @@ public class PlayerAttack : MonoBehaviour
         }
         inVillage = false;
     }
-    public void StartAndStopAttackCo(int slot, int id,AttackEquHud hud)
+    public void StartAndStopAttackCo(int slot, string id,AttackEquHud hud)
     {
-        int nowId = slots[slot].equipAttackID;
+        string idd = id.Replace("S", "");
+        if(int.TryParse(idd, out var i)) { }
+        string nowId = slots[slot].equipAttackID;
+        
+        if (int.TryParse(nowId, out var j)){ }
+        
         bool change = false;
         foreach (var nowSlot in slots)
         {
@@ -114,12 +129,12 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (nowId == id)
                 {
-                    slots[slot].equipAttackID = -1;
-                    if (co[id] != null)
+                    slots[slot].equipAttackID = null;
+                    if (co[i] != null)
                     {
-                        StopCoroutine(co[id]);
+                        StopCoroutine(co[i]);
                     }
-                    co[id] = null;
+                    co[i] = null;
                     hud.EquipRefresh(id);
                 }
                 else
@@ -131,29 +146,29 @@ public class PlayerAttack : MonoBehaviour
         }
         if(!change)
         {
-            if(nowId != -1)
+            if(nowId != null)
             {
-                if (co[nowId] != null)
+                if (co[j] != null)
                 {
-                    StopCoroutine(co[nowId]);
-                    co[nowId] = null;
+                    StopCoroutine(co[j]);
+                    co[j] = null;
                 }
             }
             slots[slot].equipAttackID = id;
             if (inVillage == false)
             {
-                switch (id)
+                switch (i)
                 {
                     case 1:
-                        co[id] = StartCoroutine(MagicArrow()); break;
+                        co[i] = StartCoroutine(MagicArrow()); break;
                     case 2:
-                        co[id] = StartCoroutine(FireCircle()); break;
+                        co[i] = StartCoroutine(FireCircle()); break;
                     case 3:
-                        co[id] = StartCoroutine(ChasingSickle()); break;
+                        co[i] = StartCoroutine(ChasingSickle()); break;
                     case 4:
-                        co[id] = StartCoroutine(LightningRay()); break;
+                        co[i] = StartCoroutine(LightningRay()); break;
                     case 5:
-                        co[id] = StartCoroutine(FlowerThorns()); break;
+                        co[i] = StartCoroutine(FlowerThorns()); break;
                     default: break;
                 }
             }
@@ -311,5 +326,5 @@ public class PlayerAttack : MonoBehaviour
 public class AttackSlotData
 {
     public int slotIndex;
-    public int equipAttackID;
+    public string equipAttackID;
 }

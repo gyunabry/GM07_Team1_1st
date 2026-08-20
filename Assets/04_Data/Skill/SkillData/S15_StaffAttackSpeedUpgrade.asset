@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: S15_StaffAttackSpeedUpgrade
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: S15
+  skillName: 
+  skillDesc: 
+  skillSprite: {fileID: 0}
+  skillMaxLevel: 2
+  skillNeedSkillPoint: 0
+  skillNeedLevel: 0
+  skillNeedMoney: 800
+  value:
+  - -0.08
+  - -0.16
+  needSkill:
+  - {fileID: 11400000, guid: 219af655e0fe36f4ca83b298d701c218, type: 2}
+  effect: {fileID: 11400000, guid: c3f8e4e759e9466418e9622690e887f6, type: 2}

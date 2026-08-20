@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Attack", menuName = "ScriptableObjects/AttackSO")]
 public class AttackSO : ScriptableObject
 {
-    public int attackID;
+    public string attackID;
     public float attackDamage = 5;
     public float attackSpeed = 0.5f;
     public Vector3 position;
@@ -15,7 +15,7 @@ public class AttackSO : ScriptableObject
 }
 public class AttackUnlockData
 {
-    public int attackID;
+    public string attackID;
     public bool unlock;
     public bool equip;
     public Sprite sprite;
