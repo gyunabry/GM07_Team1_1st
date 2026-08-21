@@ -4,6 +4,7 @@ using UnityEngine.AI;
 // NavMesh 이동 및 주문 결제 의존성을 상태 객체에 제공
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(CustomerStateMachine))]
+[RequireComponent(typeof(CustomerQueueMovement))]
 public sealed class CustomerController : MonoBehaviour
 {
     private const int NormalAvoidancePriority = 50;
@@ -28,12 +29,16 @@ public sealed class CustomerController : MonoBehaviour
     private Transform exitPoint;
     private ICustomerInventory inventory;
     private ICustomerCurrency currency;
-    private Vector3 queueDestination;
-    private bool hasQueueDestination;
+    private Vector3 navigationDestination;
+    private bool hasNavigationDestination;
+    private CustomerQueueMovement queueMovement;
     private readonly CustomerRuntimeData runtimeData = new CustomerRuntimeData();
 
     public CustomerRuntimeData RuntimeData => runtimeData;
     public CustomerOrder Order => runtimeData.Order;
+    public CustomerOrder DefaultOrder => customerData != null && customerData.DefaultOrder.IsValid
+        ? customerData.DefaultOrder
+        : defaultOrder;
     public ShopCustomerQueue Queue => runtimeData.SelectedQueue;
     public ShopCheckout Checkout => runtimeData.SelectedCheckout;
     public bool HasExitTurnPoint => exitTurnPoint != null;
@@ -43,6 +48,7 @@ public sealed class CustomerController : MonoBehaviour
     public float PaymentDuration => customerData != null ? customerData.PaymentDuration : paymentDuration;
     public float ExitTimeout => customerData != null ? customerData.ExitTimeout : exitTimeout;
     public bool HasCheckoutOperator => Checkout != null && Checkout.HasOperator;
+    public CustomerQueueMovement QueueMovement => queueMovement;
 
     public event System.Action<CustomerController> ExitCompleted;
     public event System.Action<CustomerController, string> ExitFailed;
@@ -60,13 +66,21 @@ public sealed class CustomerController : MonoBehaviour
             defaultColliderStates[i] = colliders[i].enabled;
         }
         stateMachine = GetComponent<CustomerStateMachine>();
+        queueMovement = GetComponent<CustomerQueueMovement>();
+        if (queueMovement == null)
+        {
+            // 기존 프리팹에도 새 대기열 컴포넌트를 안전하게 적용한다.
+            queueMovement = gameObject.AddComponent<CustomerQueueMovement>();
+        }
+
         stateMachine.Initialize(this);
     }
 
     private void OnDisable()
     {
         Queue?.Leave(this);
-        hasQueueDestination = false;
+        queueMovement?.Clear();
+        hasNavigationDestination = false;
 
         // 풀에 보관하는 동안 마지막 NavMesh 위치를 유지한 채 다시 생성되지 않게 한다.
         if (agent != null)
@@ -90,10 +104,7 @@ public sealed class CustomerController : MonoBehaviour
         ResetCustomer();
         exitTurnPoint = exitTurn;
         exitPoint = exit;
-        CustomerOrder fallbackOrder = customerData != null && customerData.DefaultOrder.IsValid
-            ? customerData.DefaultOrder
-            : defaultOrder;
-        CustomerOrder selectedOrder = order.IsValid ? order : fallbackOrder;
+        CustomerOrder selectedOrder = order.IsValid ? order : DefaultOrder;
         runtimeData.Initialize(shopQueue, checkoutService, selectedOrder);
         inventory = inventoryService;
         currency = currencyService;
@@ -115,7 +126,8 @@ public sealed class CustomerController : MonoBehaviour
         exitTurnPoint = null;
         inventory = null;
         currency = null;
-        hasQueueDestination = false;
+        queueMovement?.Clear();
+        hasNavigationDestination = false;
         runtimeData.Reset();
 
         if (agent != null && agent.isOnNavMesh)
@@ -131,11 +143,10 @@ public sealed class CustomerController : MonoBehaviour
         RestoreColliders();
     }
 
-    public void SetQueueDestination(Vector3 destination)
+    // 데이터 에셋이 없는 런타임 테스트에서만 기본 주문을 주입한다.
+    public void ConfigureDefaultOrder(CustomerOrder order)
     {
-        queueDestination = destination;
-        hasQueueDestination = true;
-        TryMoveTo(destination);
+        defaultOrder = order;
     }
 
     public void SetNavigationRadius(float radius)
@@ -147,10 +158,7 @@ public sealed class CustomerController : MonoBehaviour
         }
     }
 
-    public bool MoveToQueueDestination()
-    {
-        return hasQueueDestination && TryMoveTo(queueDestination);
-    }
+    public bool MoveToQueueDestination(Vector3 destination) => TryMoveTo(destination);
 
     public bool MoveToExit()
     {
@@ -185,6 +193,17 @@ public sealed class CustomerController : MonoBehaviour
         // 계산 중인 손님은 최우선 회피 대상으로 두어 뒤 손님에게 밀려나지 않게 한다.
         agent.isStopped = true;
         agent.avoidancePriority = CheckoutAvoidancePriority;
+    }
+
+    public void StopInQueue()
+    {
+        if (agent == null || !agent.isOnNavMesh)
+        {
+            return;
+        }
+
+        agent.isStopped = true;
+        agent.avoidancePriority = NormalAvoidancePriority;
     }
 
     public bool TryCompletePayment()
@@ -300,6 +319,14 @@ public sealed class CustomerController : MonoBehaviour
             return false;
         }
 
+        // 같은 목적지를 다시 요청하는 대기열 상태 전환에서는 경로를 재계산하지 않는다.
+        if (hasNavigationDestination && (navigationDestination - destination).sqrMagnitude <= 0.0001f)
+        {
+            agent.isStopped = false;
+            agent.avoidancePriority = avoidancePriority;
+            return true;
+        }
+
         NavMeshPath path = new NavMeshPath();
         if (!agent.CalculatePath(destination, path) || path.status != NavMeshPathStatus.PathComplete)
         {
@@ -308,6 +335,13 @@ public sealed class CustomerController : MonoBehaviour
 
         agent.isStopped = false;
         agent.avoidancePriority = avoidancePriority;
-        return agent.SetDestination(destination);
+        bool destinationSet = agent.SetDestination(destination);
+        if (destinationSet)
+        {
+            navigationDestination = destination;
+            hasNavigationDestination = true;
+        }
+
+        return destinationSet;
     }
 }
