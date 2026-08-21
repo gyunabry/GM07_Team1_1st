@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8179baaee06256540b310e8bb38a9014, type: 3}
   m_Name: LightningRay
   m_EditorClassIdentifier: Assembly-CSharp::AttackSO
-  attackID: 3
-  attackDamage: 7
-  attackSpeed: 1
+  attackID: 4
+  attackDamage: 0.6
+  attackSpeed: 1.1
   position: {x: 0, y: 0, z: 0}
   direction: {x: 0, y: 0, z: 0}
-  distance: 10
+  distance: 20
   projectileCount: 1
   spreadAngle: 0
   sprite: {fileID: -812792229667561009, guid: 8cc9a2164926e84499b76e90c7c519a3, type: 3}

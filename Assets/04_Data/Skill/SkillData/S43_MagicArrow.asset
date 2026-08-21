@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: S43_MagicArrow
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: S43
+  skillName: MagicArrow
+  skillDesc: 
+  skillSprite: {fileID: 0}
+  skillMaxLevel: 1
+  skillNeedSkillPoint: 1
+  skillNeedLevel: 0
+  skillNeedMoney: 0
+  value: []
+  needSkill:
+  - {fileID: 11400000, guid: 83bf96e235ac8004385a6cd2b95d5c00, type: 2}
+  effect: {fileID: 11400000, guid: 5a34435d78e17ca4aa898721848f8016, type: 2}

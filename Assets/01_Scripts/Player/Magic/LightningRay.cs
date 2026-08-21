@@ -6,12 +6,16 @@ public class LightningRay : MonoBehaviour
     private ParticleSystem ps;
     [SerializeField] private MonsterPoolManager monsterPoolManager;
     [SerializeField] private AttackSO attackSo;
+    public float damage;
 
     private void Awake()
     {
         ps = GetComponent<ParticleSystem>();
     }
-    
+    private void Update()
+    {
+        transform.Translate(Vector3.forward * Time.deltaTime * 30f, Space.Self);
+    }
     private void OnEnable()
     {
         StartCoroutine(PlayCo());
@@ -21,4 +25,13 @@ public class LightningRay : MonoBehaviour
         yield return new WaitForSeconds(1f);
         monsterPoolManager.ReturnPool(this);
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        Enemy ene = other.gameObject.GetComponent<Enemy>();
+        if (ene != null)
+        {
+            ene.TakeDamage(damage);
+        }
+    }
+    
 }
