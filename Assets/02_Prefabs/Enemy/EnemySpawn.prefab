@@ -44,10 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a294718db3ce744e882d8466786a678, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCount
-  maxEnemy: 20
+  maxEnemy: 15
   enemySpawnTimer: 1
   enemy: {fileID: 7106573620643557139, guid: 9ded382b3c549794fa9741e7275527e3, type: 3}
   poolManager: {fileID: 0}
   spawnArea: {fileID: 0}
   enemyData: {fileID: 11400000, guid: c47f3a61920ff6d499576705b2266761, type: 2}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  raycastHeight: 0
   activeEnemy: []

@@ -233,7 +233,7 @@ public class PlayerAttack : MonoBehaviour
             ad.distance = FireCircleSO.distance + upgrade[2].distance;
             
             attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(1, transform.position, transform.rotation, 0);
+            particleManager.GetParticle(1, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
@@ -253,7 +253,7 @@ public class PlayerAttack : MonoBehaviour
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
             attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(2, transform.position, transform.rotation, 0);
+            particleManager.GetParticle(2, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }
@@ -289,7 +289,7 @@ public class PlayerAttack : MonoBehaviour
                 }   
             Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
             Quaternion targetRota = Quaternion.LookRotation(dir);
-            particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage);
+            particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage, ad.distance, ad.attackSpeed);
             }
             else
             {
@@ -316,7 +316,7 @@ public class PlayerAttack : MonoBehaviour
             giz = randomPosi;
             dis = ad.distance;
             attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(4, randomPosi, transform.rotation, 0);
+            particleManager.GetParticle(4, randomPosi, transform.rotation, 0, ad.distance, ad.attackSpeed);
 
             yield return new WaitForSeconds(ad.attackSpeed);
         }

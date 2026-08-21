@@ -9880,7 +9880,7 @@ ParticleSystem:
       m_RotationOrder: 4
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
-  scalingMode: 0
+  scalingMode: 1
   randomSeed: 0
   InitialModule:
     serializedVersion: 3
@@ -14695,6 +14695,7 @@ MonoBehaviour:
   layer:
     serializedVersion: 2
     m_Bits: 512
+  enemy: {fileID: 0}
 --- !u!54 &-89418406215001680
 Rigidbody:
   m_ObjectHideFlags: 0

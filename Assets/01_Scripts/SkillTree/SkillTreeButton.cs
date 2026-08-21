@@ -32,6 +32,10 @@ public class SkillTreeButton : MonoBehaviour
         popUp.transform.SetParent(transform);
         RectTransform rect = popUp.GetComponent<RectTransform>();
         rect.anchoredPosition = new Vector2(0f, 170f);
+        if(rect.transform.position.y > 1000f)
+        {
+            rect.anchoredPosition = new Vector2(-240f, 0f);
+        }
         popUp.SetSprite(skillData.skillSprite);
         popUp.SetName(skillData.name, skillData.skillNeedLevel, skillData.skillMaxLevel);
         popUp.SetNeed(skillData.skillNeedSkillPoint, skillData.skillNeedMoney);
@@ -76,12 +80,19 @@ public class SkillTreeButton : MonoBehaviour
     public void SkillUnlock()
     {
         button.image.color = Color.white;
-        text.text = $"{skillData.skillName}";
+        if (skillData.skillSprite != null)
+        {
+            button.image.sprite = skillData.skillSprite;
+        }
     }
     public void SkillActivate()
     {
-        button.image.color = Color.green;
-        text.text = $"{skillData.skillName}({state.skillLevel}/{skillData.skillMaxLevel})";
+        button.image.color = Color.white;
+        if (skillData.skillSprite != null)
+        {
+            button.image.sprite = skillData.skillSprite;
+        }
+        text.text = $"({state.skillLevel}/{skillData.skillMaxLevel})";
     }
 
     IEnumerator StartButton()

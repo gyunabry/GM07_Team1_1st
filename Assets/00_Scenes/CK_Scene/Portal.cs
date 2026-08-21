@@ -22,7 +22,8 @@ public class Portal : InteractableBase
     [Tooltip("포탈 UI")]
     [SerializeField] private Canvas portalUI;
 
-    [SerializeField] private UnityEvent AttackOnOff;
+    [SerializeField] private UnityEvent AttackOn;
+    [SerializeField] private UnityEvent AttackOff;
 
     Transform target;
 
@@ -69,9 +70,16 @@ public class Portal : InteractableBase
         // 에이전트의 회전 방향을 포탈이 바라보는 방향과 일치
         agent.transform.rotation = target.rotation;
 
-        AttackOnOff?.Invoke();
+        if(portalList != 1)
+        {
+            AttackOn?.Invoke();
+        }
+        else
+        {
+            AttackOff?.Invoke();
+        }
 
-        portalUI.gameObject.SetActive(false);
+            portalUI.gameObject.SetActive(false);
     }
 }
  

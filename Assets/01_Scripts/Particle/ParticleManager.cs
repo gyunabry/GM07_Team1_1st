@@ -20,7 +20,7 @@ public class ParticleManager : MonoBehaviour
             }
         }
     }
-    public void GetParticle(int code, Vector3 position, Quaternion rotation, float damage)
+    public void GetParticle(int code, Vector3 position, Quaternion rotation, float damage, float distance, float attackSpeed)
     {
         particleDic.TryGetValue(code, out nowParticle);
 
@@ -32,8 +32,18 @@ public class ParticleManager : MonoBehaviour
                 if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
-                ParticleSystem ps = cs.GetComponent<ParticleSystem>();
-                ps.Play();
+                ParticleSystem[] ps = cs.GetComponentsInChildren<ParticleSystem>();
+                ps[0].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                float dis = distance * 0.1f;
+                ps[0].transform.localScale = new Vector3(dis, dis, dis);
+                foreach (var p in ps)
+                {
+                    var pm = p.main;
+                    pm.duration = attackSpeed;
+                    pm.startLifetime = attackSpeed;
+                }
+
+                ps[0].Play();
             }
             if(nowParticle.particleName == "FireCircle")
             {
@@ -42,8 +52,18 @@ public class ParticleManager : MonoBehaviour
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
                 cs.transform.SetParent(player.transform);
-                ParticleSystem ps = cs.GetComponent<ParticleSystem>();
-                ps.Play();
+                ParticleSystem[] ps = cs.GetComponentsInChildren<ParticleSystem>();
+                ps[0].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                float dis = distance * 0.8f;
+                ps[0].transform.localScale = new Vector3(dis, dis, dis);
+                foreach (var p in ps)
+                {
+                    var pm = p.main;
+                    pm.duration = attackSpeed;
+                    pm.startLifetime = attackSpeed;
+                }
+
+                ps[0].Play();
             }
             if(nowParticle.particleName == "FlowerThorns")
             {
@@ -51,8 +71,18 @@ public class ParticleManager : MonoBehaviour
                 if (cs == null) return;
                 cs.transform.position = position;
                 cs.transform.rotation = rotation;
-                ParticleSystem ps = cs.GetComponent<ParticleSystem>();
-                ps.Play();
+                ParticleSystem[] ps = cs.GetComponentsInChildren<ParticleSystem>();
+                ps[0].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                float dis = distance * 0.7f;
+                ps[0].transform.localScale = new Vector3(dis, dis, dis);
+                foreach (var p in ps)
+                {
+                    var pm = p.main;
+                    pm.duration = attackSpeed;
+                    pm.startLifetime = attackSpeed;
+                }
+
+                ps[0].Play();
             }
             if(nowParticle.particleName == "LightningRay")
             {
@@ -62,8 +92,18 @@ public class ParticleManager : MonoBehaviour
                 cs.transform.position = position;
                 cs.transform.localPosition = new Vector3(cs.transform.position.x, -3f, cs.transform.position.z);
                 cs.transform.rotation = rotation;
-                ParticleSystem ps = cs.GetComponent<ParticleSystem>();
-                ps.Play();
+                ParticleSystem[] ps = cs.GetComponentsInChildren<ParticleSystem>();
+                ps[0].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                float dis = distance * 0.2f;
+                ps[0].transform.localScale = new Vector3(dis, dis, dis);
+                foreach (var p in ps)
+                {
+                    var pm = p.main;
+                    pm.duration = attackSpeed;
+                    pm.startLifetime = attackSpeed;
+                }
+
+                ps[0].Play();
             }
         }
     }
