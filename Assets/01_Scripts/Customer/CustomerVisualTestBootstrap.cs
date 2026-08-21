@@ -60,35 +60,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         Transform exit = CreateMarker("Exit", new Vector3(8.5f, 0f, -9f), Vector3.forward);
 
         CustomerController customerTemplate = CreateCustomerTemplate();
-        PoolManager poolManager = new GameObject("PoolManager").AddComponent<PoolManager>();
-        if (productionBuilding != null && carrierEmployeePrefab != null)
-        {
-            testProductionBuilding = productionBuilding;
-            testTransmitterInventory = new ItemInventory();
-            foreach (RecipeDataSO recipe in productionBuilding.AvailableRecipes)
-            {
-                if (recipe != null)
-                {
-                    testTransmitterInventory.Add(recipe.Input, 3);
-                }
-            }
-
-            // Product 명령 테스트용: 시작 시 생산 완료품 하나를 출력 인벤토리에 준비한다.
-            RecipeDataSO initialRecipe = productionBuilding.SelectedRecipe;
-            if (initialRecipe != null)
-            {
-                productionBuilding.OutputInventory.Add(initialRecipe.Output, 1);
-            }
-
-            StartCoroutine(SpawnCarrierForTest(poolManager, productionBuilding, carrierHome, testTransmitterInventory, transmitterWorkPoint));
-            CreateCarrierCommandUi(productionBuilding);
-        }
-        CustomerVisualTestServices testServices = new GameObject("TestServices").AddComponent<CustomerVisualTestServices>();
-        currencySystem = new GameObject("CurrencySystem").AddComponent<CurrencySystem>();
-        CustomerSpawnManager spawnManager = new GameObject("CustomerSpawnManager").AddComponent<CustomerSpawnManager>();
-        CreateCurrencyDisplay();
-
-        CustomerOrder order = new CustomerOrder
+        customerTemplate.ConfigureDefaultOrder(new CustomerOrder
         {
             Items = new List<CustomerOrderItem>
             {
@@ -97,9 +69,14 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
             },
             Reward = 10,
             ExperienceReward = 5
-        };
+        });
+        new GameObject("PoolManager").AddComponent<PoolManager>();
+        CustomerVisualTestServices testServices = new GameObject("TestServices").AddComponent<CustomerVisualTestServices>();
+        currencySystem = new GameObject("CurrencySystem").AddComponent<CurrencySystem>();
+        CustomerSpawnManager spawnManager = new GameObject("CustomerSpawnManager").AddComponent<CustomerSpawnManager>();
+        CreateCurrencyDisplay();
 
-        spawnManager.Configure(customerTemplate, entrance, exitTurn, exit, order, 2.5f);
+        spawnManager.Configure(customerTemplate, entrance, exitTurn, exit, 2.5f);
         spawnManager.BindServices(testServices, currencySystem);
     }
 
