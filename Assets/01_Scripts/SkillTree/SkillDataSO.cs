@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillDataSO", menuName = "SkillData/SkillDataSO")]
 public class SkillDataSO : ScriptableObject
 {
-    public int skillID;
+    public string skillID;
     public string skillName;
     [TextArea]
     public string skillDesc; 
@@ -13,7 +13,6 @@ public class SkillDataSO : ScriptableObject
     public int skillNeedLevel;
     public int skillNeedMoney;
     public float[] value;
-    public MultiValue[] multiValue;
     public SkillDataSO[] needSkill;
     public SkillEffectSO effect;
 }
@@ -29,7 +28,7 @@ public abstract class SkillEffectSO : ScriptableObject
 [System.Serializable]
 public class SkillRuntimeState
 {
-    public int skillID;
+    public string skillID;
     public int skillLevel;
     public bool Locked;
 }

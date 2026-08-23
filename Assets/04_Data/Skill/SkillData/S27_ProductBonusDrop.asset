@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: S27_ProductBonusDrop
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: S27
+  skillName: ProductBonusDrop
+  skillDesc: 
+  skillSprite: {fileID: 21300000, guid: 87a48d89c9d667b4eb31965286bdbf6a, type: 3}
+  skillMaxLevel: 3
+  skillNeedSkillPoint: 0
+  skillNeedLevel: 0
+  skillNeedMoney: 500
+  value:
+  - 1.5
+  - 3
+  - 4.5
+  needSkill:
+  - {fileID: 11400000, guid: be98246c7a7588b47bb1847a847f807c, type: 2}
+  effect: {fileID: 11400000, guid: 5c202ccc157065f47b4f3de5386ccfc9, type: 2}
