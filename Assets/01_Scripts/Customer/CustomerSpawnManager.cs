@@ -19,8 +19,10 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     private ICustomerInventory inventory;
     private ICustomerCurrency currency;
     private Coroutine replenishRoutine;
+    private float patienceBonusSeconds;
 
     public static CustomerSpawnManager Instance { get; private set; }
+    public float PatienceBonusSeconds => patienceBonusSeconds;
 
     private void Awake()
     {
@@ -56,6 +58,35 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     {
         inventory = inventoryService;
         currency = currencyService;
+    }
+
+    public void AddCustomerPatienceSeconds(float seconds)
+    {
+        if (seconds <= 0f)
+        {
+            return;
+        }
+
+        SetCustomerPatienceBonusSeconds(patienceBonusSeconds + seconds);
+    }
+
+    public void SetCustomerPatienceBonusSeconds(float seconds)
+    {
+        patienceBonusSeconds = Mathf.Max(0f, seconds);
+
+        foreach (CustomerCheckoutStation station in stations)
+        {
+            if (station?.Queue == null)
+            {
+                continue;
+            }
+
+            CustomerController[] customers = station.Queue.GetCustomersSnapshot();
+            for (int i = 0; i < customers.Length; i++)
+            {
+                customers[i]?.SetPatienceBonusSeconds(patienceBonusSeconds);
+            }
+        }
     }
 
     // 전역 입·출구와 주문만 구성한다. 계산대는 CustomerCheckoutStation이 자동 등록한다.
@@ -129,6 +160,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
         if (customer.OnSpawned(station.Queue, station.Checkout, exitTurnPoint, exitPoint, order, inventory, currency))
         {
+            customer.SetPatienceBonusSeconds(patienceBonusSeconds);
             customer.ExitCompleted += OnCustomerExitCompleted;
             customer.ExitFailed += OnCustomerExitFailed;
             return true;

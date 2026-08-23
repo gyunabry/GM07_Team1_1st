@@ -16,6 +16,7 @@ public sealed class CustomerController : MonoBehaviour
     [Header("Legacy Defaults")]
     [SerializeField] private CustomerOrder defaultOrder;
     [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
+    [SerializeField, Min(0.1f)] private float patienceDuration = 600f;
     [SerializeField, Min(0.1f)] private float exitTimeout = 30f;
 
     private NavMeshAgent agent;
@@ -32,6 +33,8 @@ public sealed class CustomerController : MonoBehaviour
     private Vector3 navigationDestination;
     private bool hasNavigationDestination;
     private CustomerQueueMovement queueMovement;
+    private float patienceElapsed;
+    private float patienceBonusSeconds;
     private readonly CustomerRuntimeData runtimeData = new CustomerRuntimeData();
 
     public CustomerRuntimeData RuntimeData => runtimeData;
@@ -46,6 +49,7 @@ public sealed class CustomerController : MonoBehaviour
     public bool IsPaymentCompleted => runtimeData.PaymentCompleted;
     public bool HasInventoryService => inventory != null;
     public float PaymentDuration => customerData != null ? customerData.PaymentDuration : paymentDuration;
+    public float PatienceDuration => Mathf.Max(0.1f, (customerData != null ? customerData.PatienceDuration : patienceDuration) + patienceBonusSeconds);
     public float ExitTimeout => customerData != null ? customerData.ExitTimeout : exitTimeout;
     public bool HasCheckoutOperator => Checkout != null && Checkout.HasOperator;
     public CustomerQueueMovement QueueMovement => queueMovement;
@@ -128,6 +132,8 @@ public sealed class CustomerController : MonoBehaviour
         currency = null;
         queueMovement?.Clear();
         hasNavigationDestination = false;
+        patienceElapsed = 0f;
+        patienceBonusSeconds = 0f;
         runtimeData.Reset();
 
         if (agent != null && agent.isOnNavMesh)
@@ -147,6 +153,11 @@ public sealed class CustomerController : MonoBehaviour
     public void ConfigureDefaultOrder(CustomerOrder order)
     {
         defaultOrder = order;
+    }
+
+    public void SetPatienceBonusSeconds(float bonusSeconds)
+    {
+        patienceBonusSeconds = Mathf.Max(0f, bonusSeconds);
     }
 
     public void SetNavigationRadius(float radius)
@@ -228,6 +239,23 @@ public sealed class CustomerController : MonoBehaviour
         }
 
         stateMachine.ChangeState(new CustomerExitState(this));
+    }
+
+    public bool TryHandlePatienceTimeout()
+    {
+        if (runtimeData.PaymentCompleted)
+        {
+            return false;
+        }
+
+        patienceElapsed += Time.deltaTime;
+        if (patienceElapsed < PatienceDuration)
+        {
+            return false;
+        }
+
+        ForceExitWithoutPayment();
+        return true;
     }
 
     public void SubscribeInventoryChanged(System.Action handler)

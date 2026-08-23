@@ -17,6 +17,11 @@ public sealed class CustomerVisitState : ICustomerState
     }
     public void Update()
     {
+        if (controller.TryHandlePatienceTimeout())
+        {
+            return;
+        }
+
         if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.Queue.IsInCheckoutRange(controller))
         {
             controller.StateMachine.ChangeState(new CustomerOrderState(controller));
@@ -41,6 +46,11 @@ public sealed class CustomerOrderState : ICustomerState
     public void Enter() { }
     public void Update()
     {
+        if (controller.TryHandlePatienceTimeout())
+        {
+            return;
+        }
+
         if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.Queue.IsInCheckoutRange(controller))
         {
             controller.StateMachine.ChangeState(new CustomerIdleState(controller));
@@ -76,6 +86,11 @@ public sealed class CustomerIdleState : ICustomerState
     {
         // 계산 담당자가 도착한 순간부터만 계산 시간을 잰다.
         // 담당자가 자리를 비우면 진행 중인 계산도 취소한다.
+        if (controller.TryHandlePatienceTimeout())
+        {
+            return;
+        }
+
         if (!controller.HasCheckoutOperator)
         {
             paymentElapsed = 0f;
