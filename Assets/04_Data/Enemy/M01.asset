@@ -12,17 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33d7af39524e13c40a224d52046d19a0, type: 3}
   m_Name: M01
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDataSO
-  <EnemyId>k__BackingField: M01
-  <EnemyName>k__BackingField: "\uD30C\uB2E5 \uBC15\uC950"
-  <Description>k__BackingField: "\uC219\uC131\uC2DC\uD0AC \uC218\uB85D \uD6A8\uACFC\uAC00
-    \uAC15\uD574\uC9C4\uB2E4."
-  <Hp>k__BackingField: 40
-  <PatrolSpeed>k__BackingField: 2.5
-  <RunSpeed>k__BackingField: 3
-  <RunStartDistance>k__BackingField: 1
-  <RunEndDistance>k__BackingField: 1
-  <Reward>k__BackingField:
+  enemyId: M01
+  enemyName: "\uD30C\uB2E5 \uBC15\uC950"
+  discription: "\uC219\uC131\uC2DC\uD0AC \uC218\uB85D \uD6A8\uACFC\uAC00 \uAC15\uD574\uC9C4\uB2E4."
+  hp: 150
+  patrolSpeed: 2.5
+  runSpeed: 3
+  reward:
     drop:
       item: {fileID: 11400000, guid: e1e92148abe7e6c4e90af86cdd9a8fee, type: 2}
       amount: 1
-    killExp: 15
+    killExp: 3
+  runStartDistance: 2
+  runEndDistance: 4

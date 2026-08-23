@@ -22,7 +22,7 @@ public class EnemyIdleState : IState
     }
     public void Execute()
     {
-        if(randomEnd == true)
+        if (randomEnd == true)
         {
             stateController.ChangeState(stateController.PatrolState);
         }

@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Dropitem : MonoBehaviour, ICollectable
 {
-    [field: SerializeField]
+    [SerializeField] private SpriteRenderer sr;
+
     public ItemDataSO Item { get; private set; }
     public int Amount { get; private set; } = 1;
 
@@ -10,6 +11,12 @@ public class Dropitem : MonoBehaviour, ICollectable
     {
         Item = item;
         Amount = amount;
+
+        if (sr != null)
+        {
+            sr.sprite = item != null ? item.Icon : null;
+            sr.enabled = item != null && item.Icon != null;
+        }
     }
 
     public bool TryCollect(ItemInventory target)
@@ -20,16 +27,28 @@ public class Dropitem : MonoBehaviour, ICollectable
         }
 
         int added = target.Add(Item, Amount);
+
         if (added <= 0) return false;
 
         Amount -= added;
+
         if (Amount <= 0)
         {
-            Item = null;
-            Amount = 0;
             MonsterPoolManager.Instance.ReturnPool(this);
         }
 
         return true;
+    }
+
+    private void OnDisable()
+    {
+        Item = null;
+        Amount = 0;
+
+        if (sr != null)
+        {
+            sr.sprite = null;
+            sr.enabled = false;
+        }
     }
 }

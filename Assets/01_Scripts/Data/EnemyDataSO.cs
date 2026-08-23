@@ -19,6 +19,8 @@ public class EnemyDataSO : ScriptableObject
     [SerializeField] private float patrolSpeed;
     [SerializeField] private float runSpeed;
     [SerializeField] private EnemyReward reward;
+    [SerializeField] private float runStartDistance;
+    [SerializeField] private float runEndDistance;
 
     [Header("기본 정보")]
     public string EnemyId => enemyId;
@@ -32,9 +34,9 @@ public class EnemyDataSO : ScriptableObject
 
     public float RunSpeed => runSpeed;
 
-    public float RunStartDistance { get; private set; }
+    public float RunStartDistance => runStartDistance;
 
-    public float RunEndDistance { get; private set; }
+    public float RunEndDistance => runEndDistance;
 
     [Header("처치 보상")]
     public EnemyReward Reward => reward;
