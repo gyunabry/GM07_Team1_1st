@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: S54_LightningRayProjectileCount
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: S54
+  skillName: 
+  skillDesc: 
+  skillSprite: {fileID: 21300000, guid: 55a92f233f2debc43967597e5318b5c4, type: 3}
+  skillMaxLevel: 3
+  skillNeedSkillPoint: 1
+  skillNeedLevel: 0
+  skillNeedMoney: 0
+  value:
+  - 1
+  - 2
+  - 3
+  needSkill:
+  - {fileID: 11400000, guid: 60662366f8d24204cbfa98e8325c2f5e, type: 2}
+  effect: {fileID: 11400000, guid: ec10f4a87d7b4a641bee641d43179123, type: 2}

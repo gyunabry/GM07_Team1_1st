@@ -10,7 +10,7 @@ public class AttackEquHud : MonoBehaviour
 
     [SerializeField] AttackEquHud closeButton1;
     [SerializeField] AttackEquHud closeButton2;
-    public int equAttackID;
+    public string equAttackID;
     public bool equip;
     public int slotIndex;
 
@@ -62,11 +62,11 @@ public class AttackEquHud : MonoBehaviour
             }
         }
     }
-    public void EquipSlot(int id)
+    public void EquipSlot(string id)
     {
         playerAttack.StartAndStopAttackCo(slotIndex, id, this);
     }
-    public void EquipRefresh(int id)
+    public void EquipRefresh(string id)
     {
         equAttackID = id;
         equip = false;
@@ -79,7 +79,6 @@ public class AttackEquHud : MonoBehaviour
         }
         if(equip == false)
         {
-            Debug.Log("¿Â¬¯ «ÿ¡¶");
             button.image.sprite = null;
         }
         else

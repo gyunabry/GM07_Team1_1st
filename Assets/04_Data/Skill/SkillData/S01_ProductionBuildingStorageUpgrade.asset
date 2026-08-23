@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c943f28743342fa4fa2b061aa11fdbb2, type: 3}
+  m_Name: S01_ProductionBuildingStorageUpgrade
+  m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
+  skillID: S01
+  skillName: ProductionBuildingStorageUpgrade
+  skillDesc: 
+  skillSprite: {fileID: 21300000, guid: 966f298cab5aab6428d55e234e2554fb, type: 3}
+  skillMaxLevel: 2
+  skillNeedSkillPoint: 0
+  skillNeedLevel: 0
+  skillNeedMoney: 800
+  value:
+  - 30
+  - 60
+  needSkill:
+  - {fileID: 11400000, guid: a4780c51ccb9e68418c69b0ed7e23a44, type: 2}
+  effect: {fileID: 11400000, guid: a8436784282e17b4287fc227ef643ab5, type: 2}

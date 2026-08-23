@@ -61,29 +61,7 @@ public class AttackBase : IAttack
     }
     public void LightningRay(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {
-        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
-
-        Collider nearEnemy = null;
-        float minDis = Mathf.Infinity;
-        if (enemy.Length > 0) 
-        { 
-            foreach(var that in enemy)
-            {
-                Vector3 enemyPosi = that.transform.position;
-                float distance = (data.position - enemyPosi).sqrMagnitude;
-                if(distance < minDis)
-                {
-                    minDis = distance;
-                    nearEnemy = that;
-                }
-            }
-            RaycastHit[] hits = Physics.BoxCastAll(data.position, new Vector3(data.distance/2, data.distance / 2, data.distance / 2), (nearEnemy.transform.position - data.position).normalized, quaternion.identity, 20, layer);
-            foreach(var that in hits)
-            {
-                Enemy ene = that.collider.gameObject.transform.GetComponent<Enemy>();
-                ene.TakeDamage(AttackDamage);
-            }
-        }
+        
     }
     public void FlowerThorns(float AttackDamage, AttackData data, MonsterPoolManager poolManager, LayerMask layer)
     {

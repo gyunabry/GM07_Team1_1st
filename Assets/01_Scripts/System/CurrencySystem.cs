@@ -101,4 +101,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         CurrencyChanged?.Invoke(money, experience);
         return true;
     }
+    public void TestButton()
+    {
+        CurrencyChanged?.Invoke(money, experience);
+    }
 }
