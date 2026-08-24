@@ -15,8 +15,12 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField] private Grid grid;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private InputManager inputManager;
-    [SerializeField] private BuildableArea buildableArea;
+    // [SerializeField] private BuildableArea buildableArea;
+    [SerializeField] private List<BuildableArea> buildableAreas = new();
     [SerializeField] private Transform buildingContainer;
+    [SerializeField] private EconomyModifierService economyModifier;
+
+    private BuildableArea currentArea;
 
     // 셀별로 어떤 건물이 점유 중인지 저장
     private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
@@ -27,7 +31,7 @@ public class PlacementSystem : MonoBehaviour
     private Vector3Int currentCell;
 
     // 0 : 0도 / 1: 90도 / 2: 180도 / 3: 270도
-    private int rotationIndex;
+    private short rotationIndex;
     private bool canPlace;
 
     public bool IsPlacementMode => selectedBuildingData != null;
@@ -93,6 +97,7 @@ public class PlacementSystem : MonoBehaviour
     public void CancelPlacement()
     {
         selectedBuildingData = null;
+        currentArea = null;
         rotationIndex = 0;
         canPlace = false;
 
@@ -124,15 +129,21 @@ public class PlacementSystem : MonoBehaviour
 
         if (inputManager.IsPointerOverUI())
         {
-            previewObject.SetActive(false);
-            canPlace = false;
+            HidePreview();
             return;
         }
 
-        if (!inputManager.TryGetWorldPosition(out Vector3 worldPos))
+        if (!inputManager.TryGetPlacementHit(out Vector3 worldPos, out Collider hitCollider))
         {
-            previewObject.SetActive(false);
-            canPlace = false;
+            HidePreview();
+            return;
+        }
+
+        currentArea = FindBuildableArea(hitCollider);
+
+        if (currentArea == null)
+        {
+            HidePreview();
             return;
         }
 
@@ -149,7 +160,7 @@ public class PlacementSystem : MonoBehaviour
 
         previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
 
-        canPlace = IsCellsAvailable(currentCell, rotatedSize);
+        canPlace = IsCellsAvailable(currentArea, currentCell, rotatedSize);
 
         UpdatePreviewVisual(canPlace);
     }
@@ -160,7 +171,7 @@ public class PlacementSystem : MonoBehaviour
         if (!IsPlacementMode || previewObject == null) return;
 
         // 회전 인덱스 증가
-        rotationIndex = (rotationIndex + 1) % 4;
+        rotationIndex = (short)((rotationIndex + 1) % 4);
 
         // 프리뷰 회전
         previewObject.transform.rotation = GetRotation(rotationIndex);
@@ -171,8 +182,14 @@ public class PlacementSystem : MonoBehaviour
     // 프리뷰 위치에 실제 건물 인스턴스 생성
     private void PlaceBuilding()
     {
-        if (!IsPlacementMode || !canPlace || previewObject == null)
+        if (currentArea == null || !canPlace || previewObject == null)
             return;
+
+        int finalCost = economyModifier.GetBuildCost(selectedBuildingData);
+        if (!CurrencySystem.Instance.TrySpendMoney(finalCost))
+        {
+            return;
+        }
 
         Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 
@@ -195,6 +212,7 @@ public class PlacementSystem : MonoBehaviour
         {
             placedBuilding.Initialize(
                 selectedBuildingData, 
+                currentArea,
                 currentCell, 
                 rotationIndex, 
                 cells
@@ -216,29 +234,51 @@ public class PlacementSystem : MonoBehaviour
     }
 
     // 건물이 차지할 모든 셀이 비어있는지 검사
-    private bool IsCellsAvailable(Vector3Int originCell, Vector2Int size)
+    private bool IsCellsAvailable(BuildableArea area, Vector3Int originCell, Vector2Int size)
     {
-        if (buildableArea == null) return false;
+        if (area == null) return false;
 
-        for (int x = 0; x < size.x; x++)
+        if (!area.CanPlaceBuilding(selectedBuildingData, originCell, size))
         {
-            for (int z = 0; z < size.y; z++)
+            return false;
+        }
+
+        if (IsHunterBuilding(selectedBuildingData))
+        {
+            HuntingFieldContext fieldContext = area.GetComponent<HuntingFieldContext>();
+            if (fieldContext == null || !fieldContext.TryGetCompletedTransmitter(out _))
             {
-                Vector3Int cell = originCell + new Vector3Int(x, z, 0);
-
-                // 공방 밖이면 배치 불가
-                if (!buildableArea.IsBuildable(cell))
-                {
-                    return false;
-                }
-
-                // 해당 셀이 이미 등록되어 있다면 false 반환
-                if (occupiedCells.ContainsKey(cell))
-                {
-                    return false;
-                }
+                return false;
             }
         }
+
+        foreach (Vector3Int cell in GetOccupiedCells(originCell, size))
+        {
+            if (occupiedCells.ContainsKey(cell))
+            {
+                return false;
+            }
+        }
+
+        //for (int x = 0; x < size.x; x++)
+        //{
+        //    for (int z = 0; z < size.y; z++)
+        //    {
+        //        Vector3Int cell = originCell + new Vector3Int(x, z, 0);
+
+        //        // 공방 밖이면 배치 불가
+        //        if (!buildableArea.IsBuildable(cell))
+        //        {
+        //            return false;
+        //        }
+
+        //        // 해당 셀이 이미 등록되어 있다면 false 반환
+        //        if (occupiedCells.ContainsKey(cell))
+        //        {
+        //            return false;
+        //        }
+        //    }
+        //}
 
         return true;
     }
@@ -283,7 +323,7 @@ public class PlacementSystem : MonoBehaviour
     }
 
     // 회전 인덱스를 Y축 회전값으로 변환
-    private Quaternion GetRotation(int targetRotationIndex)
+    private Quaternion GetRotation(short targetRotationIndex)
     {
         return Quaternion.Euler(
             0f,
@@ -309,4 +349,40 @@ public class PlacementSystem : MonoBehaviour
         return occupiedCells.ContainsKey(cell);
     }
 
+    private BuildableArea FindBuildableArea(Collider hitColldier)
+    {
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area == null) continue;
+
+            if (area.PlacementSurface == hitColldier)
+            {
+                return area;
+            }
+        }
+
+        return null;
+    }
+
+    private void HidePreview()
+    {
+        currentArea = null;
+        canPlace = false;
+
+        if (previewObject != null)
+        {
+            previewObject.gameObject.SetActive(false);
+        }
+    }
+
+    // 임시 메서드
+    private static bool IsHunterBuilding(BuildingDataSO buildingData)
+    {
+        if (buildingData == null || buildingData.BuildingPrefab == null) 
+        {
+            return false;
+        }
+
+        return buildingData.BuildingPrefab.TryGetComponent<HunterBuildingController>(out _);
+    }
 }

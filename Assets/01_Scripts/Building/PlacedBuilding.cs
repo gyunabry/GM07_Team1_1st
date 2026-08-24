@@ -16,14 +16,19 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     [SerializeField] private GameObject constructionObject;
     [SerializeField] private GameObject completedObject;
 
+    [Header("테스트용 시설 상태")]
+    [SerializeField] private BuildingState state = BuildingState.Constructing;
+
     public BuildingDataSO Data { get; private set; }
     public Vector3Int OriginCell { get; private set; }
-    public int RotationIndex { get; private set; }
+    public short RotationIndex { get; private set; }
 
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
 
-    public BuildingState State { get; private set; }
+    // 해당 시설이 어느 영역에 있는지 담는 프로퍼티
+    public BuildableArea AssignedArea { get; private set; }
+    public BuildingState State => state;
     public float ConstructionProgress { get; private set; }
     public bool IsComplete => State == BuildingState.Completed;
 
@@ -40,9 +45,16 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     /// <param name="originCell">배치 셀 위치</param>
     /// <param name="rotationIndex">회전 인덱스 0 ~ 3</param>
     /// <param name="cells">점유하는 셀</param>
-    public void Initialize(BuildingDataSO data, Vector3Int originCell, int rotationIndex, IEnumerable<Vector3Int> cells) 
+    public void Initialize(
+        BuildingDataSO data, 
+        BuildableArea assignedArea,
+        Vector3Int originCell, 
+        short rotationIndex, 
+        IEnumerable<Vector3Int> cells
+    ) 
     {
         Data = data;
+        AssignedArea = assignedArea;
         OriginCell = originCell;
         RotationIndex = rotationIndex;
 
@@ -50,7 +62,8 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         occupiedCells.AddRange(cells);
 
         // 건설 시작
-        State = BuildingState.Constructing;
+        // State = BuildingState.Constructing;
+        state = BuildingState.Constructing;
         ConstructionProgress = 0f;
 
         constructionObject?.SetActive(true);
@@ -88,7 +101,8 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
 
     private void CompleteConstruction()
     {
-        State = BuildingState.Completed;
+        // State = BuildingState.Completed;
+        state = BuildingState.Completed;
         ConstructionProgress = 1f;
 
         constructionObject?.SetActive(false);

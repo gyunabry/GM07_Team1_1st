@@ -11,6 +11,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
     private const string OperatorObjectName = "SalesEmployeeOperator";
 
     [SerializeField] private GameObject salesEmployeePrefab;
+    [SerializeField] private Transform spawnPoint;
 
     private EmployeeManager employeeManager;
     private PlacedBuilding placedBuilding;
@@ -147,7 +148,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         }
 
         Vector3 position = GetOperatorPosition();
-        operatorObject = Instantiate(salesEmployeePrefab, position, checkout.transform.rotation, transform);
+        operatorObject = Instantiate(salesEmployeePrefab, spawnPoint.position, spawnPoint.rotation, transform);
         operatorObject.name = OperatorObjectName;
 
         EnsureCheckoutOperatorComponents(operatorObject);

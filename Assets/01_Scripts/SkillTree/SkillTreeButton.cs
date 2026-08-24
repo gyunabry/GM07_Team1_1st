@@ -11,7 +11,7 @@ public class SkillTreeButton : MonoBehaviour
     Button button;
     [SerializeField] SkillTreeManager skillTreeManager;
     [SerializeField] SkillTreePopUp skillTreePopUp;
-    [SerializeField] MonsterPoolManager monsterPoolManager;
+    [SerializeField] PoolManager poolManager;
     TextMeshProUGUI text;
     SkillRuntimeState state;
     SkillTreePopUp popUp;
@@ -28,7 +28,7 @@ public class SkillTreeButton : MonoBehaviour
     }
     public void MouserEnter()
     {
-        popUp = monsterPoolManager.GetPool<SkillTreePopUp>();
+        popUp = poolManager.GetPool<SkillTreePopUp>();
         popUp.transform.SetParent(transform);
         RectTransform rect = popUp.GetComponent<RectTransform>();
         rect.anchoredPosition = new Vector2(0f, 170f);
@@ -45,7 +45,7 @@ public class SkillTreeButton : MonoBehaviour
     {
         if(popUp != null)
         {
-            monsterPoolManager.ReturnPool(popUp);
+            poolManager.ReturnPool(popUp);
         }
     }
     private void OnEnable()

@@ -17,6 +17,4 @@ public class DropEntry
 
     [field: SerializeField, Min(1)]
     public int MaxAmount { get; private set; } = 1;
-
-
 }

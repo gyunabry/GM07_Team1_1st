@@ -5,6 +5,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NavMeshAgent))]
 public sealed class HunterWorker : MonoBehaviour
 {
+    private const float NavMeshSampleDistance = 1f;
+
     private enum State { Idle, Trace, Attack, Get, Store }
     private static readonly Dictionary<Enemy, HunterWorker> MonsterOwners = new();
     private static readonly Dictionary<Dropitem, HunterWorker> DropOwners = new();
@@ -19,9 +21,16 @@ public sealed class HunterWorker : MonoBehaviour
     [SerializeField, Min(0.05f)] private float targetSearchInterval = 0.25f;
 
     private readonly HunterCargo cargo = new();
-    private NavMeshAgent agent; private EmployeeManager manager; private EmployeeRuntimeData employee;
-    private Collider area; private HuntingTransmitter transmitter; private Transform home;
-    private Enemy monster; private Dropitem drop; private State state; private float nextAttack;
+    private NavMeshAgent agent; 
+    private EmployeeManager manager; 
+    private EmployeeRuntimeData employee;
+    private Collider area; 
+    private Transmitter transmitter;
+    private Transform home;
+    private Enemy monster; 
+    private Dropitem drop; 
+    private State state; 
+    private float nextAttack;
     private bool awaitingKillerDrop;
     private float killerDropWaitUntil;
     private HunterStatModifiers statModifiers;
@@ -82,15 +91,58 @@ public sealed class HunterWorker : MonoBehaviour
             }
         }
 
-        if (cargo.TotalAmount >= cargo.Capacity) { ReleaseMonster(); state = State.Store; }
-        switch (state) { case State.Idle: Decide(); break; case State.Trace: Trace(); break; case State.Attack: Attack(); break; case State.Get: Get(); break; case State.Store: Store(); break; }
+        if (cargo.TotalAmount >= cargo.Capacity) 
+        { 
+            ReleaseMonster(); 
+            state = State.Store; 
+        }
+
+        switch (state) { 
+            case State.Idle: 
+                Decide(); 
+                break; 
+
+            case State.Trace: 
+                Trace(); 
+                break; 
+
+            case State.Attack: 
+                Attack(); 
+                break; 
+
+            case State.Get:
+                Get(); 
+                break;
+
+            case State.Store: 
+                Store();
+                break; 
+        }
     }
 
-    public void Initialize(EmployeeManager m, EmployeeRuntimeData e, Collider huntingArea, HuntingTransmitter targetTransmitter, Transform homePoint)
+    public void Initialize(
+        EmployeeManager m, 
+        EmployeeRuntimeData e, 
+        Collider huntingArea,
+        Transmitter targetTransmitter,
+        Transform homePoint
+    )
     {
-        manager=m; employee=e; area=huntingArea; transmitter=targetTransmitter; home=homePoint; state=State.Idle; cargo.Clear(); awaitingKillerDrop=false; nextTargetSearchTime=0f;
-        ApplyStatModifiers(); agent.stoppingDistance=.2f; manager.TrySetWorkState(employee, EmployeeWorkState.Idle);
+        manager = m;
+        employee = e;
+        area = huntingArea;
+        transmitter = targetTransmitter;
+        home = homePoint;
+        state = State.Idle; 
+        cargo.Clear();
+        awaitingKillerDrop = false;
+        nextTargetSearchTime = 0f;
+
+        ApplyStatModifiers(); 
+        agent.stoppingDistance = 0.2f; 
+        manager.TrySetWorkState(employee, EmployeeWorkState.Idle);
     }
+
     public void SetCarryingCapacity(int value)
     {
         baseCarryingCapacity = Mathf.Max(1, value);
@@ -101,13 +153,32 @@ public sealed class HunterWorker : MonoBehaviour
         statModifiers = modifiers;
         ApplyStatModifiers();
     }
+
     public HunterStatModifiers GetStatModifiers() => statModifiers;
+
     public void DepositCargoForBuildingSale()
     {
         cargo.TransferTo(transmitter?.Inventory);
         cargo.Clear();
     }
-    public void ResetForPool() { ReleaseTargets(); cargo.Clear(); manager=null; employee=null; area=null; transmitter=null; home=null; if(agent.isOnNavMesh)agent.ResetPath(); }
+
+    public void ResetForPool() 
+    { 
+        ReleaseTargets(); 
+        cargo.Clear(); 
+
+        manager = null;
+        employee = null;
+        area = null;
+        transmitter = null;
+        home=null;
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+            agent.isStopped = true;
+        }   
+    }
 
     private void RequestTargetSearch() => nextTargetSearchTime = 0f;
 
@@ -150,6 +221,7 @@ public sealed class HunterWorker : MonoBehaviour
         if (attackEffect != null) Instantiate(attackEffect, monster.transform.position, Quaternion.identity);
         nextAttack=Time.time+attackInterval;
     }
+
     private void Get()
     {
         if (!Valid(drop)) { ReleaseDrop(); RequestTargetSearch(); state=State.Idle; return; }
@@ -164,8 +236,11 @@ public sealed class HunterWorker : MonoBehaviour
             }
             return;
         }
+
         Stop(EmployeeWorkState.Working);
-        cargo.Add(drop.Item, drop.TryCollectAmount(cargo.Remaining));
+        // cargo.Add(drop.Item, drop.TryCollectAmount(cargo.Remaining));
+        cargo.Add(drop.Item, 1);
+
         if (Valid(drop))
         {
             state = cargo.Remaining <= 0 ? State.Store : State.Get;
@@ -175,19 +250,33 @@ public sealed class HunterWorker : MonoBehaviour
         RequestTargetSearch();
         state=State.Idle;
     }
+
     private void Store()
     {
-        if (transmitter == null) { Stop(EmployeeWorkState.Idle); return; }
+        if (transmitter == null) 
+        { 
+            Stop(EmployeeWorkState.Idle);
+            return; 
+        }
+
         if (Distance(transmitter.DepositPoint.position) > .3f)
         {
             Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving);
             return;
         }
+
         int cargoBeforeDeposit = cargo.TotalAmount;
         cargo.TransferTo(transmitter.Inventory);
+
         Stop(cargo.TotalAmount == cargoBeforeDeposit ? EmployeeWorkState.Idle : EmployeeWorkState.Working);
-        if (cargo.TotalAmount < cargo.Capacity) { RequestTargetSearch(); state=State.Idle; }
+
+        if (cargo.TotalAmount < cargo.Capacity)
+        { 
+            RequestTargetSearch(); 
+            state=State.Idle; 
+        }
     }
+
     private bool ClaimMonster()
     {
         CleanupReservations();
@@ -307,4 +396,33 @@ public sealed class HunterWorker : MonoBehaviour
     private void ReleaseTargets(){awaitingKillerDrop=false;KillerDropReservations.Remove(this);ReleaseMonster();ReleaseDrop();}
     private void ReleaseMonster(){if(monster!=null&&MonsterOwners.TryGetValue(monster,out var o)&&o==this)MonsterOwners.Remove(monster);monster=null;}
     private void ReleaseDrop(){if(drop!=null&&DropOwners.TryGetValue(drop,out var o)&&o==this)DropOwners.Remove(drop);drop=null;}
+
+    public bool TryPlaceAt(Transform targetPoint)
+    {
+        if (targetPoint == null || agent == null) return false;
+
+        if (!agent.enabled) agent.enabled = true;
+
+        if (!NavMesh.SamplePosition(
+            targetPoint.position,
+            out NavMeshHit hit,
+            NavMeshSampleDistance,
+            agent.areaMask))
+        {
+            return false;
+        }
+
+        // 이전 경로를 제거
+        if (agent.isOnNavMesh)
+        {
+            agent.ResetPath();
+            agent.isStopped = true;
+        }
+
+        // agent 내부 위치를 해당 위치로 이동
+        if (!agent.Warp(hit.position)) return false;
+        transform.rotation = targetPoint.rotation;
+
+        return true;
+    }
 }

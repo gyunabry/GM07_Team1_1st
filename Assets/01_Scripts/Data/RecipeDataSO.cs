@@ -1,7 +1,5 @@
-using System;
 using UnityEngine;
-using System.Collections.Generic;
-
+ 
 public enum ProcessType
 {
     Refine, // 정제
@@ -11,21 +9,21 @@ public enum ProcessType
 [CreateAssetMenu(fileName = "RecipeData", menuName = "Tycoon/Recipe Data")]
 public class RecipeDataSO : ScriptableObject
 {
-    [field: SerializeField]
-    public string RecipeId { get; private set; }
+    [SerializeField] private string recipeId;
+    [SerializeField] private string recipeName;
 
-    [field: SerializeField]
-    public string RecipeName { get; private set; }
+    [SerializeField] private ProcessType processType;
+    [SerializeField] private ItemDataSO input;
+    [SerializeField] private ItemDataSO output;
 
-    [field: SerializeField]
-    public ProcessType ProcessType { get; private set; }
+    [SerializeField] private float productionTime;
 
-    [field: SerializeField]
-    public ItemDataSO Input { get; private set; } // 재료 아이템
+    public string RecipeId => recipeId;
+    public string RecipeName => recipeName;
 
-    [field: SerializeField]
-    public ItemDataSO Output { get; private set; } // 생산 아이템
+    public ProcessType ProcessType => processType;
+    public ItemDataSO Input => input;
+    public ItemDataSO Output => output;
 
-    [field: SerializeField]
-    public float ProductionTime { get; private set; }
+    public float ProductionTime => productionTime;
 }

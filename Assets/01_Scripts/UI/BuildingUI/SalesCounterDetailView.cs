@@ -5,15 +5,19 @@ using UnityEngine.UI;
 
 public class SalesCounterDetailView : BuildingDetailView
 {
-    [Header("판매대 상태")]
-    [SerializeField] private TMP_Text statusText;
+    [Header("패널")]
+    [SerializeField] private Canvas canvas;
+    [SerializeField] private GraphicRaycaster graphicRaycaster;
+
+    [Header("판매대 정보")]
+    [SerializeField] private TMP_Text buildingName;
     [SerializeField] private TMP_Text capacityText;
 
     [Header("재고 목록")]
     [SerializeField] private RectTransform contentRoot;
     [SerializeField] private SalesInventoryItemView itemViewPrefab;
 
-    [SerializeField] private int slotCount = 12;
+    [SerializeField] private int slotCount = 24;
 
     private readonly List<SalesInventoryItemView> itemViews = new();
 
@@ -23,31 +27,38 @@ public class SalesCounterDetailView : BuildingDetailView
     private void Awake()
     {
         PrepareSlots();
+
+        SetVisible(false);
     }
 
     private void OnDisable()
     {
-        Unbind();
+        Close();
     }
 
     private void OnDestroy()
     {
-        Unbind();
+        Close();
     }
 
-    public override void Bind(IBuildingUIModel building)
+    public override void Open(IBuildingUIModel building)
     {
         SalesCounter salesCounter = GetBuildingComponent<SalesCounter>(building);
 
-        Unbind();
+        Close();
 
         if (salesCounter == null) return;
+        if (buildingName != null)
+        {
+            buildingName.text = building.BuildingName;
+        }
 
         currentCounter = salesCounter;
         currentCounter.StateChanged += HandleCounterStateChanged;
 
         SetInventory(currentCounter.Inventory);
         RefreshAll();
+        SetVisible(true);
     }
 
     public override bool Supports(IBuildingUIModel building)
@@ -55,8 +66,10 @@ public class SalesCounterDetailView : BuildingDetailView
         return GetBuildingComponent<SalesCounter>(building) != null;
     }
 
-    public override void Unbind()
+    public override void Close()
     {
+        SetVisible(false);
+
         if (currentCounter != null)
         {
             currentCounter.StateChanged -= HandleCounterStateChanged;
@@ -65,9 +78,9 @@ public class SalesCounterDetailView : BuildingDetailView
         SetInventory(null);
         currentCounter = null;
 
-        if (statusText != null)
+        if (buildingName != null)
         {
-            statusText.text = string.Empty;
+            buildingName.text = string.Empty;
         }
 
         if (capacityText != null)
@@ -101,15 +114,10 @@ public class SalesCounterDetailView : BuildingDetailView
 
     private void RefreshStatus()
     {
-        if (statusText == null) return;
-
         if (currentCounter == null || !currentCounter.CanOperate)
         {
-            statusText.text = "준비 중";
             return;
         }
-
-        statusText.text = currentCounter.IsOpen ? "판매 중" : "판매 중지";
     }
 
     private void RefreshInventory()
@@ -185,5 +193,11 @@ public class SalesCounterDetailView : BuildingDetailView
     {
         SetInventory(currentCounter?.Inventory);
         RefreshAll();
+    }
+
+    private void SetVisible(bool visible)
+    {
+        canvas.enabled = visible;
+        graphicRaycaster.enabled = visible;
     }
 }

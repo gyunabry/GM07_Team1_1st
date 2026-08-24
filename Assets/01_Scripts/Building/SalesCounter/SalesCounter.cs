@@ -1,23 +1,22 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 
 /*
-[ÆÇ¸Å Èå¸§]
-1. ÇÃ·¹ÀÌ¾î°¡ ÆÇ¸Å´ë ¾ÈÂÊ »óÈ£ÀÛ¿ë ¿µ¿ª¿¡ ¼­¸é ¾ÆÀÌÅÛÀÌ Ã¢°í·Î ÀÌµ¿ (ÀÚµ¿ ¿î¹İ Á÷¿ø µ¿ÀÏ?)
-2. ¼Õ´ÔÀÌ ÆÇ¸Å´ë ¾Õ¿¡ µµÂø
-3. ¿øÇÏ´Â »óÇ°ÀÌ ¾ø´Ù¸é ÀÎ³» ½Ã°£ µ¿¾È ´ë±â
-4. »óÇ°°ú ÆÇ¸Å ´ã´çÀÚ°¡ ÀÖ´Ù¸é ÆÇ¸Å ½Ã°£ ½ÃÀÛ
-5. ÀÏÁ¤ ½Ã°£ µ¿¾È Á¶°ÇÀÌ À¯ÁöµÇ¸é ¿ä±¸ »óÇ°À» Â÷°¨ÇÏ°í µ·°ú °æÇèÄ¡ Áö±Ş
-6. ´ã´çÀÚ°¡ ÆÇ¸Å À§Ä¡¸¦ ¹ş¾î³ª°Å³ª Àç°í°¡ »ç¶óÁö¸é ÆÇ¸Å Áß´Ü (ÆÇ¸Å ÁøÇàµµ´Â ÃÊ±âÈ­)
+[íŒë§¤ íë¦„]
+1. í”Œë ˆì´ì–´ê°€ íŒë§¤ëŒ€ ì•ˆìª½ ìƒí˜¸ì‘ìš© ì˜ì—­ì— ì„œë©´ ì•„ì´í…œì´ ì°½ê³ ë¡œ ì´ë™ (ìë™ ìš´ë°˜ ì§ì› ë™ì¼?)
+2. ì†ë‹˜ì´ íŒë§¤ëŒ€ ì•ì— ë„ì°©
+3. ì›í•˜ëŠ” ìƒí’ˆì´ ì—†ë‹¤ë©´ ì¸ë‚´ ì‹œê°„ ë™ì•ˆ ëŒ€ê¸°
+4. ìƒí’ˆê³¼ íŒë§¤ ë‹´ë‹¹ìê°€ ìˆë‹¤ë©´ íŒë§¤ ì‹œê°„ ì‹œì‘
+5. ì¼ì • ì‹œê°„ ë™ì•ˆ ì¡°ê±´ì´ ìœ ì§€ë˜ë©´ ìš”êµ¬ ìƒí’ˆì„ ì°¨ê°í•˜ê³  ëˆê³¼ ê²½í—˜ì¹˜ ì§€ê¸‰
+6. ë‹´ë‹¹ìê°€ íŒë§¤ ìœ„ì¹˜ë¥¼ ë²—ì–´ë‚˜ê±°ë‚˜ ì¬ê³ ê°€ ì‚¬ë¼ì§€ë©´ íŒë§¤ ì¤‘ë‹¨ (íŒë§¤ ì§„í–‰ë„ëŠ” ì´ˆê¸°í™”)
  */
+
+// íŒë§¤ëŒ€ ë°°ì¹˜ ì‹œ OperationAreaì— ì§ì› ìë™ ë°°ì¹˜
 
 public class SalesCounter : MonoBehaviour
 {
-    [Header("°í°´ ½Ã½ºÅÛ")]
+    [Header("ê³ ê° ì‹œìŠ¤í…œ")]
     [SerializeField] private CustomerCheckoutStation checkoutStation;
-
-    [Header("ÀÚµ¿È­ Á÷¿ø")]
-    [SerializeField] private GameObject salesEmployee;
 
     private PlacedBuilding placedBuilding;
     private CounterInventory counterInventory;
@@ -27,7 +26,7 @@ public class SalesCounter : MonoBehaviour
         ? CounterInventory.Instance.Inventory 
         : null;
 
-    // °Ç¼³ÀÌ ¿Ï·áµÇ¾î¾ß ÆÇ¸Å´ë ¿î¿µ °¡´É
+    // ê±´ì„¤ì´ ì™„ë£Œë˜ì–´ì•¼ íŒë§¤ëŒ€ ìš´ì˜ ê°€ëŠ¥
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
 
     public bool IsOpen => checkoutStation != null && checkoutStation.IsAvailable;
@@ -59,21 +58,19 @@ public class SalesCounter : MonoBehaviour
 
         if (counterInventory == null)
         {
-            Debug.LogError("Àü¿ª ÆÇ¸Å´ë ÀÎº¥Åä¸®°¡ ÇÊ¿äÇÕ´Ï´Ù.");
+            Debug.LogError("ì „ì—­ íŒë§¤ëŒ€ ì¸ë²¤í† ë¦¬ê°€ í•„ìš”í•©ë‹ˆë‹¤.");
             checkoutStation?.CloseStation();
             return;
         }
 
         if (checkoutStation == null)
         {
-            Debug.LogError("Ã¼Å©¾Æ¿ô ½ºÅ×ÀÌ¼ÇÀÌ ÇÊ¿äÇÕ´Ï´Ù.");
+            Debug.LogError("ì²´í¬ì•„ì›ƒ ìŠ¤í…Œì´ì…˜ì´ í•„ìš”í•©ë‹ˆë‹¤.");
             return;
         }
-
-
     }
 
-    // ÆÇ¸Å´ë ÀÌµ¿, È¸Àü, Ã¶°Å Àü¿¡ È£Ãâ
+    // íŒë§¤ëŒ€ ì´ë™, íšŒì „, ì² ê±° ì „ì— í˜¸ì¶œ
     public void CloseCounter()
     {
         bool wasOpen = IsOpen;
@@ -86,7 +83,7 @@ public class SalesCounter : MonoBehaviour
         }
     }
 
-    // ÀÌµ¿, È¸Àü, NavMesh ¹İ¿µÀÌ ³¡³ª°í È£Ãâ
+    // ì´ë™, íšŒì „, NavMesh ë°˜ì˜ì´ ëë‚˜ê³  í˜¸ì¶œ
     public bool OpenCounter()
     {
         if (!CanOperate || checkoutStation == null)
