@@ -4,7 +4,7 @@ using System.Collections;
 public class MagicArrow : MonoBehaviour
 {
     private ParticleSystem ps;
-    [SerializeField] private MonsterPoolManager monsterPoolManager;
+    [SerializeField] private PoolManager poolManager;
 
     private void Awake()
     {
@@ -22,7 +22,7 @@ public class MagicArrow : MonoBehaviour
         }
         else
         {
-            monsterPoolManager.ReturnPool(this);
+            poolManager.ReturnPool(this);
         }
     }
 }

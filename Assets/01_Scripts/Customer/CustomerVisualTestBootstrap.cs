@@ -163,7 +163,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         }
 
         Vector3Int cell = Vector3Int.RoundToInt(position);
-        placedBuilding.Initialize(salesCounterData, cell, 0, new[] { cell });
+        // placedBuilding.Initialize(salesCounterData, cell, 0, new[] { cell });
         placedBuilding.BeginConstruction();
     }
 
@@ -193,7 +193,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         }
 
         Vector3Int cell = Vector3Int.RoundToInt(position);
-        placedBuilding.Initialize(productionBuildingData, cell, 0, new[] { cell });
+        // placedBuilding.Initialize(productionBuildingData, cell, 0, new[] { cell });
         placedBuilding.BeginConstruction();
         return productionBuilding;
     }

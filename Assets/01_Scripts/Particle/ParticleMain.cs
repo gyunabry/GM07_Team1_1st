@@ -1,11 +1,10 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ParticleMain : MonoBehaviour
 {
     private ParticleSystem ps;
-    [SerializeField] private MonsterPoolManager monsterPoolManager;
+    [SerializeField] private PoolManager poolManager;
     [SerializeField] private AttackSO attackSo;
 
     private void Awake()
@@ -24,7 +23,7 @@ public class ParticleMain : MonoBehaviour
         }
         else
         {
-            monsterPoolManager.ReturnPool(this);
+            poolManager.ReturnPool(this);
         }
     }
 }

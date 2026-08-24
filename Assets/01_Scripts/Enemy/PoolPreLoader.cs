@@ -4,7 +4,10 @@ using UnityEngine.UI;
 public class PoolPreLoader : MonoBehaviour
 {
     [Header("积己且 橇府普")]
-    [SerializeField] private Enemy enemyPrefab;
+    [SerializeField] private EnemySpawnEntry[] enemies;
+    [SerializeField] private CarrierWorker carrierWorkerPrefab;
+    [SerializeField] private HunterWorker hunterWorkerPrefab;
+    [SerializeField] private CustomerController customerPrefab;
     [SerializeField] private Dropitem dropItemPrefab;
     [SerializeField] private AttackPoint attackPointPrefab;
     [SerializeField] private ChasingSickle chasingSicklePrefab;
@@ -15,7 +18,9 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private SkillTreePopUp skillTreePopUpPrefab;
 
     [Header("积己 俺荐")]
-    [SerializeField] private int enemyCount;
+    [SerializeField] private int carrierCount;
+    [SerializeField] private int hunterCount;
+    [SerializeField] private int customerCount;
     [SerializeField] private int dropItemCount;
     [SerializeField] private int attackPointCount;
     [SerializeField] private int chasingSickleCount;
@@ -30,15 +35,24 @@ public class PoolPreLoader : MonoBehaviour
     private void Start()
     {
         if (setup) return;
-        MonsterPoolManager.Instance.PreLoadPool(enemyPrefab, enemyCount);
-        MonsterPoolManager.Instance.PreLoadPool(dropItemPrefab, dropItemCount);
-        MonsterPoolManager.Instance.PreLoadPool(attackPointPrefab, attackPointCount);
-        MonsterPoolManager.Instance.PreLoadPool(chasingSicklePrefab, chasingSickleCount);
-        MonsterPoolManager.Instance.PreLoadPool(fireCirclePrefab, fireCircleCount);
-        MonsterPoolManager.Instance.PreLoadPool(flowerThornsPrefab, flowerThornsCount);
-        MonsterPoolManager.Instance.PreLoadPool(lightningRayPrefab, lightningRayCount);
-        MonsterPoolManager.Instance.PreLoadPool(buttonPrefab, buttonCount);
-        MonsterPoolManager.Instance.PreLoadPool(skillTreePopUpPrefab, skillTreePopUpCount);
+        //MonsterPoolManager.Instance.PreLoadPool(enemyPrefab, enemyCount);
+
+        foreach (EnemySpawnEntry entry in enemies)
+        {
+            PoolManager.Instance.PreLoadPool(entry.prefab, entry.maxEnemyCount);
+        }
+
+        PoolManager.Instance.PreLoadPool(carrierWorkerPrefab, carrierCount);
+        PoolManager.Instance.PreLoadPool(hunterWorkerPrefab, hunterCount);
+        PoolManager.Instance.PreLoadPool(customerPrefab, customerCount);
+        PoolManager.Instance.PreLoadPool(dropItemPrefab, dropItemCount);
+        PoolManager.Instance.PreLoadPool(attackPointPrefab, attackPointCount);
+        PoolManager.Instance.PreLoadPool(chasingSicklePrefab, chasingSickleCount);
+        PoolManager.Instance.PreLoadPool(fireCirclePrefab, fireCircleCount);
+        PoolManager.Instance.PreLoadPool(flowerThornsPrefab, flowerThornsCount);
+        PoolManager.Instance.PreLoadPool(lightningRayPrefab, lightningRayCount);
+        PoolManager.Instance.PreLoadPool(buttonPrefab, buttonCount);
+        PoolManager.Instance.PreLoadPool(skillTreePopUpPrefab, skillTreePopUpCount);
         setup = true;
     }
 

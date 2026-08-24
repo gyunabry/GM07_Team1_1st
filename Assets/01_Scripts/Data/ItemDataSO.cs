@@ -1,17 +1,5 @@
 using UnityEngine;
 
-/*
-EnemySO
-ㄴ DropEntry
-    ㄴ ItemDataSO
-    ㄴ 드랍 확률 및 수량
-
-RecipeSO
-ㄴ 입력 ItemDataSO 리스트
-ㄴ 생산 방식
-ㄴ 출력 ItemDataSO
-*/
-
 public enum ItemType
 {
     Material,   // 몬스터 드랍 재료
@@ -21,27 +9,27 @@ public enum ItemType
 [CreateAssetMenu(fileName = "ItemData", menuName = "Tycoon/Item Data")]
 public class ItemDataSO : ScriptableObject
 {
-    [field: SerializeField]
-    public string ItemId { get; private set; }
+    [SerializeField] private string itemId;
+    [SerializeField] private string itemName;
+    [SerializeField] private string description;
 
-    [field: SerializeField]
-    public string ItemName { get; private set; }
+    [SerializeField] private ItemType itemType;
+    [SerializeField] private ProcessType processType;
 
-    [field: SerializeField]
-    public string Description { get; private set; }
+    [SerializeField] private int sellPrice;
+    [SerializeField] private int exp;
 
-    [field: SerializeField]
-    public ItemType ItemType { get; private set; }
+    [SerializeField] private Sprite icon;
 
-    [field: SerializeField]
-    public int SellPrice { get; private set; }
+    public string ItemId => itemId;
+    public string ItemName => itemName;
+    public string Description => description;
 
-    [field: SerializeField]
-    public int Exp { get; private set; }
+    public ItemType ItemType => itemType;
+    public ProcessType ProcessType => processType;
 
-    [field: SerializeField, Min(1)]
-    public int MaxStack { get; private set; }
+    public int SellPrice => sellPrice;
+    public int Exp => exp;
 
-    [field: SerializeField]
-    public Sprite Icon { get; private set; }
+    public Sprite Icon => icon;
 }

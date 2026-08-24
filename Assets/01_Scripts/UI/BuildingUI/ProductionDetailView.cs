@@ -4,19 +4,22 @@ using UnityEngine.UI;
 
 public class ProductionDetailView : BuildingDetailView
 {
-    [Header("레시피 선택 패널")]
-    [SerializeField] private Button itemButton;
-    [SerializeField] private RecipeSelectPanel recipeSelectPanel;
+    [Header("패널")]
+    [SerializeField] private Canvas targetCanvas;
+    [SerializeField] private GraphicRaycaster graphicRaycaster;
+    [SerializeField] private TMP_Text buildingNameText;
 
-    [Header("선택된 레시피 정보")]
-    [SerializeField] private Image recipeIcon;
-    [SerializeField] private TMP_Text recipeNameText;
-    [SerializeField] private TMP_Text itemIncomeText;
+    [Header("생산 아이템")]
+    [SerializeField] private Button itemButton; // 완성품 아이콘 버튼
+    [SerializeField] private Image inputIcon;
+    [SerializeField] private TMP_Text inputCountText;
+    [SerializeField] private Image outputIcon;
+    [SerializeField] private TMP_Text outputCountText;
     [SerializeField] private TMP_Text productionTimeText;
-
-    [Header("생산 진행 상황")]
     [SerializeField] private Image progressFill;
-    [SerializeField] private TMP_Text statusText;
+
+    [Header("레시피")]
+    [SerializeField] private RecipeSelectPanel recipeSelectPanel;
 
     private ProductionBuilding currentBuilding;
 
@@ -26,11 +29,8 @@ public class ProductionDetailView : BuildingDetailView
         {
             itemButton.onClick.AddListener(OpenRecipePanel);
         }
-    }
 
-    private void OnDisable()
-    {
-        Unbind();
+        SetVisible(false);
     }
 
     private void OnDestroy()
@@ -39,51 +39,56 @@ public class ProductionDetailView : BuildingDetailView
         {
             itemButton.onClick.RemoveListener(OpenRecipePanel);
         }
-
-        Unbind();
     }
 
-    public override void Bind(IBuildingUIModel building)
+    public void Show(ProductionBuilding building, string buildingName)
     {
-        ProductionBuilding productionBuilding = GetBuildingComponent<ProductionBuilding>(building);
+        if (building == null) return;
 
-        Unbind();
+        Hide();
 
-        if (productionBuilding == null) return;
+        currentBuilding = building;
 
-        currentBuilding = productionBuilding;
-
-        // 시설 상태를 표시하는 동안만 이벤트 구독
-        currentBuilding.RecipeChanged += HandleRecipeChanged;
-        currentBuilding.ProgressChanged += HandleProgressChanged;
-        currentBuilding.StateChanged += HandleStateChanged;
-        currentBuilding.ProductionStarted += HandleProductionStarted;
-        currentBuilding.ProductionComplete += HandleProductionCompleted;
-
-        recipeSelectPanel?.Hide();
-        RefreshAll();
-    }
-
-    public override bool Supports(IBuildingUIModel building)
-    {
-        return GetBuildingComponent<ProductionBuilding>(building);
-    }
-
-    public override void Unbind()
-    {
-        recipeSelectPanel?.Hide();
+        if (buildingNameText != null)
+        {
+            buildingNameText.text = buildingName;
+        }
 
         if (currentBuilding != null)
         {
-            currentBuilding.RecipeChanged -= HandleRecipeChanged;
-            currentBuilding.ProgressChanged -= HandleProgressChanged;
-            currentBuilding.StateChanged -= HandleStateChanged;
-            currentBuilding.ProductionStarted -= HandleProductionStarted;
-            currentBuilding.ProductionComplete -= HandleProductionCompleted;
+            currentBuilding.RecipeChanged += HandleRecipeChanged;
+            currentBuilding.ProgressChanged += HandleProgressChanged;
+            currentBuilding.StateChanged += HandleStateChanged;
+
+            currentBuilding.InputInventory.InventoryChanged += HandleInventoryChanged;
+            currentBuilding.OutputInventory.InventoryChanged += HandleInventoryChanged;
         }
 
-        currentBuilding = null;
+        RefreshAll();
+        SetVisible(true);
+    }
+
+    public void Hide()
+    {
+        recipeSelectPanel?.Hide();
+
+        DetachBuilding();
         ResetView();
+        SetVisible(false);
+    }
+
+    private void DetachBuilding()
+    {
+        if (currentBuilding == null) return;
+
+        currentBuilding.RecipeChanged -= HandleRecipeChanged;
+        currentBuilding.ProgressChanged -= HandleProgressChanged;
+        currentBuilding.StateChanged -= HandleStateChanged;
+
+        currentBuilding.InputInventory.InventoryChanged -= HandleInventoryChanged;
+        currentBuilding.OutputInventory.InventoryChanged -= HandleInventoryChanged;
+
+        currentBuilding = null;
     }
 
     private void RefreshAll()
@@ -95,48 +100,9 @@ public class ProductionDetailView : BuildingDetailView
         }
 
         RefreshRecipeInfo(currentBuilding.SelectedRecipe);
-        RefreshStatus(currentBuilding.State);
         SetProgress(currentBuilding.Progress);
-    }
-
-    // 레시피 정보를 갱신하는 메서드
-    private void RefreshRecipeInfo(RecipeDataSO recipe)
-    {
-        if (recipe == null)
-        {
-            recipeIcon.enabled = false;
-            recipeNameText.text = "선택된 레시피 없음";
-            itemIncomeText.text = string.Empty;
-            productionTimeText.text = string.Empty;
-            return;
-        }
-
-        recipeNameText.text = recipe.RecipeName;
-        productionTimeText.text = $"{recipe.ProductionTime} sec";
-
-        if (recipe.Output != null)
-        {
-            recipeIcon.enabled = true;
-            recipeIcon.sprite = recipe.Output.Icon;
-            itemIncomeText.text = $"{recipe.Output.SellPrice}G";
-        }
-        else
-        {
-            recipeIcon.enabled = false;
-            itemIncomeText.text = string.Empty;
-        }
-    }
-
-    private void RefreshStatus(ProductionState state)
-    {
-        statusText.text = state switch
-        {
-            ProductionState.Idle => "레시피를 선택하세요.",
-            ProductionState.WaitingForMaterials => "재료 대기 중",
-            ProductionState.Producing => "생산 중...",
-            ProductionState.WaitingForOutputSpace => "출력 공간 부족",
-            _ => "알 수 없는 상태"
-        };
+        RefreshRemainingTime();
+        RefreshInventoryInfo();
     }
 
     // 진행률을 설정하는 메서드
@@ -152,49 +118,157 @@ public class ProductionDetailView : BuildingDetailView
         recipeSelectPanel.Show(currentBuilding);
     }
 
-    private void ResetView()
+    private void RefreshRecipeInfo(RecipeDataSO recipe)
     {
-        if (recipeIcon != null)
+        if (recipe == null)
         {
-            recipeIcon.sprite = null;
-            recipeIcon.enabled = false;
+            ResetView();
+            return;
         }
 
-        if (recipeNameText != null) recipeNameText.text = "선택된 레시피 없음";
-        if (itemIncomeText != null) itemIncomeText.text = string.Empty;
+        if (inputIcon != null)
+        {
+            inputIcon.sprite = recipe.Input.Icon;
+            inputIcon.enabled = true;
+        }
+
+        if (outputIcon != null)
+        {
+            outputIcon.sprite = recipe.Output.Icon;
+            outputIcon.enabled = true;
+        }
+
+        RefreshInventoryInfo();
+    }
+
+    // 생산시설 인벤토리 갱신
+    private void RefreshInventoryInfo()
+    {
+        if (currentBuilding == null) return;
+
+        RecipeDataSO recipe = currentBuilding.SelectedRecipe;
+
+        if (recipe == null)
+        {
+            inputCountText.text = string.Empty;
+            outputCountText.text = string.Empty;
+            return;
+        }
+
+        int inputAmount = currentBuilding.InputInventory.GetAmount(recipe.Input);
+        int outputAmount = currentBuilding.OutputInventory.GetAmount(recipe.Output);
+
+        if (inputCountText != null)
+        {
+            inputCountText.text = $"{inputAmount} / {currentBuilding.InputInventory.Capacity}";
+        }
+
+        if (outputCountText != null)
+        {
+            outputCountText.text = $"{outputAmount} / {currentBuilding.OutputInventory.Capacity}";
+        }
+    }
+
+    private void RefreshRemainingTime()
+    {
+        if (currentBuilding == null || currentBuilding.SelectedRecipe == null)
+        {
+            productionTimeText.text = "00:00";
+            return;
+        }
+
+        float time;
+
+        if (currentBuilding.ActiveRecipe != null)
+        {
+            // 생산 중 or 출력 공간 부족
+            time = currentBuilding.ReaminingTime;
+        }
+        else
+        {
+            // 재료 대기 or 생산 시작 전
+            time = currentBuilding.SelectedRecipeEffectiveDuration;
+        }
+
+        int totalSeconds = Mathf.CeilToInt(Mathf.Max(0f, time));
+
+        int min = totalSeconds / 60;
+        int sec = totalSeconds % 60;
+
+        if (productionTimeText != null)
+        {
+            productionTimeText.text = $"{min:00}:{sec:00}";
+        }
+    }
+
+    private void ResetView()
+    {
+        if (inputIcon != null)
+        {
+            inputIcon.sprite = null;
+            inputIcon.enabled = false;
+        }
+
+        if (outputIcon != null)
+        {
+            outputIcon.sprite = null;
+            outputIcon.enabled = false;
+        }
+
         if (productionTimeText != null) productionTimeText.text = string.Empty;
-        if (statusText != null) statusText.text = string.Empty;
+        if (inputCountText != null) inputCountText.text = string.Empty;
+        if (outputCountText != null) outputCountText.text = string.Empty;
+
         SetProgress(0f);
     }
 
     private void HandleRecipeChanged(RecipeDataSO recipe)
     {
         RefreshRecipeInfo(recipe);
-        RefreshStatus(currentBuilding.State);
+        RefreshRemainingTime();
     }
 
     private void HandleProgressChanged(float progress)
     {
         SetProgress(progress);
+        RefreshRemainingTime();
     }
 
     private void HandleStateChanged(ProductionState state)
     {
-        RefreshStatus(state);
-
         if (currentBuilding != null)
         {
             SetProgress(currentBuilding.Progress);
         }
     }
 
-    private void HandleProductionStarted(RecipeDataSO recipe)
+    private void HandleInventoryChanged()
     {
-        RefreshAll();
+        RefreshInventoryInfo();
     }
 
-    private void HandleProductionCompleted(RecipeDataSO recipe)
+    private void SetVisible(bool visible)
     {
-        RefreshAll();
+        targetCanvas.enabled = visible;
+        graphicRaycaster.enabled = visible;
+    }
+
+    public override bool Supports(IBuildingUIModel building)
+    {
+        return GetBuildingComponent<ProductionBuilding>(building) != null;
+    }
+
+    public override void Open(IBuildingUIModel building)
+    {
+        ProductionBuilding productionBuilding = GetBuildingComponent<ProductionBuilding>(building);
+
+        if (productionBuilding == null) return;
+
+        Show(productionBuilding, building.BuildingName);
+    }
+
+    public override void Close()
+    {
+        Hide();
     }
 }

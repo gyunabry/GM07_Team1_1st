@@ -17,6 +17,7 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask placementLayer;
     [SerializeField] private Camera mainCamera;
 
     private Vector3 lastPos;
@@ -62,5 +63,33 @@ public class InputManager : MonoBehaviour
 
         worldPosition = hit.point;
         return true;
+    }
+
+    public bool TryGetPlacementHit(out Vector3 worldPosition, out Collider hitCollider)
+    {
+        worldPosition = default;
+        hitCollider = null;
+
+        if (mainCamera == null || Mouse.current == null)
+        {
+            return false;
+        }
+
+        Vector2 mousePos = Mouse.current.position.ReadValue();
+
+        Ray ray = mainCamera.ScreenPointToRay(mousePos);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 1000f, placementLayer, QueryTriggerInteraction.Ignore))
+        {
+            worldPosition = hit.point;
+            hitCollider = hit.collider;
+
+            return true;
+        }
+
+        worldPosition = default;
+        hitCollider = null;
+
+        return false;
     }
 }

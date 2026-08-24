@@ -10,7 +10,7 @@ public class PlayerAttack : MonoBehaviour
 
     [SerializeField] private LayerMask layer;
     [SerializeField] private Player player;
-    [SerializeField] private MonsterPoolManager poolManager;
+    [SerializeField] private PoolManager poolManager;
     [SerializeField] private ParticleManager particleManager;
 
     [SerializeField] private List<AttackSO> attackSOData;

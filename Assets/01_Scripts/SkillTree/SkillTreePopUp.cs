@@ -8,7 +8,7 @@ public class SkillTreePopUp : MonoBehaviour
     [SerializeField] GameObject descName;
     [SerializeField] GameObject descNeed;
     [SerializeField] GameObject descDesc;
-    [SerializeField] MonsterPoolManager monsterPoolManager;
+    [SerializeField] PoolManager poolManager;
 
     
     public void SetSprite(Sprite sprite)

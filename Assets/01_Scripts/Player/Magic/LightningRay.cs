@@ -4,7 +4,7 @@ using System.Collections;
 public class LightningRay : MonoBehaviour
 {
     private ParticleSystem ps;
-    [SerializeField] private MonsterPoolManager monsterPoolManager;
+    [SerializeField] private PoolManager poolManager;
     [SerializeField] private AttackSO attackSo;
     public float damage;
 
@@ -23,7 +23,7 @@ public class LightningRay : MonoBehaviour
     IEnumerator PlayCo()
     {
         yield return new WaitForSeconds(1f);
-        monsterPoolManager.ReturnPool(this);
+        poolManager.ReturnPool(this);
     }
     private void OnTriggerEnter(Collider other)
     {
