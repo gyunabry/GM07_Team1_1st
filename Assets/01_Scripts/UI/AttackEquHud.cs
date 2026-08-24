@@ -3,93 +3,211 @@ using UnityEngine.UI;
 
 public class AttackEquHud : MonoBehaviour
 {
-    Button button;
+    // Button button;
     [SerializeField] PlayerAttack playerAttack;
-    [SerializeField] MonsterPoolManager monsterPoolManager;
+    [SerializeField] PoolManager poolManager;
     [SerializeField] GameObject layoutWidth;
 
     [SerializeField] AttackEquHud closeButton1;
     [SerializeField] AttackEquHud closeButton2;
+
+    [SerializeField] private Image skillIcon;
+    [SerializeField] private Image plusIcon; // 스킬이 장착된 상태가 아닐 때 활성화
+
     public string equAttackID;
-    public bool equip;
+    public bool isEquip;
     public int slotIndex;
 
     private void Awake()
     {
-        button = GetComponent<Button>();
+        // button = GetComponent<Button>();
         layoutWidth.SetActive(false);
     }
+
+    private void Start()
+    {
+        RefreshSlot();
+    }
+
+    private void OnDisable()
+    {
+        if (layoutWidth != null) CloseSelector();
+    }
+
     public void OnOffButton()
     {
-        if (layoutWidth.activeSelf == true)
+        //if (layoutWidth.activeSelf == true)
+        //{
+        //    AttackEquPrefab[] childButton = GetComponentsInChildren<AttackEquPrefab>();
+        //    foreach(var button in childButton)
+        //    {
+        //        poolManager.ReturnPool(button);
+        //    }
+        //    layoutWidth.SetActive(false);
+        //}
+        //else
+        //{
+        //    layoutWidth.SetActive(true);
+        //    if(closeButton1.layoutWidth.activeSelf == true)
+        //    {
+        //        closeButton1.OnOffButton();
+        //    }
+        //    if (closeButton2.layoutWidth.activeSelf == true)
+        //    {
+        //        closeButton2.OnOffButton();
+        //    }
+        //    SelectAttack();
+        //}
+
+        if (layoutWidth.activeSelf)
         {
-            AttackEquPrefab[] childButton = GetComponentsInChildren<AttackEquPrefab>();
-            foreach(var button in childButton)
-            {
-                monsterPoolManager.ReturnPool(button);
-            }
-            layoutWidth.SetActive(false);
+            CloseSelector();
+            return;
         }
-        else
-        {
-            layoutWidth.SetActive(true);
-            if(closeButton1.layoutWidth.activeSelf == true)
-            {
-                closeButton1.OnOffButton();
-            }
-            if (closeButton2.layoutWidth.activeSelf == true)
-            {
-                closeButton2.OnOffButton();
-            }
-            SelectAttack();
-        }
+
+        closeButton1?.CloseSelector();
+        closeButton2?.CloseSelector();
+
+        layoutWidth.SetActive(true);
+        SelectAttack();
     }
+
     public void SelectAttack()
     {
         foreach(var attackData in playerAttack.attackUnlockDatas)
         {
-            if(attackData.unlock == true)
-            {
-                AttackEquPrefab prefabButton = monsterPoolManager.GetPool<AttackEquPrefab>();
-                Button prefabImage = prefabButton.GetComponent<Button>();
-                prefabButton.attackEquHud = this;
-                prefabImage.image.sprite = attackData.sprite;
-                prefabButton.transform.SetParent(layoutWidth.transform);
-                prefabButton.equID = equAttackID;
-                prefabButton.slotIndex = slotIndex;
-                prefabButton.playerAttack = playerAttack;
-                prefabButton.attackID = attackData.attackID;
-            }
+            //if(attackData.unlock == true)
+            //{
+            //    AttackEquPrefab prefabButton = poolManager.GetPool<AttackEquPrefab>();
+            //    Button prefabImage = prefabButton.GetComponent<Button>();
+            //    prefabButton.attackEquHud = this;
+            //    prefabImage.image.sprite = attackData.sprite;
+            //    prefabButton.transform.SetParent(layoutWidth.transform);
+            //    prefabButton.equID = equAttackID;
+            //    prefabButton.slotIndex = slotIndex;
+            //    prefabButton.playerAttack = playerAttack;
+            //    prefabButton.attackID = attackData.attackID;
+            //}
+
+            if (!attackData.unlock) continue;
+
+            AttackEquPrefab prefabButton = poolManager.GetPool<AttackEquPrefab>();
+
+            if (prefabButton == null) continue;
+
+            prefabButton.transform.SetParent(layoutWidth.transform);
+
+            prefabButton.Bind(this, attackData.attackID, attackData.sprite);
         }
     }
+
     public void EquipSlot(string id)
     {
         playerAttack.StartAndStopAttackCo(slotIndex, id, this);
     }
+
     public void EquipRefresh(string id)
     {
-        equAttackID = id;
-        equip = false;
-        foreach(var playerAttackSlot in playerAttack.slots)
+        //equAttackID = id;
+        //isEquip = false;
+        //foreach(var playerAttackSlot in playerAttack.slots)
+        //{
+        //    if(playerAttackSlot.equipAttackID == id)
+        //    {
+        //        isEquip = true;
+        //    }
+        //}
+
+        //if(isEquip == false)
+        //{
+        //    button.image.sprite = null;
+        //}
+        //else
+        //{
+        //    foreach(var unlockData in playerAttack.attackUnlockDatas)
+        //    {
+        //        if(unlockData.attackID == id)
+        //        {
+        //            button.image.sprite = unlockData.sprite;
+        //        }
+        //    }
+        //}
+
+        RefreshSlot();
+    }
+
+    public void RefreshSlot()
+    {
+        if (playerAttack == null ||
+            playerAttack.slots == null || 
+            slotIndex < 0 || 
+            slotIndex >= playerAttack.slots.Length)
         {
-            if(playerAttackSlot.equipAttackID == id)
-            {
-                equip = true;
-            }
+            SetEmptySlot();
+            return;
         }
-        if(equip == false)
+
+        string equippedId = playerAttack.slots[slotIndex].equipAttackID;
+
+        equAttackID = equippedId;
+        isEquip = !string.IsNullOrEmpty(equippedId);
+
+        Sprite equippedSprite = null;
+
+        if (isEquip)
         {
-            button.image.sprite = null;
-        }
-        else
-        {
-            foreach(var unlockData in playerAttack.attackUnlockDatas)
+            foreach (var unlockData in playerAttack.attackUnlockDatas)
             {
-                if(unlockData.attackID == id)
+                if (unlockData.attackID == equippedId)
                 {
-                    button.image.sprite = unlockData.sprite;
+                    equippedSprite = unlockData.sprite;
+                    break;
                 }
             }
         }
+
+        // 스킬을 장착하면 스킬 아이콘을 활성화하고 플러스 아이콘은 비활성화
+        if (skillIcon != null)
+        {
+            skillIcon.sprite = equippedSprite;
+            skillIcon.gameObject.SetActive(isEquip);
+        }
+
+        if (plusIcon != null)
+        {
+            plusIcon.gameObject.SetActive(!isEquip);
+        }
+    }
+
+    private void SetEmptySlot()
+    {
+        equAttackID = null;
+        isEquip = false;
+
+        if (skillIcon != null)
+        {
+            skillIcon.sprite = null;
+            skillIcon.gameObject.SetActive(false);
+        }
+
+        if (plusIcon != null)
+        {
+            plusIcon.gameObject.SetActive(true);
+        }
+    }
+
+    public void CloseSelector()
+    {
+        if (layoutWidth == null) return;
+
+        AttackEquPrefab[] childButtons = layoutWidth.GetComponentsInChildren<AttackEquPrefab>(true);
+
+        foreach (var button in childButtons)
+        {
+            button.ResetState();
+            poolManager.ReturnPool(button);
+        }
+
+        layoutWidth.SetActive(false);
     }
 }

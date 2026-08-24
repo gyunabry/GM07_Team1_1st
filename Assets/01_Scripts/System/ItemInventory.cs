@@ -34,7 +34,10 @@ public sealed class ItemInventory
     [SerializeField, Min(0)] private int capacity = 20;
     [SerializeField] private List<InventoryEntry> entries = new();
 
-    public int Capacity => capacity;
+    private int bonusCapacity;
+
+    public int Capacity => Mathf.Max(0, capacity + bonusCapacity);
+    public int BonusCapacity => bonusCapacity;
 
     public int TotalAmount
     {
@@ -58,6 +61,12 @@ public sealed class ItemInventory
     public IReadOnlyList<InventoryEntry> Entries => entries;
 
     public event Action InventoryChanged;
+
+    public void SetBonusCapacity(int value)
+    {
+        bonusCapacity = Mathf.Max(0, value);
+        InventoryChanged?.Invoke();
+    }
 
     public int GetAmount(ItemDataSO item)
     {

@@ -4,7 +4,7 @@ using System.Collections;
 public class FlowerThorns : MonoBehaviour
 {
     private ParticleSystem ps;
-    [SerializeField] private MonsterPoolManager monsterPoolManager;
+    [SerializeField] private PoolManager monsterPoolManager;
     [SerializeField] private AttackSO attackSo;
 
     private void Awake()

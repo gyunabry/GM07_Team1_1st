@@ -37,6 +37,7 @@ public class EnemyPatrolState : IState
             moveDir.y = 0f;
             moveDir.Normalize();
         }
+
         enemy.agent.Move(moveDir * Time.deltaTime * enemy.enemyData.PatrolSpeed);
         
         if (randomEnd == true)

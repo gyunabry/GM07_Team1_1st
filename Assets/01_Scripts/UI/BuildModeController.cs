@@ -1,13 +1,13 @@
 using DG.Tweening;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class BuildModeController : MonoBehaviour
 {
     [SerializeField] private RectTransform buildMenu;
     [SerializeField] private Canvas buildMenuCanvas;
-    [SerializeField] private GameObject gridView;
+    [SerializeField] private List<BuildableArea> buildableAreas = new();
     [SerializeField] private InputManager inputManager;
 
     [Header("이벤트")]
@@ -19,6 +19,7 @@ public class BuildModeController : MonoBehaviour
     [SerializeField] private Ease openEase = Ease.OutBack;
     [SerializeField] private Ease closeEase = Ease.InCubic;
 
+    private BuildableArea area;
     private Vector2 visiblePos;
     private Vector2 hiddenPos;
     private Sequence anim;
@@ -27,7 +28,7 @@ public class BuildModeController : MonoBehaviour
 
     private void Awake()
     {
-        gridView.SetActive(false);
+        SetGridViewVisible(false);
 
         // 에디터에 배치한 위치를 최종 위치로 사용
         visiblePos = buildMenu.anchoredPosition;
@@ -81,7 +82,7 @@ public class BuildModeController : MonoBehaviour
             .SetEase(openEase))
             .SetUpdate(true);
 
-        gridView.SetActive(true);
+        SetGridViewVisible(true);
     }
 
     public void CloseBuildMode()
@@ -106,6 +107,16 @@ public class BuildModeController : MonoBehaviour
             })
             .SetUpdate(true);
 
-        gridView.SetActive(false);
+        SetGridViewVisible(false);
+    }
+
+    private void SetGridViewVisible(bool visible)
+    {
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area == null) continue;
+
+            area.SetGridVisible(visible);
+        }
     }
 }

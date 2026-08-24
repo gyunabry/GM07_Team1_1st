@@ -6,41 +6,81 @@ using UnityEngine.AI;
 
 public class EnemySpawn : MonoBehaviour
 {
-    [SerializeField] private int maxEnemy;
-    [SerializeField] private float enemySpawnTimer;
-    [SerializeField] private Enemy enemy;
-    [SerializeField] private MonsterPoolManager poolManager;
+    [Header("몬스터 설정")]
+    [SerializeField] private EnemySpawnEntry enemyEntry;
+    [SerializeField] private float enemySpawnTimer = 1f;
+
+    [Header("스폰 구역")]
     [SerializeField] private BoxCollider spawnArea;
-    [SerializeField] private EnemyDataSO enemyData;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float raycastHeight;
-    private Coroutine co;
+    [SerializeField] private float raycastHeight = 10f;
+
+    [Header("풀")]
+    [SerializeField] private PoolManager poolManager;
+
+    private Coroutine spawnCoroutine;
+    private WaitForSeconds spawnWait;
+
     public List<Enemy> activeEnemy = new List<Enemy>();
+
+    private void Awake()
+    {
+        spawnWait = new WaitForSeconds(enemySpawnTimer);
+    }
+
+    private void Start()
+    {
+        if (poolManager == null)
+        {
+            poolManager = PoolManager.Instance;
+        }
+    }
 
     private void Update()
     {
-        if(activeEnemy.Count < maxEnemy && co == null)
+        if(activeEnemy.Count >= enemyEntry.maxEnemyCount)
         {
-            co = StartCoroutine(SpawnEnemy());
+            return;
+        }
+
+        if (spawnCoroutine == null)
+        {
+            spawnCoroutine = StartCoroutine(SpawnEnemy());
         }
     }
+
     private IEnumerator SpawnEnemy()
     {
-        yield return new WaitForSeconds(enemySpawnTimer);
-        while(activeEnemy.Count < maxEnemy)
+        yield return spawnWait;
+
+        if (activeEnemy.Count < enemyEntry.maxEnemyCount)
         {
-            Enemy nowEnemy = poolManager.GetPool<Enemy>();
-            NavMeshAgent agent = nowEnemy.GetComponent<NavMeshAgent>();
-            agent.Warp(RandomPoint());
-            nowEnemy.GetEnemyData(enemyData);
-            nowEnemy.enemySpawn = this;
-            nowEnemy.CurrentHp = enemyData.Hp;
-            nowEnemy.runStartDistance = enemyData.RunStartDistance;
-            nowEnemy.runEndDistance = enemyData.RunEndDistance;
-            activeEnemy.Add(nowEnemy);
+            SpawnOneEnemy();
         }
-        co = null;
+
+        spawnCoroutine = null;
     }
+
+    private void SpawnOneEnemy()
+    {
+        Enemy enemy = poolManager.GetPool(enemyEntry.prefab);
+
+        if (enemy == null) return;
+
+        EnemyDataSO data = enemyEntry.data;
+
+        enemy.GetEnemyData(data);
+        enemy.enemySpawn = this;
+        enemy.CurrentHp = data.Hp;
+        enemy.runStartDistance = data.RunStartDistance;
+        enemy.runEndDistance = data.RunEndDistance;
+
+        NavMeshAgent agent = enemy.GetComponent<NavMeshAgent>();
+        agent.Warp(RandomPoint());
+
+        activeEnemy.Add(enemy);
+    }
+
     private Vector3 RandomPoint()
     {
         Vector3 localPoint = spawnArea.center + new Vector3(Random.Range(-spawnArea.size.x * 0.5f, spawnArea.size.x * 0.5f),

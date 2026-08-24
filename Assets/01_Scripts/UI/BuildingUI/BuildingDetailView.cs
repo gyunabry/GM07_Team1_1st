@@ -13,12 +13,12 @@ public abstract class BuildingDetailView : MonoBehaviour
     /// <summary>
     /// 시설 데이터를 연결하고 필요한 이벤트를 구독
     /// </summary>
-    public abstract void Bind(IBuildingUIModel building);
+    public abstract void Open(IBuildingUIModel building);
 
     /// <summary>
     /// 시설 참조를 제거하고 이벤트 구독을 해제
     /// </summary>
-    public abstract void Unbind();
+    public abstract void Close();
 
     /// <summary>
     /// 같은 오브젝트에 있는 실제 기능 컴포넌트를 찾아서 반환

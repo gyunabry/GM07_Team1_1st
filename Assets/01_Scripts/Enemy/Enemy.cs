@@ -4,24 +4,30 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
     public NavMeshAgent agent;
-    private MonsterPoolManager poolManager;
+    private PoolManager poolManager;
 
     public EnemyStateController stateController;
+    [SerializeField] private EnemyAnimationController animationController;
     public EnemyDataSO enemyData;
+    public Dropitem dropItemPrefab;
     public LayerMask playerLayer;
 
     public float runStartDistance;
     public float runEndDistance;
     public EnemySpawn enemySpawn;
-    
+
     private bool isStart = false;
+    private bool isDying;
+
     public bool isHit = false;
 
     public float CurrentHp { get; set; }
-   
+
+    public EnemyAnimationController AnimationController => animationController;
+
     private void OnEnable()
     {
-        poolManager = FindAnyObjectByType<MonsterPoolManager>();
+        poolManager = FindAnyObjectByType<PoolManager>();
         if (!isStart)
         {
             isStart = true;
@@ -30,11 +36,24 @@ public class Enemy : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         stateController = new EnemyStateController(this);
         stateController.ChangeState(stateController.IdleState);
+
+        isDying = false;
+        isHit = false;
+
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = false;
+        }
     }
 
     private void Update()
     {
         stateController.UpdateExcute();
+
+        if (agent != null && animationController != null)
+        {
+            animationController.SetMoveSpeed(agent.velocity.magnitude);
+        }
     }
 
     public void GetEnemyData(EnemyDataSO enemySO)
@@ -50,7 +69,7 @@ public class Enemy : MonoBehaviour
     public void MonsterDropItem()
     {
         ItemAmount drop = enemyData.Reward.Drop;
-        Dropitem dropItem = poolManager.GetPool<Dropitem>();
+        Dropitem dropItem = poolManager.GetPool(dropItemPrefab);
         dropItem.Initialize(drop.Item, drop.Amount); // 해당 몬스터의 드랍 보상 정보를 주입
         dropItem.transform.position = transform.position;
 
@@ -74,7 +93,13 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        Debug.Log($"{name}: Player에게 {damage} 입음! 현재 체력 : {CurrentHp}");
         CurrentHp = CurrentHp - damage;
         isHit = true;
+    }
+
+    public void PlayDeathAnimation()
+    {
+        animationController.PlayDie();
     }
 }

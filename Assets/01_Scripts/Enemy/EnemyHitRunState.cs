@@ -9,21 +9,36 @@ public class EnemyHitRunState : IState
     private MonoBehaviour mono;
     private Player player;
     private bool isRunEnd = false;
+
     public EnemyHitRunState(Enemy enemy)
     {
         this.enemy = enemy;
         mono = enemy.GetComponent<MonoBehaviour>();
     }
+
     public void Enter()
     {
         stateController = enemy.stateController;
+
+        enemy.AnimationController.PlayHit();
+
         mono.StartCoroutine(RandomTime());
         Collider[] cPlayer = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance * 30, enemy.playerLayer);
-        player = cPlayer[0].GetComponent<Player>();
+
+        player = null;
+
+        foreach (Collider collider in cPlayer)
+        {
+            player = collider.GetComponentInParent<Player>();
+
+            if (player != null) break;
+        }
     }
+
     public void Execute()
     {
-            Vector3 dirPlayer = enemy.transform.position - player.transform.position;
+        Vector3 dirPlayer = enemy.transform.position - player.transform.position;
+
         if(Vector3.Distance(player.transform.position, enemy.transform.position) <= enemy.runEndDistance)
         {
             Vector3 runDistance = enemy.transform.position + dirPlayer.normalized * 1f;

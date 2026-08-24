@@ -138,7 +138,11 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
     public bool SpawnOne()
     {
-        if (customerPrefab == null || entrancePoint == null || exitPoint == null || PoolManager.Instance == null || !TryGetShortestStation(out CustomerCheckoutStation station))
+        if (customerPrefab == null 
+            || entrancePoint == null 
+            || exitPoint == null 
+            || PoolManager.Instance == null 
+            || !TryGetShortestStation(out CustomerCheckoutStation station))
         {
             return false;
         }
