@@ -16,7 +16,7 @@ public class EnemySpawn : MonoBehaviour
     [SerializeField] private float raycastHeight = 10f;
 
     [Header("Ǯ")]
-    [SerializeField] private MonsterPoolManager poolManager;
+    [SerializeField] private PoolManager poolManager;
 
     private Coroutine spawnCoroutine;
     private WaitForSeconds spawnWait;
@@ -32,7 +32,7 @@ public class EnemySpawn : MonoBehaviour
     {
         if (poolManager == null)
         {
-            poolManager = MonsterPoolManager.Instance;
+            poolManager = PoolManager.Instance;
         }
     }
 

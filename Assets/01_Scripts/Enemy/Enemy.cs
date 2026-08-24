@@ -4,7 +4,7 @@ using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
     public NavMeshAgent agent;
-    private MonsterPoolManager poolManager;
+    private PoolManager poolManager;
 
     public EnemyStateController stateController;
     [SerializeField] private EnemyAnimationController animationController;
@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable()
     {
-        poolManager = FindAnyObjectByType<MonsterPoolManager>();
+        poolManager = FindAnyObjectByType<PoolManager>();
         if (!isStart)
         {
             isStart = true;
@@ -93,6 +93,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        Debug.Log($"{name}: Player에게 {damage} 입음! 현재 체력 : {CurrentHp}");
         CurrentHp = CurrentHp - damage;
         isHit = true;
     }

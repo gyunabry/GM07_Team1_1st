@@ -212,6 +212,7 @@ public class PlacementSystem : MonoBehaviour
         {
             placedBuilding.Initialize(
                 selectedBuildingData, 
+                currentArea,
                 currentCell, 
                 rotationIndex, 
                 cells
@@ -240,6 +241,15 @@ public class PlacementSystem : MonoBehaviour
         if (!area.CanPlaceBuilding(selectedBuildingData, originCell, size))
         {
             return false;
+        }
+
+        if (IsHunterBuilding(selectedBuildingData))
+        {
+            HuntingFieldContext fieldContext = area.GetComponent<HuntingFieldContext>();
+            if (fieldContext == null || !fieldContext.TryGetCompletedTransmitter(out _))
+            {
+                return false;
+            }
         }
 
         foreach (Vector3Int cell in GetOccupiedCells(originCell, size))
@@ -363,5 +373,16 @@ public class PlacementSystem : MonoBehaviour
         {
             previewObject.gameObject.SetActive(false);
         }
+    }
+
+    // 임시 메서드
+    private static bool IsHunterBuilding(BuildingDataSO buildingData)
+    {
+        if (buildingData == null || buildingData.BuildingPrefab == null) 
+        {
+            return false;
+        }
+
+        return buildingData.BuildingPrefab.TryGetComponent<HunterBuildingController>(out _);
     }
 }

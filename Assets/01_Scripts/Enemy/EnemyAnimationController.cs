@@ -27,6 +27,7 @@ public class EnemyAnimationController : MonoBehaviour
 
     public void PlayDie()
     {
+        animator.ResetTrigger(hitHash);
         animator.SetTrigger(dieHash);
     }
 

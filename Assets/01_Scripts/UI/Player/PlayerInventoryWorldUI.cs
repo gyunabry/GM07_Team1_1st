@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerInventoryWorldUI : MonoBehaviour
 {
+    [SerializeField] private Canvas canvas;
     [SerializeField] private TMP_Text countText;
 
     private ItemInventory inventory;
@@ -32,11 +33,21 @@ public class PlayerInventoryWorldUI : MonoBehaviour
 
     private void RefreshUI()
     {
-        if (inventory == null || countText == null)
-        {
-            return;
-        }
+        if (inventory == null) return;
+
+        int totalAmount = inventory.TotalAmount;
+        SetVisible(totalAmount > 0);
+
+        if (totalAmount <= 0 || countText == null) return;
 
         countText.text = $"{inventory.TotalAmount} / {inventory.Capacity}";
+    }
+
+    private void SetVisible(bool visible)
+    {
+        if (canvas != null)
+        {
+            canvas.enabled = visible;
+        }
     }
 }

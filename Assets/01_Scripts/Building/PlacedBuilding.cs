@@ -26,7 +26,8 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
 
-    // public BuildingState State { get; private set; }
+    // 해당 시설이 어느 영역에 있는지 담는 프로퍼티
+    public BuildableArea AssignedArea { get; private set; }
     public BuildingState State => state;
     public float ConstructionProgress { get; private set; }
     public bool IsComplete => State == BuildingState.Completed;
@@ -44,9 +45,16 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     /// <param name="originCell">배치 셀 위치</param>
     /// <param name="rotationIndex">회전 인덱스 0 ~ 3</param>
     /// <param name="cells">점유하는 셀</param>
-    public void Initialize(BuildingDataSO data, Vector3Int originCell, short rotationIndex, IEnumerable<Vector3Int> cells) 
+    public void Initialize(
+        BuildingDataSO data, 
+        BuildableArea assignedArea,
+        Vector3Int originCell, 
+        short rotationIndex, 
+        IEnumerable<Vector3Int> cells
+    ) 
     {
         Data = data;
+        AssignedArea = assignedArea;
         OriginCell = originCell;
         RotationIndex = rotationIndex;
 

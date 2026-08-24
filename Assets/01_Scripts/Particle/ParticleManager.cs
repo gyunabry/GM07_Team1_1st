@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ParticleManager : MonoBehaviour
 {
-    [SerializeField] private MonsterPoolManager monsterPoolManager;
+    [SerializeField] private PoolManager monsterPoolManager;
     [SerializeField] private List<ParticleData> particleList;
     [SerializeField] private Player player;
     private Dictionary<int, ParticleData> particleDic = new Dictionary<int, ParticleData>();

@@ -17,6 +17,7 @@ public class Transmitter : MonoBehaviour
 
     [Header("전송 설정")]
     [SerializeField] private IntegratedTransmitter destination;
+    [SerializeField] private Transform depositPoint;
     [SerializeField] private float transferInterval = 1f;
 
     private PlacedBuilding placedBuilding;
@@ -25,6 +26,7 @@ public class Transmitter : MonoBehaviour
 
     public ItemInventory Inventory => inventory;
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
+    public Transform DepositPoint => depositPoint;
 
 
     private void Awake()

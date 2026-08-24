@@ -134,7 +134,7 @@ public class ProductionDetailView : BuildingDetailView
 
         if (outputIcon != null)
         {
-            outputIcon.sprite = recipe.Input.Icon;
+            outputIcon.sprite = recipe.Output.Icon;
             outputIcon.enabled = true;
         }
 

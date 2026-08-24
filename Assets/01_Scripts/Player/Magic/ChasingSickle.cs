@@ -4,7 +4,7 @@ using UnityEngine;
 public class ChasingSickle : MonoBehaviour
 {
     private ParticleSystem ps;
-    [SerializeField] private MonsterPoolManager monsterPoolManager;
+    [SerializeField] private PoolManager poolManager;
     [SerializeField] private AttackSO attackSo;
 
     private void Awake()
@@ -17,7 +17,7 @@ public class ChasingSickle : MonoBehaviour
     }
     IEnumerator PlayCo()
     {
-            yield return new WaitForSeconds(attackSo.attackSpeed);
-            monsterPoolManager.ReturnPool(this);
+        yield return new WaitForSeconds(attackSo.attackSpeed);
+        poolManager.ReturnPool(this);
     }
 }

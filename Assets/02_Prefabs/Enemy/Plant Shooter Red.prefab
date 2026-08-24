@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plant Shooter Red
       objectReference: {fileID: 0}
+    - target: {fileID: 135828812005854587, guid: 69dff914f049ff7429af14d85c1e11e9, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 768249910455637953, guid: 69dff914f049ff7429af14d85c1e11e9, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.4
@@ -68,6 +72,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6503299607806373384, guid: 69dff914f049ff7429af14d85c1e11e9, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 79d0dd94d1a43fd47a86d90f4722a75f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

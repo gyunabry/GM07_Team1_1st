@@ -53,7 +53,7 @@ public class BuildingDataSO : ScriptableObject
 
     public Vector2Int Size => size;
 
-    public ProcessType SupportedProcessType { get; private set; }
+    public ProcessType SupportedProcessType => supportedProcessType;
     public GameObject BuildingPrefab => buildingPrefab;
     public GameObject PreviewPrefab => buildingPreview;
 }

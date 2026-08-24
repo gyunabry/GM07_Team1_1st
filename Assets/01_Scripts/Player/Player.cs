@@ -10,10 +10,10 @@ public class Player : MonoBehaviour
     public int NowLevel { get; private set;}
     public int skillPoint = 0;
 
-    public float baseAttackDamage = 0;
-    public float baseAttackSpeed = 0;
-    public float AttackDamage = 0;
-    public float AttackSpeed = 0;
+    public float baseAttackDamage;
+    public float baseAttackSpeed;
+    public float AttackDamage;
+    public float AttackSpeed;
 
     public event Action LevelUp;
 
