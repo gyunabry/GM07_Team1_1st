@@ -49,6 +49,7 @@ public class EnemyDieState : IState
 
         deathCompleted = true;
 
+        enemy.GrantExp();
         enemy.MonsterDropItem();
         enemy.MonsterDie();
     }

@@ -82,27 +82,24 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         CurrencyChanged?.Invoke(money, experience);
         return true;
     }
-    public bool TrySpendExp(int amount)
-    {
-        if (amount < 0)
-        {
-            Debug.LogWarning("?뚮え??寃쏀뿕移섎뒗 ?뚯닔?????놁뒿?덈떎.", this);
-            return false;
-        }
 
-        if (experience < amount)
-        {
-            return false;
-        }
+    //public bool TrySpendExp(int amount)
+    //{
+    //    if (amount < 0)
+    //    {
+    //        Debug.LogWarning("?뚮え??寃쏀뿕移섎뒗 ?뚯닔?????놁뒿?덈떎.", this);
+    //        return false;
+    //    }
 
-        experience -= amount;
+    //    if (experience < amount)
+    //    {
+    //        return false;
+    //    }
 
-        // 援щℓ???깃났??蹂댁쑀 ?덉씠 諛붾뚯뿀?쇰?濡?HUD? ????쒖뒪?쒖뿉 ?뚮┛??
-        CurrencyChanged?.Invoke(money, experience);
-        return true;
-    }
-    public void TestButton()
-    {
-        CurrencyChanged?.Invoke(money, experience);
-    }
+    //    experience -= amount;
+
+    //    // 援щℓ???깃났??蹂댁쑀 ?덉씠 諛붾뚯뿀?쇰?濡?HUD? ????쒖뒪?쒖뿉 ?뚮┛??
+    //    CurrencyChanged?.Invoke(money, experience);
+    //    return true;
+    //}
 }

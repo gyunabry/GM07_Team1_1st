@@ -40,6 +40,7 @@ public class FacilityManager : MonoBehaviour
         if (placementSystem != null)
         {
             placementSystem.OnBuildingPlaced += HandleBuildingPlaced;
+            placementSystem.OnBuildingSold += HandleBuildingSold;
         }
     }
 
@@ -48,6 +49,7 @@ public class FacilityManager : MonoBehaviour
         if (placementSystem != null)
         {
             placementSystem.OnBuildingPlaced -= HandleBuildingPlaced;
+            placementSystem.OnBuildingSold -= HandleBuildingSold;
         }
     }
 
@@ -82,11 +84,15 @@ public class FacilityManager : MonoBehaviour
         FacilityCountChanged?.Invoke(data, newCount);
     }
 
-    private void HandleBuildingDestroyed(PlacedBuilding building, BuildingDataSO data)
+    private void HandleBuildingSold(PlacedBuilding building, int refund)
     {
-        if (building == null || data == null) return;
+        if (building == null || building.Data == null) return;
 
-        int newCount = GetPlacedCount(data) + 1;
+        BuildingDataSO data = building.Data;
+
+        int newCount = Mathf.Max(0, GetPlacedCount(data) - 1);
+
+        // 실제 배치 수 갱신
         placedCounts[data] = newCount;
 
         FacilityCountChanged?.Invoke(data, newCount);

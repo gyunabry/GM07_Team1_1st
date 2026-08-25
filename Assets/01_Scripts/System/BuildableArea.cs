@@ -14,6 +14,8 @@ public class BuildableArea : MonoBehaviour
     [SerializeField] private List<RectInt> unlockedAreas = new();
     [SerializeField] private List<RectInt> blockedAreas = new();
 
+    private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
+
     public string AreaId => areaId;
     public AreaType AreaType => areaType;
     public Grid Grid => grid;
@@ -133,6 +135,79 @@ public class BuildableArea : MonoBehaviour
         }
 
         return false;
+    }
+
+    public bool AreCellsAvailable(IReadOnlyList<Vector3Int> cells, PlacedBuilding ignoredBuilding = null)
+    {
+        if (cells == null || cells.Count == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            Vector3Int cell = NormalizeCell(cells[i]);
+
+            if (!occupiedCells.TryGetValue(cell, out PlacedBuilding owner))
+            {
+                continue;
+            }
+
+            // 재배치 중인 자기 자신은 허용
+            if (owner != ignoredBuilding)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 점유 시도
+    public bool TryOccupy(PlacedBuilding building, IReadOnlyList<Vector3Int> cells)
+    {
+        if (building == null || !AreCellsAvailable(cells))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            occupiedCells[NormalizeCell(cells[i])] = building;
+        }
+
+        return true;
+    }
+
+    // 점유 해제
+    public void Release(PlacedBuilding building, IReadOnlyList<Vector3Int> cells)
+    {
+        if (building == null || cells == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < cells.Count; i++)
+        {
+            Vector3Int cell = NormalizeCell(cells[i]);
+
+            // 선택된 시설이 실제 점유하고 있는 시설과 같다면 딕셔너리에서 제거
+            if (occupiedCells.TryGetValue(cell, out PlacedBuilding owner) && owner == building)
+            {
+                occupiedCells.Remove(cell);
+            }
+        }
+    }
+
+    public bool IsOccupied(Vector3Int cell)
+    {
+        return occupiedCells.ContainsKey(NormalizeCell(cell));
+    }
+
+    private static Vector3Int NormalizeCell(Vector3Int cell)
+    {
+        cell.z = 0;
+        return cell;
     }
 
     private void OnDrawGizmosSelected()

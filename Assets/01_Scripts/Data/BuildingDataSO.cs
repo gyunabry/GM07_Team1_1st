@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// 설치 가능 위치
@@ -25,15 +27,33 @@ public enum SellableType
     Patial
 }
 
+public enum BuildingTag
+{
+    None = 0,
+    Transmitter,
+    Sales,
+    Employee,
+    Production
+}
+
+
 [CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Tycoon/Building Data")]
 public class BuildingDataSO : ScriptableObject
 {
+    [Header("기본 정보")]
     [SerializeField] private string buildingId;
     [SerializeField] private string buildingName;
+    [SerializeField] private Sprite buildingIcon;
+    [SerializeField] private BuildingTag buildingTag;
     [SerializeField, TextArea] private string discription;
+
+    [Header("구매 조건")]
+    [SerializeField] private int requiredLevel;
+    [SerializeField] private int placementLimit = 3;
+    [SerializeField] private int buildCost;
+
     [SerializeField] private PlacementAreaMask allowedAreas;
     [SerializeField] private SellableType sellable;
-    [SerializeField] private int buildCost;
     [SerializeField] private float buildTime;
 
     [SerializeField] private Vector2Int size;
@@ -44,7 +64,13 @@ public class BuildingDataSO : ScriptableObject
 
     public string BuildingName => buildingName;
     public string BuildingId => buildingId;
+    public Sprite BuildingIcon => buildingIcon;
+    public BuildingTag BuildingTag => buildingTag;
     public string Description => discription;
+
+    public int RequiredLevel => requiredLevel;
+    public int PlacementLimit => placementLimit;
+
     public PlacementAreaMask AllowedAreas => allowedAreas;
     public SellableType Sellable => sellable;
     public int BuildCost => buildCost;

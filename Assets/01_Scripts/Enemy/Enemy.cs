@@ -86,9 +86,10 @@ public class Enemy : MonoBehaviour
     }
 
     // 몬스터 처치 시 해당 몬스터의 경험치만큼 플레이어에게 추가
-    private void GrantExp()
+    public void GrantExp()
     {
         int exp = enemyData.Reward.KillExp;
+        CurrencySystem.Instance.GrantExperience(exp);
     }
 
     public void TakeDamage(float damage)

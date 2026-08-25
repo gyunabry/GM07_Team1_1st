@@ -142,8 +142,7 @@ public class SkillTreeManager : MonoBehaviour
     }
     public void ResetEffect()
     {
-        effectContext.player.AttackDamage = 0;
-        effectContext.player.AttackSpeed = 0;
-        
+        effectContext.player.AttackDamage = 100;
+        effectContext.player.AttackSpeed = 1;
     }
 }
