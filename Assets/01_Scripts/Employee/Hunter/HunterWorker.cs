@@ -34,6 +34,7 @@ public sealed class HunterWorker : MonoBehaviour
     private State state; 
     private float nextAttack;
     private bool awaitingKillerDrop;
+    private bool collectingKillerDrop;
     private float killerDropWaitUntil;
     private HunterStatModifiers statModifiers;
     private float baseMovementSpeed;
@@ -144,6 +145,7 @@ public sealed class HunterWorker : MonoBehaviour
         state = State.Idle; 
         cargo.Clear();
         awaitingKillerDrop = false;
+        collectingKillerDrop = false;
         nextTargetSearchTime = 0f;
         monsterPathFailureSince = -1f;
 
@@ -241,7 +243,7 @@ public sealed class HunterWorker : MonoBehaviour
         if (monster.CurrentHp <= attackDamage)
         {
             awaitingKillerDrop = true;
-            killerDropWaitUntil = Time.time + 1f;
+            killerDropWaitUntil = Time.time + 3f;
             KillerDropReservations[this] = monster.transform.position;
         }
         monster.TakeDamage(attackDamage);
@@ -252,7 +254,7 @@ public sealed class HunterWorker : MonoBehaviour
 
     private void Get()
     {
-        if (!Valid(drop)) { ReleaseDrop(); RequestTargetSearch(); state=State.Idle; return; }
+        if (!IsValidDropTarget(drop)) { ReleaseDrop(); RequestTargetSearch(); state=State.Idle; return; }
         if (cargo.Remaining <= 0) { state=State.Store; return; }
         if (Distance(drop.transform.position) > .3f)
         {
@@ -350,6 +352,8 @@ public sealed class HunterWorker : MonoBehaviour
     }
     private bool Valid(Enemy e) => e != null && e.CurrentHp > 0 && IsInsideHuntingArea(e.transform.position);
     private bool Valid(Dropitem d) => d != null && d.Item != null && d.Amount > 0 && IsInsideHuntingArea(d.transform.position);
+    private bool IsValidDropTarget(Dropitem d) => d != null && d.Item != null && d.Amount > 0 &&
+                                                     (collectingKillerDrop || IsInsideHuntingArea(d.transform.position));
 
     private bool IsInsideHuntingArea(Vector3 position)
     {
@@ -360,8 +364,9 @@ public sealed class HunterWorker : MonoBehaviour
         if (!KillerDropReservations.TryGetValue(this, out Vector3 deathPosition)) return false;
         foreach (Dropitem candidate in FindObjectsByType<Dropitem>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
-            if (!Valid(candidate) || DropOwners.ContainsKey(candidate) || !IsAtSamePosition(candidate.transform.position, deathPosition)) continue;
+            if (candidate == null || candidate.Item == null || candidate.Amount <= 0 || DropOwners.ContainsKey(candidate) || !IsAtSamePosition(candidate.transform.position, deathPosition)) continue;
             drop = candidate;
+            collectingKillerDrop = true;
             DropOwners[drop] = this;
             return true;
         }
@@ -449,7 +454,7 @@ public sealed class HunterWorker : MonoBehaviour
 
         monster = null;
     }
-    private void ReleaseDrop(){if(drop!=null&&DropOwners.TryGetValue(drop,out var o)&&o==this)DropOwners.Remove(drop);drop=null;}
+    private void ReleaseDrop(){if(drop!=null&&DropOwners.TryGetValue(drop,out var o)&&o==this)DropOwners.Remove(drop);drop=null;collectingKillerDrop=false;}
 
     public bool TryPlaceAt(Transform targetPoint)
     {
