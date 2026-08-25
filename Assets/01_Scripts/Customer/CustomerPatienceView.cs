@@ -12,8 +12,6 @@ public sealed class CustomerPatienceView : MonoBehaviour
     private GameObject hudInstance;
     private Image orderIcon;
     private Image patienceGauge;
-    private RectTransform patienceGaugeRect;
-    private Vector2 patienceGaugeSize;
     private TextMeshProUGUI amountText;
 
     private void Awake()
@@ -80,10 +78,10 @@ public sealed class CustomerPatienceView : MonoBehaviour
             return;
         }
 
-        patienceGaugeRect = patienceGauge.rectTransform;
-        patienceGaugeSize = patienceGaugeRect.sizeDelta;
-        // 프리팹의 게이지가 Z축으로 90도 회전되어 있어 로컬 X축이 화면상의 세로 축이다.
-        patienceGaugeRect.pivot = new Vector2(0f, 0.5f);
+        // 프리팹의 게이지는 Z축으로 90도 회전되어 있어, 가로 Fill이 화면에서는 아래에서 위로 채워진다.
+        // RectTransform 크기/피벗을 바꾸면 회전된 축에서 위치까지 이동하므로 채움값만 갱신한다.
+        patienceGauge.fillMethod = Image.FillMethod.Horizontal;
+        patienceGauge.fillOrigin = 0;
         SetVisible(false);
     }
 
@@ -96,7 +94,7 @@ public sealed class CustomerPatienceView : MonoBehaviour
         amountText.text = requestedItem.Amount > 1 ? "x" + requestedItem.Amount : string.Empty;
         amountText.enabled = requestedItem.Amount > 1;
 
-        patienceGaugeRect.sizeDelta = new Vector2(patienceGaugeSize.x * controller.PatienceNormalized, patienceGaugeSize.y);
+        patienceGauge.fillAmount = controller.PatienceNormalized;
     }
 
     private void SetVisible(bool visible)
