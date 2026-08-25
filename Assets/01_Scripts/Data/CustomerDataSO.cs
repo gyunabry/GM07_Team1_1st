@@ -6,11 +6,13 @@ public sealed class CustomerDataSO : ScriptableObject
 {
     [SerializeField, Min(0.1f)] private float movementSpeed = 1.5f;
     [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
+    [SerializeField, Min(0.1f)] private float patienceDuration = 600f;
     [SerializeField, Min(0.1f)] private float exitTimeout = 30f;
     [SerializeField] private CustomerOrder defaultOrder;
 
     public float MovementSpeed => movementSpeed;
     public float PaymentDuration => paymentDuration;
+    public float PatienceDuration => patienceDuration;
     public float ExitTimeout => exitTimeout;
     public CustomerOrder DefaultOrder => defaultOrder;
 }
