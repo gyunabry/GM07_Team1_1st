@@ -19,6 +19,8 @@ public class SalesCounterDetailView : BuildingDetailView
 
     [SerializeField] private int slotCount = 24;
 
+    [SerializeField] private StorageDecomposition storageDecomposition;
+
     private readonly List<SalesInventoryItemView> itemViews = new();
 
     private SalesCounter currentCounter;
@@ -154,7 +156,7 @@ public class SalesCounterDetailView : BuildingDetailView
             }
 
             // 유효한 아이템을 슬롯 하나에 연결
-            itemViews[slotIndex].Bind(entry);
+            itemViews[slotIndex].Bind(entry, storageDecomposition);
             slotIndex++;
         }
     }
