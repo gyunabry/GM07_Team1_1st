@@ -93,7 +93,6 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        Debug.Log($"{name}: Player에게 {damage} 입음! 현재 체력 : {CurrentHp}");
         CurrentHp = CurrentHp - damage;
         isHit = true;
     }
