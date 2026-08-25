@@ -40,6 +40,24 @@ public class Dropitem : MonoBehaviour, ICollectable
         return true;
     }
 
+    public int TryCollectAmount(int requestedAmount)
+    {
+        if (Item == null || Amount <= 0 || requestedAmount <= 0)
+        {
+            return 0;
+        }
+
+        int collected = Mathf.Min(Amount, requestedAmount);
+        Amount -= collected;
+
+        if (Amount <= 0)
+        {
+            PoolManager.Instance.ReturnPool(this);
+        }
+
+        return collected;
+    }
+
     private void OnDisable()
     {
         Item = null;

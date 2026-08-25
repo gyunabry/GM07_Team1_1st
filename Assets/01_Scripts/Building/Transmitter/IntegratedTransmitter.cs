@@ -6,6 +6,7 @@ public class IntegratedTransmitter : MonoBehaviour
     [SerializeField] private ItemInventory inventory = new();
 
     private PlacedBuilding placedBuilding;
+    private CarrierCommandService carrierCommandService;
 
     public ItemInventory Inventory => inventory;
 
@@ -14,6 +15,27 @@ public class IntegratedTransmitter : MonoBehaviour
     private void Awake()
     {
         placedBuilding = GetComponent<PlacedBuilding>();
+    }
+
+    private void OnEnable()
+    {
+        if (placedBuilding != null)
+        {
+            placedBuilding.OnConstructionCompleted += HandleConstructionCompleted;
+        }
+    }
+
+    private void Start()
+    {
+        RegisterCarrierLogistics();
+    }
+
+    private void OnDisable()
+    {
+        if (placedBuilding != null)
+        {
+            placedBuilding.OnConstructionCompleted -= HandleConstructionCompleted;
+        }
     }
 
     public int TryGiveOne(ItemInventory targetInventory)
@@ -30,6 +52,29 @@ public class IntegratedTransmitter : MonoBehaviour
         if (material == null) return 0;
 
         return inventory.TransferTo(targetInventory, material, 1);
+    }
+
+    private void HandleConstructionCompleted(PlacedBuilding building)
+    {
+        if (building == placedBuilding)
+        {
+            RegisterCarrierLogistics();
+        }
+    }
+
+    private void RegisterCarrierLogistics()
+    {
+        if (!CanOperate)
+        {
+            return;
+        }
+
+        if (carrierCommandService == null)
+        {
+            carrierCommandService = FindFirstObjectByType<CarrierCommandService>();
+        }
+
+        carrierCommandService?.ConfigureLogistics(inventory, transform);
     }
 
     private ItemDataSO FindFirstMaterial()
