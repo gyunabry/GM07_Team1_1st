@@ -310,8 +310,17 @@ public sealed class HunterWorker : MonoBehaviour
         DropOwners[drop] = this;
         return true;
     }
-    private bool Valid(Enemy e)=>e!=null&&e.CurrentHp>0&&area!=null&&area.bounds.Contains(e.transform.position);
-    private bool Valid(Dropitem d)=>d!=null&&d.Item!=null&&d.Amount>0&&area!=null&&area.bounds.Contains(d.transform.position);
+    private bool Valid(Enemy e) => e != null && e.CurrentHp > 0 && IsInsideHuntingArea(e.transform.position);
+    private bool Valid(Dropitem d) => d != null && d.Item != null && d.Amount > 0 && IsInsideHuntingArea(d.transform.position);
+
+    private bool IsInsideHuntingArea(Vector3 position)
+    {
+        if (area == null) return false;
+
+        Bounds bounds = area.bounds;
+        return position.x >= bounds.min.x && position.x <= bounds.max.x &&
+               position.z >= bounds.min.z && position.z <= bounds.max.z;
+    }
     private bool TryClaimKillerDrop()
     {
         if (!KillerDropReservations.TryGetValue(this, out Vector3 deathPosition)) return false;
