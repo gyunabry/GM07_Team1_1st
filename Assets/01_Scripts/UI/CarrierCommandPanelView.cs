@@ -79,8 +79,12 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     private void SelectType(CarrierCommandType type)
     {
         currentType = type;
-        materialContent.gameObject.SetActive(type == CarrierCommandType.Material);
-        productContent.gameObject.SetActive(type == CarrierCommandType.Product);
+
+        // IngredientUI와 ProductUI는 같은 위치에 겹쳐 있으며 ProductUI가 더 앞에 렌더링된다.
+        // 내용 컨테이너만 전환하면 재료 행이 ProductUI 뒤에 가려지므로, 각 탭의 상위 패널을 전환한다.
+        materialContent.parent.gameObject.SetActive(type == CarrierCommandType.Material);
+        productContent.parent.gameObject.SetActive(type == CarrierCommandType.Product);
+
         materialButton.interactable = type != CarrierCommandType.Material;
         productButton.interactable = type != CarrierCommandType.Product;
         RebuildRows();
