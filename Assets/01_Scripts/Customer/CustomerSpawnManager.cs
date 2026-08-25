@@ -7,6 +7,7 @@ using UnityEngine.AI;
 public sealed class CustomerSpawnManager : MonoBehaviour
 {
     [SerializeField] private CustomerController customerPrefab;
+    [SerializeField] private GameObject[] customerVisualPrefabs;
     [SerializeField] private Transform entrancePoint;
     [SerializeField] private Transform exitTurnPoint;
     [SerializeField] private Transform exitPoint;
@@ -16,6 +17,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     [SerializeField] private bool spawnOnStart = true;
 
     private readonly HashSet<CustomerCheckoutStation> stations = new HashSet<CustomerCheckoutStation>();
+    private readonly Dictionary<CustomerController, GameObject[]> customerVisualInstances = new Dictionary<CustomerController, GameObject[]>();
     private ICustomerInventory inventory;
     private ICustomerCurrency currency;
     private Coroutine replenishRoutine;
@@ -162,6 +164,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
         CustomerController customer = PoolManager.Instance.GetPool(customerPrefab);
         customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
+        ApplyRandomVisual(customer);
         if (customer.OnSpawned(station.Queue, station.Checkout, exitTurnPoint, exitPoint, order, inventory, currency))
         {
             customer.SetPatienceBonusSeconds(patienceBonusSeconds);
@@ -226,6 +229,76 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         }
 
         return fallbackOrder;
+    }
+
+    private void ApplyRandomVisual(CustomerController customer)
+    {
+        if (customer == null || customerVisualPrefabs == null || customerVisualPrefabs.Length == 0)
+        {
+            return;
+        }
+
+        int validVisualCount = 0;
+        for (int i = 0; i < customerVisualPrefabs.Length; i++)
+        {
+            if (customerVisualPrefabs[i] != null)
+            {
+                validVisualCount++;
+            }
+        }
+
+        if (validVisualCount == 0)
+        {
+            return;
+        }
+
+        int selectedVisual = Random.Range(0, validVisualCount);
+        GameObject[] instances = GetOrCreateVisualInstances(customer);
+
+        for (int i = 0, validIndex = 0; i < instances.Length; i++)
+        {
+            if (instances[i] == null)
+            {
+                continue;
+            }
+
+            instances[i].SetActive(validIndex == selectedVisual);
+            validIndex++;
+        }
+    }
+
+    private GameObject[] GetOrCreateVisualInstances(CustomerController customer)
+    {
+        if (customerVisualInstances.TryGetValue(customer, out GameObject[] instances))
+        {
+            return instances;
+        }
+
+        instances = new GameObject[customerVisualPrefabs.Length];
+        for (int i = 0; i < customerVisualPrefabs.Length; i++)
+        {
+            GameObject visualPrefab = customerVisualPrefabs[i];
+            if (visualPrefab == null)
+            {
+                continue;
+            }
+
+            GameObject visual = Instantiate(visualPrefab, customer.transform);
+            visual.name = visualPrefab.name;
+            visual.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            visual.transform.localScale = Vector3.one;
+            visual.SetActive(false);
+            instances[i] = visual;
+        }
+
+        Renderer baseRenderer = customer.GetComponent<Renderer>();
+        if (baseRenderer != null)
+        {
+            baseRenderer.enabled = false;
+        }
+
+        customerVisualInstances.Add(customer, instances);
+        return instances;
     }
 
     private void RequestReplenishment()

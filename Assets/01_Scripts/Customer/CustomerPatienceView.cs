@@ -5,7 +5,7 @@ using TMPro;
 [RequireComponent(typeof(CustomerController))]
 public sealed class CustomerPatienceView : MonoBehaviour
 {
-    private const float VerticalOffset = 2.2f;
+    private const float VerticalOffset = 2.8f;
 
     private CustomerController controller;
     private GameObject customerHudPrefab;
