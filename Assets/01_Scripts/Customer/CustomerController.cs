@@ -13,6 +13,7 @@ public sealed class CustomerController : MonoBehaviour
     private const int ExitAvoidancePriority = 0;
 
     [SerializeField] private CustomerDataSO customerData;
+    [SerializeField] private GameObject customerHudPrefab;
     [Header("Legacy Defaults")]
     [SerializeField] private CustomerOrder defaultOrder;
     [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
@@ -90,10 +91,12 @@ public sealed class CustomerController : MonoBehaviour
             queueMovement = gameObject.AddComponent<CustomerQueueMovement>();
         }
 
-        if (GetComponent<CustomerPatienceView>() == null)
+        CustomerPatienceView patienceView = GetComponent<CustomerPatienceView>();
+        if (patienceView == null)
         {
-            gameObject.AddComponent<CustomerPatienceView>();
+            patienceView = gameObject.AddComponent<CustomerPatienceView>();
         }
+        patienceView.Configure(customerHudPrefab);
 
         stateMachine.Initialize(this);
     }

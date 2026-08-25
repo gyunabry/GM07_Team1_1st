@@ -1,32 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(CustomerController))]
 public sealed class CustomerPatienceView : MonoBehaviour
 {
-    private const float CanvasScale = 0.01f;
     private const float VerticalOffset = 2.2f;
 
     private CustomerController controller;
-    private GameObject canvasRoot;
-    private Image bubbleImage;
-    private Image patienceFill;
-    private RectTransform patienceFillRect;
-    private Image itemIcon;
-    private Text itemNameText;
-    private Text amountText;
-    private Camera targetCamera;
+    private GameObject customerHudPrefab;
+    private GameObject hudInstance;
+    private Image orderIcon;
+    private Image patienceGauge;
+    private RectTransform patienceGaugeRect;
+    private Vector2 patienceGaugeSize;
+    private TextMeshProUGUI amountText;
 
     private void Awake()
     {
         controller = GetComponent<CustomerController>();
+    }
+
+    public void Configure(GameObject hudPrefab)
+    {
+        if (customerHudPrefab == hudPrefab && hudInstance != null)
+        {
+            return;
+        }
+
+        customerHudPrefab = hudPrefab;
         CreateView();
-        SetVisible(false);
     }
 
     private void Update()
     {
-        if (controller == null || !controller.Order.IsValid)
+        if (hudInstance == null || controller == null || !controller.Order.IsValid)
         {
             SetVisible(false);
             return;
@@ -43,113 +51,65 @@ public sealed class CustomerPatienceView : MonoBehaviour
         RefreshView();
     }
 
-    private void LateUpdate()
+    private void CreateView()
     {
-        if (canvasRoot == null || !canvasRoot.activeSelf)
+        if (hudInstance != null)
         {
+            Destroy(hudInstance);
+        }
+
+        if (customerHudPrefab == null)
+        {
+            Debug.LogError("Customer HUD prefab is not assigned.", this);
             return;
         }
 
-        if (targetCamera == null)
+        hudInstance = Instantiate(customerHudPrefab, transform);
+        hudInstance.name = customerHudPrefab.name;
+        hudInstance.transform.localPosition = Vector3.up * VerticalOffset;
+
+        orderIcon = FindComponent<Image>("Order_Icon");
+        patienceGauge = FindComponent<Image>("Order_Slider");
+        amountText = FindComponent<TextMeshProUGUI>("Amount_Text");
+
+        if (orderIcon == null || patienceGauge == null || amountText == null)
         {
-            targetCamera = Camera.main;
+            Debug.LogError("UI_CustomerHUD is missing a required UI element.", hudInstance);
+            Destroy(hudInstance);
+            hudInstance = null;
+            return;
         }
 
-        if (targetCamera != null)
-        {
-            canvasRoot.transform.rotation = Quaternion.LookRotation(canvasRoot.transform.position - targetCamera.transform.position, targetCamera.transform.up);
-        }
-    }
-
-    private void CreateView()
-    {
-        canvasRoot = new GameObject("PatienceCanvas", typeof(RectTransform), typeof(Canvas));
-        canvasRoot.transform.SetParent(transform, false);
-        canvasRoot.transform.localPosition = new Vector3(0f, VerticalOffset, 0f);
-        canvasRoot.transform.localScale = Vector3.one * CanvasScale;
-
-        Canvas canvas = canvasRoot.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.WorldSpace;
-        canvas.overrideSorting = true;
-        canvas.sortingOrder = 100;
-
-        RectTransform canvasRect = canvasRoot.GetComponent<RectTransform>();
-        canvasRect.sizeDelta = new Vector2(90f, 70f);
-
-        bubbleImage = CreateImage("SpeechBubble", canvasRoot.transform, new Vector2(90f, 64f), Vector2.zero, Color.white);
-        bubbleImage.type = Image.Type.Sliced;
-
-        patienceFill = CreateImage("PatienceFill", bubbleImage.transform, new Vector2(82f, 0f), new Vector2(0f, -28f), new Color(0.95f, 0.3f, 0.3f, 0.65f));
-        patienceFillRect = patienceFill.rectTransform;
-        patienceFillRect.pivot = new Vector2(0.5f, 0f);
-
-        itemIcon = CreateImage("ItemIcon", bubbleImage.transform, new Vector2(92f, 78f), new Vector2(-3f, 4f), Color.white);
-        itemIcon.preserveAspect = true;
-
-        itemNameText = CreateText("ItemNameText", bubbleImage.transform, new Vector2(72f, 26f), new Vector2(0f, 5f));
-        itemNameText.alignment = TextAnchor.MiddleCenter;
-        itemNameText.color = Color.black;
-        itemNameText.fontSize = 12;
-
-        amountText = CreateText("AmountText", bubbleImage.transform, new Vector2(32f, 22f), new Vector2(24f, -16f));
-        amountText.alignment = TextAnchor.MiddleCenter;
-        amountText.color = Color.black;
-        amountText.fontSize = 18;
+        patienceGaugeRect = patienceGauge.rectTransform;
+        patienceGaugeSize = patienceGaugeRect.sizeDelta;
+        // 프리팹의 게이지가 Z축으로 90도 회전되어 있어 로컬 X축이 화면상의 세로 축이다.
+        patienceGaugeRect.pivot = new Vector2(0f, 0.5f);
+        SetVisible(false);
     }
 
     private void RefreshView()
     {
         CustomerOrderItem requestedItem = controller.Order.Items[0];
-        itemIcon.sprite = requestedItem.ItemId != null ? requestedItem.ItemId.Icon : null;
-        itemIcon.enabled = itemIcon.sprite != null;
-
-        itemNameText.text = itemIcon.enabled ? string.Empty : requestedItem.ItemId != null ? requestedItem.ItemId.ItemName : "?";
-        itemNameText.enabled = !itemIcon.enabled;
+        orderIcon.sprite = requestedItem.ItemId != null ? requestedItem.ItemId.Icon : null;
+        orderIcon.enabled = orderIcon.sprite != null;
 
         amountText.text = requestedItem.Amount > 1 ? "x" + requestedItem.Amount : string.Empty;
         amountText.enabled = requestedItem.Amount > 1;
 
-        patienceFillRect.sizeDelta = new Vector2(82f, 56f * controller.PatienceNormalized);
-        bubbleImage.color = Color.white;
-        patienceFill.color = new Color(0.95f, 0.3f, 0.3f, 0.65f);
+        patienceGaugeRect.sizeDelta = new Vector2(patienceGaugeSize.x * controller.PatienceNormalized, patienceGaugeSize.y);
     }
 
     private void SetVisible(bool visible)
     {
-        if (canvasRoot != null && canvasRoot.activeSelf != visible)
+        if (hudInstance != null && hudInstance.activeSelf != visible)
         {
-            canvasRoot.SetActive(visible);
+            hudInstance.SetActive(visible);
         }
     }
 
-    private static Image CreateImage(string objectName, Transform parent, Vector2 size, Vector2 position, Color color)
+    private T FindComponent<T>(string objectName) where T : Component
     {
-        GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-        imageObject.transform.SetParent(parent, false);
-
-        RectTransform rect = imageObject.GetComponent<RectTransform>();
-        rect.sizeDelta = size;
-        rect.anchoredPosition = position;
-
-        Image image = imageObject.GetComponent<Image>();
-        image.sprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/UISprite.psd");
-        image.color = color;
-        image.raycastTarget = false;
-        return image;
-    }
-
-    private static Text CreateText(string objectName, Transform parent, Vector2 size, Vector2 position)
-    {
-        GameObject textObject = new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
-        textObject.transform.SetParent(parent, false);
-
-        RectTransform rect = textObject.GetComponent<RectTransform>();
-        rect.sizeDelta = size;
-        rect.anchoredPosition = position;
-
-        Text text = textObject.GetComponent<Text>();
-        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        text.raycastTarget = false;
-        return text;
+        Transform child = hudInstance.transform.Find(objectName);
+        return child != null ? child.GetComponent<T>() : null;
     }
 }
