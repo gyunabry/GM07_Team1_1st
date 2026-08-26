@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 // TODO: 嫄대Ъ 嫄댁꽕쨌?낃렇?덉씠?쒖? ?щ즺 援щℓ ??TrySpendMoney(鍮꾩슜)瑜??몄텧?섎룄濡??곌껐?쒕떎.
@@ -12,13 +13,20 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
     [SerializeField, Min(0)] private int money;
     [SerializeField, Min(0)] private int experience;
+    [SerializeField, Min(0)] private int nowExperience;
 
     // 媛믪씠 諛붾뚮㈃ HUD? ????쒖뒪?쒖씠 ???대깽?몃? 援щ룆??媛깆떊?쒕떎.
     public event Action<int, int> CurrencyChanged;
+    public event Action LevelUp;
 
     public int Money => money;
     public int Experience => experience;
 
+
+    List<int> needExp = new List<int>() { 60, 110, 260, 330, 430, 800, 950, 1100, 6500, 7200, 10000, 12000, 18000, 20000, 24000, 27000,
+    32000, 35000, 40000, 44000};
+    private int level = 1;
+    public int Level => level;
     private void Awake()
     {
         if (Instance == null)
@@ -44,6 +52,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         // 蹂댁긽 異쒖쿂媛 ?섏뼱?섎룄 ?ы솕 蹂寃?洹쒖튃??遺꾩궛?섏? ?딄쾶 ?쒕떎.
         money += moneyAmount;
         experience += experienceAmount;
+        nowExperience += experienceAmount;
 
         // UI? ???湲곕뒫? ???뚮┝留?諛쏆븘??媛곸옄 ?꾩슂??泥섎━瑜??쒕떎.
         CurrencyChanged?.Invoke(money, experience);
@@ -90,12 +99,12 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
             return false;
         }
 
-        if (experience < amount)
+        if (nowExperience < amount)
         {
             return false;
         }
 
-        experience -= amount;
+        nowExperience -= amount;
 
         // 援щℓ???깃났??蹂댁쑀 ?덉씠 諛붾뚯뿀?쇰?濡?HUD? ????쒖뒪?쒖뿉 ?뚮┛??
         CurrencyChanged?.Invoke(money, experience);
@@ -104,5 +113,24 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public void TestButton()
     {
         CurrencyChanged?.Invoke(money, experience);
+    }
+
+
+    private void OnEnable()
+    {
+        CurrencyChanged += CurrencySystem_CurrencyChanged;
+    }
+    private void OnDisable()
+    {
+        CurrencyChanged -= CurrencySystem_CurrencyChanged;
+    }
+
+    private void CurrencySystem_CurrencyChanged(int arg1, int arg2)
+    {
+        if (needExp[level-1] <= nowExperience)
+        {
+            level++;
+            LevelUp?.Invoke();
+        }
     }
 }

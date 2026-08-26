@@ -5,6 +5,6 @@ public class S46_MagicArrowProjectileCount : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[1].projectileCount += (int)skillData.value[nowLevel];
     }
 }
