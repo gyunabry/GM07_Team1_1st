@@ -38,6 +38,7 @@ public sealed class CustomerController : MonoBehaviour
     private CustomerQueueMovement queueMovement;
     private float patienceElapsed;
     private float patienceBonusSeconds;
+    private float patienceBonusPercent;
     private bool didPatienceExpire;
     private readonly CustomerRuntimeData runtimeData = new CustomerRuntimeData();
 
@@ -55,8 +56,22 @@ public sealed class CustomerController : MonoBehaviour
     public float PatienceNormalized => Mathf.Clamp01(patienceElapsed / PatienceDuration);
     public bool DidPatienceExpire => didPatienceExpire;
     public bool HasInventoryService => inventory != null;
-    public float PaymentDuration => customerData != null ? customerData.PaymentDuration : paymentDuration;
-    public float PatienceDuration => Mathf.Max(0.1f, (customerData != null ? customerData.PatienceDuration : patienceDuration) + patienceBonusSeconds);
+    public float PaymentDuration
+    {
+        get
+        {
+            float baseDuration = customerData != null ? customerData.PaymentDuration : paymentDuration;
+            return Mathf.Max(0f, baseDuration * (Checkout != null ? Checkout.PaymentDurationMultiplier : 1f));
+        }
+    }
+    public float PatienceDuration
+    {
+        get
+        {
+            float baseDuration = customerData != null ? customerData.PatienceDuration : patienceDuration;
+            return Mathf.Max(0.1f, baseDuration * (1f + patienceBonusPercent / 100f) + patienceBonusSeconds);
+        }
+    }
     public float ExitTimeout => customerData != null ? customerData.ExitTimeout : exitTimeout;
     public bool HasCheckoutOperator => Checkout != null && Checkout.HasOperator;
     public CustomerQueueMovement QueueMovement => queueMovement;
@@ -155,6 +170,7 @@ public sealed class CustomerController : MonoBehaviour
         hasNavigationDestination = false;
         patienceElapsed = 0f;
         patienceBonusSeconds = 0f;
+        patienceBonusPercent = 0f;
         didPatienceExpire = false;
         runtimeData.Reset();
 
@@ -186,6 +202,11 @@ public sealed class CustomerController : MonoBehaviour
     public void SetPatienceBonusSeconds(float bonusSeconds)
     {
         patienceBonusSeconds = Mathf.Max(0f, bonusSeconds);
+    }
+
+    public void SetPatienceBonusPercent(float bonusPercent)
+    {
+        patienceBonusPercent = Mathf.Max(0f, bonusPercent);
     }
 
     public void SetNavigationRadius(float radius)

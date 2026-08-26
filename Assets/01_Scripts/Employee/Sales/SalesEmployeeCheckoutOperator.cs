@@ -51,6 +51,9 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
 
         employeeManager.EmployeeHired += HandleEmployeeChanged;
         employeeManager.EmployeeRemoved += HandleEmployeeChanged;
+        employeeManager.SalesPaymentTimeReductionChanged += ApplySalesPaymentTimeReduction;
+        employeeManager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
+        RefreshPaymentDuration();
 
         if (placedBuilding.IsComplete)
         {
@@ -69,6 +72,8 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         {
             employeeManager.EmployeeHired -= HandleEmployeeChanged;
             employeeManager.EmployeeRemoved -= HandleEmployeeChanged;
+            employeeManager.SalesPaymentTimeReductionChanged -= ApplySalesPaymentTimeReduction;
+            employeeManager.AllEmployeeProcessingSpeedIncreaseChanged -= ApplyAllEmployeeProcessingSpeedIncrease;
         }
 
         RemoveOperator();
@@ -93,6 +98,30 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
     private void HandleEmployeeChanged(EmployeeRuntimeData employee)
     {
         RefreshOperator();
+    }
+
+    private void ApplySalesPaymentTimeReduction(float _)
+    {
+        RefreshPaymentDuration();
+    }
+
+    private void ApplyAllEmployeeProcessingSpeedIncrease(float _)
+    {
+        RefreshPaymentDuration();
+    }
+
+    private void RefreshPaymentDuration()
+    {
+        if (employeeManager == null)
+        {
+            return;
+        }
+
+        float totalReductionPercent = Mathf.Clamp(
+            employeeManager.SalesPaymentTimeReductionPercent + employeeManager.AllEmployeeProcessingSpeedIncreasePercent,
+            0f,
+            100f);
+        checkout?.SetPaymentDurationReductionPercent(totalReductionPercent);
     }
 
     private void RegisterBuilding()
