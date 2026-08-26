@@ -2,65 +2,57 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] Slider expSlider;
-    CurrencySystem currencySystem;
-    List<int> needExp = new List<int>() { 60, 110, 260, 330, 430, 800, 950, 1100, 6500, 7200, 10000, 12000, 18000, 20000, 24000, 27000,
-    32000, 35000, 40000, 44000};
-    public int NowLevel { get; private set; }
+    [SerializeField] CurrencySystem currencySystem;
+    public NavMeshAgent navMeshAgent;
+    private int nowLevel = 0;
+    public int NowLevel => nowLevel;
     public int skillPoint = 0;
 
     public float baseAttackDamage;
     public float baseAttackSpeed;
-    public float AttackDamage;
-    public float AttackSpeed;
+    public float baseAttackDistance;
+    public float attackDamage;
+    public float attackSpeed;
+    public float attackDistance;
+    public float moveSpeed;
+
+    public List<LevelUpStat> levelUpStats = new List<LevelUpStat>();
 
     public event Action LevelUp;
-
-    private void Awake()
-    {
-        currencySystem = FindAnyObjectByType<CurrencySystem>();
-    }
+    
     private void OnEnable()
     {
-        currencySystem.CurrencyChanged += CurrencySystem_CurrencyChanged;
+        currencySystem.LevelUp += CurrencySystem_LevelUp;
+        navMeshAgent = GetComponent<NavMeshAgent>();
     }
     private void OnDisable()
     {
-        currencySystem.CurrencyChanged -= CurrencySystem_CurrencyChanged;
+        currencySystem.LevelUp -= CurrencySystem_LevelUp;
     }
-
-    private void CurrencySystem_CurrencyChanged(int arg1, int arg2)
+    private void CurrencySystem_LevelUp()
     {
-        int level = 0;
-        int exp = currencySystem.Experience;
-        for (int i = 0; i < needExp.Count; i++)
+        if (levelUpStats[nowLevel] != null)
         {
-            if (exp >= needExp[i])
-            {
-                exp -= needExp[i];
-                level++;
-            }
+            baseAttackDamage += levelUpStats[nowLevel].attackDamage;
+            baseAttackSpeed += levelUpStats[nowLevel].attackSpeed;
+            baseAttackDistance += levelUpStats[nowLevel].attackDistance;
+            moveSpeed += levelUpStats[nowLevel].moveSpeed;
+            navMeshAgent.speed = (3.5f + moveSpeed);
         }
-        if(exp != 0)
-        {
-            float expSliderValue = exp / (needExp[level] / 100);
-            expSlider.value = expSliderValue;
-        }
-        else
-        {
-            expSlider.value = 0;
-        }
-        if (NowLevel >= level) return;
-        else
-        {
-            skillPoint += (level - NowLevel) * 3;
-            NowLevel = level;
-            LevelUp?.Invoke();
-        }
-
+        nowLevel++;
     }
+}
+[System.Serializable]
+public class LevelUpStat
+{
+    public float attackDamage = 0;
+    public float attackSpeed = 0;
+    public float attackDistance = 0;
+    public float moveSpeed = 0;
 }

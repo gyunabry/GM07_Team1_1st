@@ -5,6 +5,6 @@ public class S52_LightningRayDamage : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[3].damage += skillData.value[nowLevel];
     }
 }

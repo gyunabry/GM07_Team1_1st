@@ -5,6 +5,6 @@ public class S54_LightningRayProjectileCount : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[3].projectileCount += (int)skillData.value[nowLevel];
     }
 }

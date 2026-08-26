@@ -5,6 +5,6 @@ public class S42_ChasingSickleDistance : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[0].distance += skillData.value[nowLevel];
     }
 }

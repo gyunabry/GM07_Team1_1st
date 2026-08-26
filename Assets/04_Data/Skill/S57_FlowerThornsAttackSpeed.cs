@@ -5,6 +5,6 @@ public class S57_FlowerThornsAttackSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[4].attackSpeed += skillData.value[nowLevel];
     }
 }
