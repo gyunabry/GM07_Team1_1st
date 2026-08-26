@@ -1,9 +1,9 @@
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class TitleSceneController : MonoBehaviour
 {
+    [SerializeField] private GameObject titleOptionUI;
+
     private void Start()
     {
         AudioManager.Instance.PlayBGM(EBGMType.Title);
@@ -37,7 +37,7 @@ public class TitleSceneController : MonoBehaviour
     public void OnClickOptionBtn()
     {
         AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
-        
+        titleOptionUI.SetActive(true);
     }
 
     // 게임 끝내기

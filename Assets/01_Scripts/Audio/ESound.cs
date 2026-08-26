@@ -7,6 +7,7 @@ public enum EBGMType
     HuntingSpot,
 }
 
+//SFX
 public enum ESFXType
 {
     None,

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
@@ -18,6 +17,9 @@ public class AudioManager : MonoBehaviour
     private float masterVolume = 1f;
     private float bgmVolume = 1f;
     private float sfxVolume = 1f;
+
+    public float GetBGMVolume() => bgmVolume;
+    public float GetSFXVolume() => sfxVolume;
     
     private static AudioManager instance;
 
