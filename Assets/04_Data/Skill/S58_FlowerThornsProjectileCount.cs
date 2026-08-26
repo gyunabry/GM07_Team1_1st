@@ -5,6 +5,6 @@ public class S58_FlowerThornsProjectileCount : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[4].projectileCount += (int)skillData.value[nowLevel];
     }
 }

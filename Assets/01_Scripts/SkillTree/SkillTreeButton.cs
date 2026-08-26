@@ -8,23 +8,30 @@ using UnityEngine.InputSystem;
 public class SkillTreeButton : MonoBehaviour
 {
     [SerializeField] SkillDataSO skillData;
-    Button button;
+    private Button button;
     [SerializeField] SkillTreeManager skillTreeManager;
     [SerializeField] SkillTreePopUp skillTreePopUp;
     [SerializeField] PoolManager poolManager;
-    TextMeshProUGUI text;
-    SkillRuntimeState state;
-    SkillTreePopUp popUp;
+    private TextMeshProUGUI text;
+    private SkillRuntimeState state;
+    private SkillTreePopUp popUp;
     [SerializeField] Canvas canvas;
 
     private UnityAction clickAction;
     private Coroutine co;
+    private RectTransform[] lockObject;
     private void Awake()
     {
         clickAction = () => skillTreeManager.SkillTreeClick(skillData);
         button = GetComponent<Button>();
         text = GetComponentInChildren<TextMeshProUGUI>();
         skillTreeManager.SkillUnlockCheck();
+        lockObject = GetComponentsInChildren<RectTransform>();
+        Debug.Log(lockObject.Length);
+        if(poolManager == null)
+        {
+            poolManager = FindAnyObjectByType<PoolManager>();
+        }
     }
     public void MouserEnter()
     {
@@ -74,24 +81,16 @@ public class SkillTreeButton : MonoBehaviour
     }
     public void SkillLock()
     {
-        button.image.color = Color.black;
-        text.text = "Lock";
+        lockObject[6].gameObject.SetActive(true);
     }
     public void SkillUnlock()
     {
-        button.image.color = Color.white;
-        if (skillData.skillSprite != null)
-        {
-            button.image.sprite = skillData.skillSprite;
-        }
+        lockObject[6].gameObject.SetActive(false);
+        text.text = $"({state.skillLevel}/{skillData.skillMaxLevel})";
     }
     public void SkillActivate()
     {
-        button.image.color = Color.white;
-        if (skillData.skillSprite != null)
-        {
-            button.image.sprite = skillData.skillSprite;
-        }
+        lockObject[6].gameObject.SetActive(false);
         text.text = $"({state.skillLevel}/{skillData.skillMaxLevel})";
     }
 

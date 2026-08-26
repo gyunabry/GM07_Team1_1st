@@ -288,8 +288,6 @@ MonoBehaviour:
   inventory:
     capacity: 20
     entries: []
-  item: {fileID: 11400000, guid: 617a7d643e0814448853373f3984bd5e, type: 2}
-  amount: 10
 --- !u!114 &2081651568116816715
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,7 +353,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4096
   detector: {fileID: 7980818233093969544}
-  buildingPanel: {fileID: 0}
+  buildingUIRouter: {fileID: 0}
 --- !u!114 &4534994864522753387
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,7 +383,6 @@ MonoBehaviour:
   ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
   LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
   FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
-  isTripleShot: 0
   slots:
   - slotIndex: 0
     equipAttackID: 0
@@ -421,11 +418,75 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26b45b1cc173c1546bfda0795cd12193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  expSlider: {fileID: 0}
   skillPoint: 0
   baseAttackDamage: 0
   baseAttackSpeed: 0
-  AttackDamage: 0
-  AttackSpeed: 0
+  baseAttackDistance: 0
+  attackDamage: 0
+  attackSpeed: 0
+  attackDistance: 0
+  levelUpStats:
+  - attackDamage: 5
+    attackSpeed: 0
+    attackDistance: 0.2
+  - attackDamage: 5
+    attackSpeed: 0
+    attackDistance: 0.05
+  - attackDamage: 5
+    attackSpeed: -0.05
+    attackDistance: 0
+  - attackDamage: 5
+    attackSpeed: 0
+    attackDistance: 0
+  - attackDamage: 10
+    attackSpeed: 0
+    attackDistance: 0.2
+  - attackDamage: 10
+    attackSpeed: 0
+    attackDistance: 0.05
+  - attackDamage: 10
+    attackSpeed: -0.05
+    attackDistance: 0
+  - attackDamage: 10
+    attackSpeed: 0
+    attackDistance: 0
+  - attackDamage: 10
+    attackSpeed: 0
+    attackDistance: 0.05
+  - attackDamage: 20
+    attackSpeed: 0.05
+    attackDistance: 0
+  - attackDamage: 20
+    attackSpeed: 0
+    attackDistance: 0
+  - attackDamage: 20
+    attackSpeed: 0
+    attackDistance: 0.2
+  - attackDamage: 20
+    attackSpeed: 0
+    attackDistance: 0
+  - attackDamage: 30
+    attackSpeed: -0.05
+    attackDistance: 0.05
+  - attackDamage: 30
+    attackSpeed: 0
+    attackDistance: 0
+  - attackDamage: 30
+    attackSpeed: 0
+    attackDistance: 0.05
+  - attackDamage: 30
+    attackSpeed: 0
+    attackDistance: 0
+  - attackDamage: 30
+    attackSpeed: 0
+    attackDistance: 0.2
+  - attackDamage: 30
+    attackSpeed: 0
+    attackDistance: 0.05
+  - attackDamage: 30
+    attackSpeed: -0.1
+    attackDistance: 0.1
 --- !u!1 &7323610448573131821
 GameObject:
   m_ObjectHideFlags: 0

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class TitleSceneController : MonoBehaviour
 {
-    [SerializeField] private GameObject titleOptionUI;
+    // [SerializeField] private GameObject titleOptionUI;
 
     private void Start()
     {
@@ -32,14 +32,14 @@ public class TitleSceneController : MonoBehaviour
         }
         */
     }
-
+    /*
     // 옵션 UI
     public void OnClickOptionBtn()
     {
         AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
         titleOptionUI.SetActive(true);
     }
-
+    */
     // 게임 끝내기
     public void OnClickExitBtn()
     {

@@ -8,8 +8,6 @@ public class SkillTreeManager : MonoBehaviour
     [SerializeField] private List<SkillRuntimeState> skillRuntimeStates = new List<SkillRuntimeState>();
     [SerializeField] private SkillEffectContext effectContext;
 
-    
-
     public event Action OnSkillChange;
 
     private void Awake()
@@ -36,7 +34,7 @@ public class SkillTreeManager : MonoBehaviour
                 {
                     if(!(skill.skillNeedSkillPoint == 0))
                     {
-                        if (effectContext.player.skillPoint >= skill.skillNeedSkillPoint && !(skill.skillMaxLevel <= state.skillLevel))
+                        if (effectContext.player.skillPoint >= skill.skillNeedSkillPoint && !(skill.skillMaxLevel < state.skillLevel))
                         {
                             effectContext.player.skillPoint -= skill.skillNeedSkillPoint;
                             state.skillLevel++;
@@ -142,7 +140,20 @@ public class SkillTreeManager : MonoBehaviour
     }
     public void ResetEffect()
     {
-        effectContext.player.AttackDamage = 100;
-        effectContext.player.AttackSpeed = 1;
+        effectContext.player.attackDamage = 0;
+        effectContext.player.attackSpeed = 0;
+        effectContext.player.attackDistance = 0;
+        
+         for (int i = 0; i < effectContext.playerAttack.upgrade.Length; i++)
+         {
+            if (effectContext.playerAttack.upgrade[i] != null)
+            {
+                effectContext.playerAttack.upgrade[i].damage = 0;
+                effectContext.playerAttack.upgrade[i].attackSpeed = 0;
+                effectContext.playerAttack.upgrade[i].distance = 0;
+                effectContext.playerAttack.upgrade[i].projectileCount = 0;
+            }
+        }
+        effectContext.player.navMeshAgent.speed = 3.5f;
     }
 }

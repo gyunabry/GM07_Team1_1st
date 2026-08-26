@@ -5,6 +5,6 @@ public class S53_LightningRayAttackSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[3].attackSpeed += skillData.value[nowLevel];
     }
 }

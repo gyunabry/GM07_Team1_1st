@@ -5548,12 +5548,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d26fb4834511ba46984ed712f50cf0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingInteractionPanel
-  targetCanvas: {fileID: 1739003255}
-  graphicRaycaster: {fileID: 1739003253}
-  buildingNameText: {fileID: 198529055}
-  detailViews:
-  - {fileID: 1633699423}
-  - {fileID: 1512669872}
 --- !u!114 &785981553 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8942205613681907849, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
@@ -11178,7 +11172,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1293135240
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18008,6 +18002,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CurrencySystem
   money: 500000
   experience: 50
+  nowExperience: 0
 --- !u!4 &2033676985
 Transform:
   m_ObjectHideFlags: 0

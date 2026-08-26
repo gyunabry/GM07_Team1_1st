@@ -5,6 +5,6 @@ public class S49_FireCircleAttackSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.playerAttack.upgrade[2].attackSpeed += skillData.value[nowLevel];
     }
 }

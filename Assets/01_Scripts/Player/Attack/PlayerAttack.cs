@@ -187,8 +187,8 @@ public class PlayerAttack : MonoBehaviour
             };
             ad.distance = MagicArrowSO.distance;
             enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
-            ad.attackDamage = (MagicArrowSO.attackDamage + upgrade[1].damage) * ((100 + player.AttackDamage) / 100);
-            ad.attackSpeed = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed) + player.AttackSpeed;
+            ad.attackDamage = (MagicArrowSO.attackDamage + player.baseAttackDamage + upgrade[1].damage) * ((100 + player.attackDamage) / 100);
+            ad.attackSpeed = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed + player.baseAttackSpeed) + player.attackSpeed;
             ad.projectileCount = MagicArrowSO.projectileCount + upgrade[1].projectileCount;
             if(enemyIn == null)
             {
@@ -228,9 +228,9 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = (FireCircleSO.attackDamage + upgrade[2].damage) * ((100 + player.AttackDamage) / 100);
-            ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed) + player.AttackSpeed;
-            ad.distance = FireCircleSO.distance + upgrade[2].distance;
+            ad.attackDamage = (FireCircleSO.attackDamage + upgrade[2].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackDamage) + player.attackSpeed;
+            ad.distance = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance;
             
             attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
             particleManager.GetParticle(1, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
@@ -247,9 +247,9 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
                 forward = transform.forward
             };
-            ad.attackDamage = (ChasingSickleSO.attackDamage + upgrade[3].damage) * ((100 + player.AttackDamage) / 100);
-            ad.attackSpeed = (ChasingSickleSO.attackSpeed + upgrade[3].attackSpeed) + player.AttackSpeed;
-            ad.distance = ChasingSickleSO.distance + upgrade[3].distance;
+            ad.attackDamage = (ChasingSickleSO.attackDamage + upgrade[0].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackSpeed = (ChasingSickleSO.attackSpeed + upgrade[0].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
+            ad.distance = ChasingSickleSO.distance + upgrade[0].distance;
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
             attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
@@ -266,9 +266,9 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = (LightningRaySO.attackDamage + upgrade[4].damage) * ((100 + player.AttackDamage) / 100);
-            ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[4].attackSpeed) + player.AttackSpeed;
-            ad.distance = LightningRaySO.distance + upgrade[4].distance;
+            ad.attackDamage = (LightningRaySO.attackDamage + upgrade[3].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[3].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
+            ad.distance = LightningRaySO.distance + upgrade[3].distance + player.baseAttackDistance;
             ad.spreadAngle = LightningRaySO.spreadAngle;
 
             Collider[] enemy = Physics.OverlapSphere(transform.position, ad.distance, layer);
@@ -309,9 +309,9 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = randomPosi,
             };
-            ad.attackDamage = (FlowerThornsSO.attackDamage + upgrade[5].damage) * ((100 + player.AttackDamage) / 100);
-            ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[5].attackSpeed) + player.AttackSpeed;
-            ad.distance = FlowerThornsSO.distance + upgrade[5].distance;
+            ad.attackDamage = (FlowerThornsSO.attackDamage + upgrade[4].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[4].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
+            ad.distance = FlowerThornsSO.distance + upgrade[4].distance + player.baseAttackDistance;
             
             giz = randomPosi;
             dis = ad.distance;

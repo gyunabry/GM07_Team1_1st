@@ -5,6 +5,6 @@ public class S60_PlayerAttackDamageUpgrade : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.player.attackDamage += skillData.value[nowLevel];
     }
 }
