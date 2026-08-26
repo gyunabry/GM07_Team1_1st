@@ -6,6 +6,7 @@ using UnityEngine.AI;
 public sealed class HunterWorker : MonoBehaviour
 {
     private const float NavMeshSampleDistance = 1f;
+    private const float MonsterPathFailureGraceDuration = 1.5f;
 
     private enum State { Idle, Trace, Attack, Get, Store }
     private static readonly Dictionary<Enemy, HunterWorker> MonsterOwners = new();
@@ -19,12 +20,13 @@ public sealed class HunterWorker : MonoBehaviour
     [SerializeField] private int carryingCapacity = 20;
     [SerializeField] private GameObject attackEffect;
     [SerializeField, Min(0.05f)] private float targetSearchInterval = 0.25f;
+    [SerializeField, TextArea(2, 4)] private string runtimeDebugStatus;
 
     private readonly HunterCargo cargo = new();
     private NavMeshAgent agent; 
     private EmployeeManager manager; 
     private EmployeeRuntimeData employee;
-    private Collider area; 
+    private HuntingFieldContext huntingField;
     private Transmitter transmitter;
     private Transform home;
     private Enemy monster; 
@@ -32,6 +34,7 @@ public sealed class HunterWorker : MonoBehaviour
     private State state; 
     private float nextAttack;
     private bool awaitingKillerDrop;
+    private bool collectingKillerDrop;
     private float killerDropWaitUntil;
     private HunterStatModifiers statModifiers;
     private float baseMovementSpeed;
@@ -40,6 +43,7 @@ public sealed class HunterWorker : MonoBehaviour
     private int baseCarryingCapacity;
     private NavMeshPath reusablePath;
     private float nextTargetSearchTime;
+    private float monsterPathFailureSince = -1f;
 
     public string DebugStatus
     {
@@ -68,7 +72,7 @@ public sealed class HunterWorker : MonoBehaviour
     private void Update()
     {
         if (employee == null) return;
-        cargo.SetCapacity(carryingCapacity); // 스킬 서비스 연결 전 기본 한도 유지
+        cargo.SetCapacity(carryingCapacity); // ?�킬 ?�비???�결 ??기본 ?�도 ?��?
         if (awaitingKillerDrop)
         {
             if (TryClaimKillerDrop())
@@ -120,23 +124,30 @@ public sealed class HunterWorker : MonoBehaviour
         }
     }
 
+    private void LateUpdate()
+    {
+        runtimeDebugStatus = DebugStatus;
+    }
+
     public void Initialize(
         EmployeeManager m, 
         EmployeeRuntimeData e, 
-        Collider huntingArea,
+        HuntingFieldContext assignedHuntingField,
         Transmitter targetTransmitter,
         Transform homePoint
     )
     {
         manager = m;
         employee = e;
-        area = huntingArea;
+        huntingField = assignedHuntingField;
         transmitter = targetTransmitter;
         home = homePoint;
         state = State.Idle; 
         cargo.Clear();
         awaitingKillerDrop = false;
+        collectingKillerDrop = false;
         nextTargetSearchTime = 0f;
+        monsterPathFailureSince = -1f;
 
         ApplyStatModifiers(); 
         agent.stoppingDistance = 0.2f; 
@@ -169,7 +180,7 @@ public sealed class HunterWorker : MonoBehaviour
 
         manager = null;
         employee = null;
-        area = null;
+        huntingField = null;
         transmitter = null;
         home=null;
 
@@ -195,25 +206,44 @@ public sealed class HunterWorker : MonoBehaviour
     }
     private void Trace()
     {
-        if (!Valid(monster)) { ReleaseMonster(); RequestTargetSearch(); state=State.Idle; return; }
-        if (Distance(monster.transform.position) <= attackRange) { state=State.Attack; return; }
-        if (!Move(monster.transform.position, EmployeeWorkState.Moving))
+        if (!HasActiveMonsterTarget()) { ReleaseMonster(); RequestTargetSearch(); state = State.Idle; return; }
+        if (Distance(monster.transform.position) <= attackRange)
         {
-            ReleaseMonster();
-            RequestTargetSearch();
-            state = State.Idle;
+            monsterPathFailureSince = -1f;
+            state = State.Attack;
+            return;
         }
+
+        if (Move(monster.transform.position, EmployeeWorkState.Moving))
+        {
+            monsterPathFailureSince = -1f;
+            return;
+        }
+
+        if (monsterPathFailureSince < 0f)
+        {
+            monsterPathFailureSince = Time.time;
+        }
+
+        if (Time.time - monsterPathFailureSince < MonsterPathFailureGraceDuration)
+        {
+            return;
+        }
+
+        ReleaseMonster();
+        RequestTargetSearch();
+        state = State.Idle;
     }
     private void Attack()
     {
-        if (!Valid(monster)) { ReleaseMonster(); RequestTargetSearch(); state=State.Idle; return; }
+        if (!HasActiveMonsterTarget()) { ReleaseMonster(); RequestTargetSearch(); state = State.Idle; return; }
         if (Distance(monster.transform.position) > attackRange) { state=State.Trace; return; }
         Stop(EmployeeWorkState.Working);
         if (Time.time < nextAttack) return;
         if (monster.CurrentHp <= attackDamage)
         {
             awaitingKillerDrop = true;
-            killerDropWaitUntil = Time.time + 1f;
+            killerDropWaitUntil = Time.time + 3f;
             KillerDropReservations[this] = monster.transform.position;
         }
         monster.TakeDamage(attackDamage);
@@ -224,7 +254,7 @@ public sealed class HunterWorker : MonoBehaviour
 
     private void Get()
     {
-        if (!Valid(drop)) { ReleaseDrop(); RequestTargetSearch(); state=State.Idle; return; }
+        if (!IsValidDropTarget(drop)) { ReleaseDrop(); RequestTargetSearch(); state=State.Idle; return; }
         if (cargo.Remaining <= 0) { state=State.Store; return; }
         if (Distance(drop.transform.position) > .3f)
         {
@@ -238,8 +268,18 @@ public sealed class HunterWorker : MonoBehaviour
         }
 
         Stop(EmployeeWorkState.Working);
-        // cargo.Add(drop.Item, drop.TryCollectAmount(cargo.Remaining));
-        cargo.Add(drop.Item, 1);
+        ItemDataSO item = drop.Item;
+        int collectedAmount = drop.TryCollectAmount(cargo.Remaining);
+
+        if (collectedAmount <= 0)
+        {
+            ReleaseDrop();
+            RequestTargetSearch();
+            state = State.Idle;
+            return;
+        }
+
+        cargo.Add(item, collectedAmount);
 
         if (Valid(drop))
         {
@@ -310,15 +350,23 @@ public sealed class HunterWorker : MonoBehaviour
         DropOwners[drop] = this;
         return true;
     }
-    private bool Valid(Enemy e)=>e!=null&&e.CurrentHp>0&&area!=null&&area.bounds.Contains(e.transform.position);
-    private bool Valid(Dropitem d)=>d!=null&&d.Item!=null&&d.Amount>0&&area!=null&&area.bounds.Contains(d.transform.position);
+    private bool Valid(Enemy e) => e != null && e.CurrentHp > 0 && IsInsideHuntingArea(e.transform.position);
+    private bool Valid(Dropitem d) => d != null && d.Item != null && d.Amount > 0 && IsInsideHuntingArea(d.transform.position);
+    private bool IsValidDropTarget(Dropitem d) => d != null && d.Item != null && d.Amount > 0 &&
+                                                     (collectingKillerDrop || IsInsideHuntingArea(d.transform.position));
+
+    private bool IsInsideHuntingArea(Vector3 position)
+    {
+        return huntingField != null && huntingField.ContainsHuntingPosition(position);
+    }
     private bool TryClaimKillerDrop()
     {
         if (!KillerDropReservations.TryGetValue(this, out Vector3 deathPosition)) return false;
         foreach (Dropitem candidate in FindObjectsByType<Dropitem>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
-            if (!Valid(candidate) || DropOwners.ContainsKey(candidate) || !IsAtSamePosition(candidate.transform.position, deathPosition)) continue;
+            if (candidate == null || candidate.Item == null || candidate.Amount <= 0 || DropOwners.ContainsKey(candidate) || !IsAtSamePosition(candidate.transform.position, deathPosition)) continue;
             drop = candidate;
+            collectingKillerDrop = true;
             DropOwners[drop] = this;
             return true;
         }
@@ -340,8 +388,8 @@ public sealed class HunterWorker : MonoBehaviour
         second.y = 0f;
         return (first - second).sqrMagnitude <= 0.25f;
     }
-    // NavMesh 이동과 상호작용 범위는 지면(XZ) 기준이다. 드롭 프리팹과
-    // 직원의 피벗 높이가 달라도, 수평으로 도착하면 획득할 수 있어야 한다.
+    // NavMesh ?�동�??�호?�용 범위??지�?XZ) 기�??�다. ?�롭 ?�리?�과
+    // 직원???�벗 ?�이가 ?�라?? ?�평?�로 ?�착?�면 ?�득?????�어???�다.
     private float Distance(Vector3 p)
     {
         Vector3 offset = p - transform.position;
@@ -394,8 +442,19 @@ public sealed class HunterWorker : MonoBehaviour
     }
     private void Stop(EmployeeWorkState s){if(agent.isOnNavMesh){agent.ResetPath();agent.isStopped=true;}manager.TrySetWorkState(employee,s);}
     private void ReleaseTargets(){awaitingKillerDrop=false;KillerDropReservations.Remove(this);ReleaseMonster();ReleaseDrop();}
-    private void ReleaseMonster(){if(monster!=null&&MonsterOwners.TryGetValue(monster,out var o)&&o==this)MonsterOwners.Remove(monster);monster=null;}
-    private void ReleaseDrop(){if(drop!=null&&DropOwners.TryGetValue(drop,out var o)&&o==this)DropOwners.Remove(drop);drop=null;}
+    private bool HasActiveMonsterTarget() => monster != null && monster.CurrentHp > 0f;
+
+    private void ReleaseMonster()
+    {
+        monsterPathFailureSince = -1f;
+        if (monster != null && MonsterOwners.TryGetValue(monster, out var owner) && owner == this)
+        {
+            MonsterOwners.Remove(monster);
+        }
+
+        monster = null;
+    }
+    private void ReleaseDrop(){if(drop!=null&&DropOwners.TryGetValue(drop,out var o)&&o==this)DropOwners.Remove(drop);drop=null;collectingKillerDrop=false;}
 
     public bool TryPlaceAt(Transform targetPoint)
     {
@@ -412,14 +471,14 @@ public sealed class HunterWorker : MonoBehaviour
             return false;
         }
 
-        // 이전 경로를 제거
+        // ?�전 경로�??�거
         if (agent.isOnNavMesh)
         {
             agent.ResetPath();
             agent.isStopped = true;
         }
 
-        // agent 내부 위치를 해당 위치로 이동
+        // agent ?��? ?�치�??�당 ?�치�??�동
         if (!agent.Warp(hit.position)) return false;
         transform.rotation = targetPoint.rotation;
 

@@ -600,9 +600,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4c202c8615c97489fe23bb7557a557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingButtonView
-  button: {fileID: 52373058}
-  buildingData: {fileID: 11400000, guid: 2def409779f8e9749808260e728305a6, type: 2}
   tooltip: {fileID: 945586767}
+  buildingData: {fileID: 11400000, guid: 2def409779f8e9749808260e728305a6, type: 2}
+  button: {fileID: 52373058}
+  facilityName: {fileID: 0}
+  facilityCount: {fileID: 0}
+  facilityPrice: {fileID: 0}
+  disableColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &53359328
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2600,12 +2604,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a647cde5cade94d91ac2ae18d75a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeButtonView
+  recipeTooltip: {fileID: 0}
   selectButton: {fileID: 379164164}
   itemIcon: {fileID: 1145970136}
-  itemNameText: {fileID: 24996947}
-  itemIncomeText: {fileID: 786803980}
-  productionTimeText: {fileID: 1761037901}
-  ingredientIcon: {fileID: 0}
   selectedMarker: {fileID: 436989887}
 --- !u!114 &379164166
 MonoBehaviour:
@@ -4100,12 +4101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a647cde5cade94d91ac2ae18d75a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeButtonView
+  recipeTooltip: {fileID: 0}
   selectButton: {fileID: 494590045}
   itemIcon: {fileID: 1830069405}
-  itemNameText: {fileID: 1241261226}
-  itemIncomeText: {fileID: 1489963783}
-  productionTimeText: {fileID: 1688373135}
-  ingredientIcon: {fileID: 0}
   selectedMarker: {fileID: 346426697}
 --- !u!114 &494590047
 MonoBehaviour:
@@ -5784,7 +5782,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &813769132
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6438,12 +6436,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a647cde5cade94d91ac2ae18d75a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeButtonView
+  recipeTooltip: {fileID: 0}
   selectButton: {fileID: 867173041}
   itemIcon: {fileID: 1079178993}
-  itemNameText: {fileID: 381106182}
-  itemIncomeText: {fileID: 1564777465}
-  productionTimeText: {fileID: 364697001}
-  ingredientIcon: {fileID: 0}
   selectedMarker: {fileID: 1036877778}
 --- !u!114 &867173043
 MonoBehaviour:
@@ -7202,6 +7197,8 @@ MonoBehaviour:
   buildingIcon: {fileID: 751116350}
   buildingName: {fileID: 1637302590}
   buildingPrice: {fileID: 1246324383}
+  buildingCount: {fileID: 0}
+  buildingDescription: {fileID: 0}
   buildingType: {fileID: 1462228170}
 --- !u!1001 &984663825
 PrefabInstance:
@@ -8073,6 +8070,9 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 16640
+  placementLayer:
+    serializedVersion: 2
+    m_Bits: 0
   mainCamera: {fileID: 1200449583}
 --- !u!1001 &1144348249
 PrefabInstance:
@@ -9145,7 +9145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildModeController
   buildMenu: {fileID: 1787692136}
   buildMenuCanvas: {fileID: 523839261}
-  gridView: {fileID: 0}
+  buildableAreas: []
   inputManager: {fileID: 1139283684}
   onBuildModeClosed:
     m_PersistentCalls:
@@ -11178,7 +11178,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1293135240
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12223,8 +12223,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RecipeSelectPanel
   targetCanvas: {fileID: 460981770}
   graphicRaycaster: {fileID: 460981768}
+  scrollRect: {fileID: 0}
   contentRoot: {fileID: 2080919281}
-  recipeUnlockManager: {fileID: 0}
+  recipeButtonPrefab: {fileID: 0}
+  preSpawnCount: 3
+  recipeToolTip: {fileID: 0}
+  unlockedRecipes: []
 --- !u!1 &1391155126
 GameObject:
   m_ObjectHideFlags: 0
@@ -13166,11 +13170,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 381cb0c8b9d777d4bb9054170001e54f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SalesCounterDetailView
-  statusText: {fileID: 107038173}
+  canvas: {fileID: 0}
+  graphicRaycaster: {fileID: 0}
+  buildingName: {fileID: 0}
   capacityText: {fileID: 1876019251}
   contentRoot: {fileID: 1339006287}
   itemViewPrefab: {fileID: 162598145531071272, guid: c57466c57eb350c4c9b593445cf34959, type: 3}
   slotCount: 15
+  storageDecomposition: {fileID: 0}
 --- !u!1 &1516171025 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4949845606146816719, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
@@ -13713,8 +13720,9 @@ MonoBehaviour:
   grid: {fileID: 323255842}
   mainCamera: {fileID: 1200449583}
   inputManager: {fileID: 1139283684}
-  buildableArea: {fileID: 1620588800}
+  buildableAreas: []
   buildingContainer: {fileID: 172377084}
+  economyModifier: {fileID: 0}
 --- !u!114 &1620588800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13727,12 +13735,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7610221a9f3dcc4d83edf6243c6fca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildableArea
+  areaId: 
+  areaType: 0
   grid: {fileID: 323255842}
+  placementSurface: {fileID: 0}
+  buildingContainer: {fileID: 0}
+  gridView: {fileID: 0}
   unlockedAreas:
   - x: -8
     y: -8
     width: 20
     height: 20
+  blockedAreas: []
 --- !u!4 &1632974143 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1032128251353475541, guid: 1c067dec691bcaa4db725a9c59e97299, type: 3}
@@ -13791,14 +13805,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f608834b4eb5d54cb2aec3d5aee884e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProductionDetailView
+  targetCanvas: {fileID: 0}
+  graphicRaycaster: {fileID: 0}
+  buildingNameText: {fileID: 0}
   itemButton: {fileID: 410872422}
-  recipeSelectPanel: {fileID: 1389662107}
-  recipeIcon: {fileID: 1895720594}
-  recipeNameText: {fileID: 909323329}
-  itemIncomeText: {fileID: 1683554698}
+  inputIcon: {fileID: 0}
+  inputCountText: {fileID: 0}
+  outputIcon: {fileID: 0}
+  outputCountText: {fileID: 0}
   productionTimeText: {fileID: 2027464646}
   progressFill: {fileID: 1394895148}
-  statusText: {fileID: 1770644448}
+  recipeSelectPanel: {fileID: 1389662107}
 --- !u!1 &1637302588
 GameObject:
   m_ObjectHideFlags: 0
@@ -13969,43 +13986,17 @@ MonoBehaviour:
   interactionPoint: {fileID: 1671598526}
   isEnabled: 1
   outlineObject: {fileID: 487611245}
-  linkedPortal1: {fileID: 6124381094653049876}
-  linkedPortal2: {fileID: 2026313707}
-  linkedPortal3: {fileID: 1671598525}
-  linkedPortal4: {fileID: 1966784054}
+  interactionMode: 0
   arrivalPoint: {fileID: 493512517}
-  navMeshSampleDistance: 1.5
-  portalUI: {fileID: 138255116}
-  AttackOn:
+  teleportUI: {fileID: 0}
+  huntingFieldPortals:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  workshopPortal: {fileID: 0}
+  onArrived:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackRefresh
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  AttackOff:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackPause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &1671598526
 Transform:
   m_ObjectHideFlags: 0
@@ -14744,7 +14735,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1712359140
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15947,12 +15938,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a647cde5cade94d91ac2ae18d75a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeButtonView
+  recipeTooltip: {fileID: 0}
   selectButton: {fileID: 1839743974}
   itemIcon: {fileID: 1581449975}
-  itemNameText: {fileID: 19817499}
-  itemIncomeText: {fileID: 850963869}
-  productionTimeText: {fileID: 1703594573}
-  ingredientIcon: {fileID: 0}
   selectedMarker: {fileID: 1255320589}
 --- !u!114 &1839743976
 MonoBehaviour:
@@ -16797,12 +16785,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14a647cde5cade94d91ac2ae18d75a19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeButtonView
+  recipeTooltip: {fileID: 0}
   selectButton: {fileID: 1883845737}
   itemIcon: {fileID: 531756957}
-  itemNameText: {fileID: 574725243}
-  itemIncomeText: {fileID: 1114896099}
-  productionTimeText: {fileID: 1682199951}
-  ingredientIcon: {fileID: 0}
   selectedMarker: {fileID: 1845530565}
 --- !u!1 &1895720592
 GameObject:
@@ -17024,9 +17009,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4c202c8615c97489fe23bb7557a557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingButtonView
-  button: {fileID: 1896408654}
-  buildingData: {fileID: 11400000, guid: f11c08d0f6e0fdb4eb91fa0c115a607f, type: 2}
   tooltip: {fileID: 945586767}
+  buildingData: {fileID: 11400000, guid: f11c08d0f6e0fdb4eb91fa0c115a607f, type: 2}
+  button: {fileID: 1896408654}
+  facilityName: {fileID: 0}
+  facilityCount: {fileID: 0}
+  facilityPrice: {fileID: 0}
+  disableColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1904223061
 GameObject:
   m_ObjectHideFlags: 0
@@ -17244,43 +17233,17 @@ MonoBehaviour:
   interactionPoint: {fileID: 1966784055}
   isEnabled: 1
   outlineObject: {fileID: 2144591647}
-  linkedPortal1: {fileID: 6124381094653049876}
-  linkedPortal2: {fileID: 2026313707}
-  linkedPortal3: {fileID: 1671598525}
-  linkedPortal4: {fileID: 1966784054}
+  interactionMode: 0
   arrivalPoint: {fileID: 1859983001}
-  navMeshSampleDistance: 1.5
-  portalUI: {fileID: 138255116}
-  AttackOn:
+  teleportUI: {fileID: 0}
+  huntingFieldPortals:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  workshopPortal: {fileID: 0}
+  onArrived:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackRefresh
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  AttackOff:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackPause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &1966784055
 Transform:
   m_ObjectHideFlags: 0
@@ -17372,19 +17335,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1411853343106160033, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1411853343106160033, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1411853343106160033, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: 1411853343106160033, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 3326638795888581679, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: playerAttack
@@ -17480,35 +17443,35 @@ PrefabInstance:
       objectReference: {fileID: 984878739}
     - target: {fileID: 5418544116884658519, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5418544116884658519, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5418544116884658519, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 5418544116884658519, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 6891162043138384357, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6891162043138384357, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6891162043138384357, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 6891162043138384357, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 7927853967128281031, guid: ef272d9b7001651488d40d604211f4cd, type: 3}
       propertyPath: playerAttack
@@ -17847,43 +17810,17 @@ MonoBehaviour:
   interactionPoint: {fileID: 2026313711}
   isEnabled: 1
   outlineObject: {fileID: 65370677}
-  linkedPortal1: {fileID: 6124381094653049876}
-  linkedPortal2: {fileID: 2026313707}
-  linkedPortal3: {fileID: 1671598525}
-  linkedPortal4: {fileID: 1966784054}
+  interactionMode: 0
   arrivalPoint: {fileID: 328192086}
-  navMeshSampleDistance: 1.5
-  portalUI: {fileID: 138255116}
-  AttackOn:
+  teleportUI: {fileID: 0}
+  huntingFieldPortals:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  workshopPortal: {fileID: 0}
+  onArrived:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackRefresh
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  AttackOff:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackPause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &2026313711
 Transform:
   m_ObjectHideFlags: 0
@@ -18496,9 +18433,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba4c202c8615c97489fe23bb7557a557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingButtonView
-  button: {fileID: 2077077925}
-  buildingData: {fileID: 11400000, guid: 92fe497f088767e4682beea85db6a607, type: 2}
   tooltip: {fileID: 945586767}
+  buildingData: {fileID: 11400000, guid: 92fe497f088767e4682beea85db6a607, type: 2}
+  button: {fileID: 2077077925}
+  facilityName: {fileID: 0}
+  facilityCount: {fileID: 0}
+  facilityPrice: {fileID: 0}
+  disableColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &2080919280
 GameObject:
   m_ObjectHideFlags: 0
@@ -18864,9 +18805,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6925937915132537901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 75, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 150, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1092318518805674265
@@ -18895,9 +18836,9 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 6154225331516229469}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 179.2264, y: -25}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 358.4528, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &1455629045951636036
@@ -19150,9 +19091,9 @@ RectTransform:
   - {fileID: 8673199015537899599}
   m_Father: {fileID: 6925937915132537901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 230, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &3163386965217691309
@@ -19323,7 +19264,7 @@ RectTransform:
   m_Father: {fileID: 8673199015537899599}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -19911,43 +19852,17 @@ MonoBehaviour:
   interactionPoint: {fileID: 6124381094653049874}
   isEnabled: 1
   outlineObject: {fileID: 1298247295}
-  linkedPortal1: {fileID: 6124381094653049876}
-  linkedPortal2: {fileID: 2026313707}
-  linkedPortal3: {fileID: 1671598525}
-  linkedPortal4: {fileID: 1966784054}
+  interactionMode: 0
   arrivalPoint: {fileID: 911251555}
-  navMeshSampleDistance: 1.5
-  portalUI: {fileID: 138255116}
-  AttackOn:
+  teleportUI: {fileID: 0}
+  huntingFieldPortals:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  workshopPortal: {fileID: 0}
+  onArrived:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackRefresh
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  AttackOff:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5093196417198891137}
-        m_TargetAssemblyTypeName: PlayerAttack, Assembly-CSharp
-        m_MethodName: AttackPause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &6142630983025069593
 MonoBehaviour:
   m_ObjectHideFlags: 0

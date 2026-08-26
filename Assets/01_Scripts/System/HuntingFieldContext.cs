@@ -11,7 +11,7 @@ public class HuntingFieldContext : MonoBehaviour
 
     public BuildableArea BuildableArea => buildableArea;
     public Collider SpawnArea => spawnArea;
-    public bool IsValid => buildableArea != null && spawnArea != null;
+    public bool IsValid => buildableArea != null;
 
     private void Awake()
     {
@@ -53,5 +53,11 @@ public class HuntingFieldContext : MonoBehaviour
         }
 
         return false;
+    }
+    public bool ContainsHuntingPosition(Vector3 worldPosition)
+    {
+        return buildableArea != null &&
+               buildableArea.TryWorldToCell(worldPosition, out Vector3Int cell) &&
+               buildableArea.IsBuildable(cell);
     }
 }

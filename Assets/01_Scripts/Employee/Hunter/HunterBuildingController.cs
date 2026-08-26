@@ -12,7 +12,6 @@ public sealed class HunterBuildingController : MonoBehaviour
     private EmployeeManager manager; 
     private PlacedBuilding building;
     private HuntingFieldContext areaContext;
-    private Collider spawnArea;
 
     private void Awake() 
     {
@@ -112,7 +111,7 @@ public sealed class HunterBuildingController : MonoBehaviour
         worker.Initialize(
             manager, 
             e, 
-            spawnArea, 
+            areaContext,
             transmitter, 
             homePoint
         );
@@ -164,8 +163,6 @@ public sealed class HunterBuildingController : MonoBehaviour
         {
             return false;
         }
-
-        spawnArea = areaContext.SpawnArea;
 
         return true;
     }

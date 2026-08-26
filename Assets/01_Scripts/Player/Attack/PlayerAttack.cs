@@ -187,7 +187,7 @@ public class PlayerAttack : MonoBehaviour
             };
             ad.distance = MagicArrowSO.distance;
             enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
-            ad.attackDamage = (MagicArrowSO.attackDamage + upgrade[1].damage) * player.AttackDamage;
+            ad.attackDamage = (MagicArrowSO.attackDamage + upgrade[1].damage) * ((100 + player.AttackDamage) / 100);
             ad.attackSpeed = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed) + player.AttackSpeed;
             ad.projectileCount = MagicArrowSO.projectileCount + upgrade[1].projectileCount;
             if(enemyIn == null)
@@ -228,7 +228,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = (FireCircleSO.attackDamage + upgrade[2].damage) * player.AttackDamage;
+            ad.attackDamage = (FireCircleSO.attackDamage + upgrade[2].damage) * ((100 + player.AttackDamage) / 100);
             ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed) + player.AttackSpeed;
             ad.distance = FireCircleSO.distance + upgrade[2].distance;
             
@@ -247,7 +247,7 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
                 forward = transform.forward
             };
-            ad.attackDamage = (ChasingSickleSO.attackDamage + upgrade[3].damage) * player.AttackDamage;
+            ad.attackDamage = (ChasingSickleSO.attackDamage + upgrade[3].damage) * ((100 + player.AttackDamage) / 100);
             ad.attackSpeed = (ChasingSickleSO.attackSpeed + upgrade[3].attackSpeed) + player.AttackSpeed;
             ad.distance = ChasingSickleSO.distance + upgrade[3].distance;
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
@@ -266,7 +266,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = (LightningRaySO.attackDamage + upgrade[4].damage) * player.AttackDamage;
+            ad.attackDamage = (LightningRaySO.attackDamage + upgrade[4].damage) * ((100 + player.AttackDamage) / 100);
             ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[4].attackSpeed) + player.AttackSpeed;
             ad.distance = LightningRaySO.distance + upgrade[4].distance;
             ad.spreadAngle = LightningRaySO.spreadAngle;
@@ -309,7 +309,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = randomPosi,
             };
-            ad.attackDamage = (FlowerThornsSO.attackDamage + upgrade[5].damage) * player.AttackDamage;
+            ad.attackDamage = (FlowerThornsSO.attackDamage + upgrade[5].damage) * ((100 + player.AttackDamage) / 100);
             ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[5].attackSpeed) + player.AttackSpeed;
             ad.distance = FlowerThornsSO.distance + upgrade[5].distance;
             
