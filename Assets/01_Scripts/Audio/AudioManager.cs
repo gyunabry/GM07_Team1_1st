@@ -13,6 +13,9 @@ public class AudioManager : MonoBehaviour
     private Dictionary<EBGMType, BGMClipData> bgmDictionary;
     private Dictionary<ESFXType, SFXClipData> sfxDictionary;
 
+    private Dictionary<ESFXType, float> sfxPlayTime;
+    private float sfxPlayCool = 0.07f;
+
     private BGMClipData currentBGMData;
     private float masterVolume = 1f;
     private float bgmVolume = 1f;
@@ -85,6 +88,7 @@ public class AudioManager : MonoBehaviour
     {
         bgmDictionary = new Dictionary<EBGMType, BGMClipData>();
         sfxDictionary = new Dictionary<ESFXType, SFXClipData>();
+        sfxPlayTime = new Dictionary<ESFXType, float>();
 
         if (audioData == null) return;
 
@@ -149,6 +153,16 @@ public class AudioManager : MonoBehaviour
     {
         if (!sfxDictionary.ContainsKey(type)) return;
 
+        if (sfxPlayTime.ContainsKey(type))
+        {
+            if (Time.time < sfxPlayTime[type] + sfxPlayCool) return;
+
+            sfxPlayTime[type] = Time.time;
+        }
+        else
+        {
+            sfxPlayTime.Add(type, Time.time);
+        }
         SFXClipData data = sfxDictionary[type];
 
         float volume = data.volume * sfxVolume * masterVolume;
