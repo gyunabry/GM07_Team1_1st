@@ -13,9 +13,11 @@ public sealed class CustomerController : MonoBehaviour
     private const int ExitAvoidancePriority = 0;
 
     [SerializeField] private CustomerDataSO customerData;
+    [SerializeField] private GameObject customerHudPrefab;
     [Header("Legacy Defaults")]
     [SerializeField] private CustomerOrder defaultOrder;
     [SerializeField, Min(0f)] private float paymentDuration = 1.5f;
+    [SerializeField, Min(0.1f)] private float patienceDuration = 600f;
     [SerializeField, Min(0.1f)] private float exitTimeout = 30f;
 
     private NavMeshAgent agent;
@@ -24,6 +26,8 @@ public sealed class CustomerController : MonoBehaviour
     private ObstacleAvoidanceType defaultObstacleAvoidance;
     private Collider[] colliders;
     private bool[] defaultColliderStates;
+    private Renderer[] renderers;
+    private MaterialPropertyBlock[] defaultPropertyBlocks;
     private CustomerStateMachine stateMachine;
     private Transform exitTurnPoint;
     private Transform exitPoint;
@@ -32,6 +36,10 @@ public sealed class CustomerController : MonoBehaviour
     private Vector3 navigationDestination;
     private bool hasNavigationDestination;
     private CustomerQueueMovement queueMovement;
+    private float patienceElapsed;
+    private float patienceBonusSeconds;
+    private float patienceBonusPercent;
+    private bool didPatienceExpire;
     private readonly CustomerRuntimeData runtimeData = new CustomerRuntimeData();
 
     public CustomerRuntimeData RuntimeData => runtimeData;
@@ -44,8 +52,26 @@ public sealed class CustomerController : MonoBehaviour
     public bool HasExitTurnPoint => exitTurnPoint != null;
     public CustomerStateMachine StateMachine => stateMachine;
     public bool IsPaymentCompleted => runtimeData.PaymentCompleted;
+    public float PatienceElapsed => patienceElapsed;
+    public float PatienceNormalized => Mathf.Clamp01(patienceElapsed / PatienceDuration);
+    public bool DidPatienceExpire => didPatienceExpire;
     public bool HasInventoryService => inventory != null;
-    public float PaymentDuration => customerData != null ? customerData.PaymentDuration : paymentDuration;
+    public float PaymentDuration
+    {
+        get
+        {
+            float baseDuration = customerData != null ? customerData.PaymentDuration : paymentDuration;
+            return Mathf.Max(0f, baseDuration * (Checkout != null ? Checkout.PaymentDurationMultiplier : 1f));
+        }
+    }
+    public float PatienceDuration
+    {
+        get
+        {
+            float baseDuration = customerData != null ? customerData.PatienceDuration : patienceDuration;
+            return Mathf.Max(0.1f, baseDuration * (1f + patienceBonusPercent / 100f) + patienceBonusSeconds);
+        }
+    }
     public float ExitTimeout => customerData != null ? customerData.ExitTimeout : exitTimeout;
     public bool HasCheckoutOperator => Checkout != null && Checkout.HasOperator;
     public CustomerQueueMovement QueueMovement => queueMovement;
@@ -65,6 +91,13 @@ public sealed class CustomerController : MonoBehaviour
         {
             defaultColliderStates[i] = colliders[i].enabled;
         }
+        renderers = GetComponentsInChildren<Renderer>(true);
+        defaultPropertyBlocks = new MaterialPropertyBlock[renderers.Length];
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            defaultPropertyBlocks[i] = new MaterialPropertyBlock();
+            renderers[i].GetPropertyBlock(defaultPropertyBlocks[i]);
+        }
         stateMachine = GetComponent<CustomerStateMachine>();
         queueMovement = GetComponent<CustomerQueueMovement>();
         if (queueMovement == null)
@@ -72,6 +105,13 @@ public sealed class CustomerController : MonoBehaviour
             // 기존 프리팹에도 새 대기열 컴포넌트를 안전하게 적용한다.
             queueMovement = gameObject.AddComponent<CustomerQueueMovement>();
         }
+
+        CustomerPatienceView patienceView = GetComponent<CustomerPatienceView>();
+        if (patienceView == null)
+        {
+            patienceView = gameObject.AddComponent<CustomerPatienceView>();
+        }
+        patienceView.Configure(customerHudPrefab);
 
         stateMachine.Initialize(this);
     }
@@ -128,6 +168,10 @@ public sealed class CustomerController : MonoBehaviour
         currency = null;
         queueMovement?.Clear();
         hasNavigationDestination = false;
+        patienceElapsed = 0f;
+        patienceBonusSeconds = 0f;
+        patienceBonusPercent = 0f;
+        didPatienceExpire = false;
         runtimeData.Reset();
 
         if (agent != null && agent.isOnNavMesh)
@@ -141,12 +185,28 @@ public sealed class CustomerController : MonoBehaviour
         }
 
         RestoreColliders();
+        RestoreRendererProperties();
     }
 
     // 데이터 에셋이 없는 런타임 테스트에서만 기본 주문을 주입한다.
     public void ConfigureDefaultOrder(CustomerOrder order)
     {
         defaultOrder = order;
+    }
+
+    public void ConfigurePatienceDuration(float duration)
+    {
+        patienceDuration = Mathf.Max(0.1f, duration);
+    }
+
+    public void SetPatienceBonusSeconds(float bonusSeconds)
+    {
+        patienceBonusSeconds = Mathf.Max(0f, bonusSeconds);
+    }
+
+    public void SetPatienceBonusPercent(float bonusPercent)
+    {
+        patienceBonusPercent = Mathf.Max(0f, bonusPercent);
     }
 
     public void SetNavigationRadius(float radius)
@@ -230,6 +290,25 @@ public sealed class CustomerController : MonoBehaviour
         stateMachine.ChangeState(new CustomerExitState(this));
     }
 
+    public bool TryHandlePatienceTimeout()
+    {
+        if (runtimeData.PaymentCompleted)
+        {
+            return false;
+        }
+
+        patienceElapsed += Time.deltaTime;
+        if (patienceElapsed < PatienceDuration)
+        {
+            return false;
+        }
+
+        didPatienceExpire = true;
+        ApplyPatienceExpiredVisual();
+        ForceExitWithoutPayment();
+        return true;
+    }
+
     public void SubscribeInventoryChanged(System.Action handler)
     {
         if (inventory != null)
@@ -308,6 +387,57 @@ public sealed class CustomerController : MonoBehaviour
             if (colliders[i] != null)
             {
                 colliders[i].enabled = defaultColliderStates[i];
+            }
+        }
+    }
+
+    private void ApplyPatienceExpiredVisual()
+    {
+        if (renderers == null)
+        {
+            return;
+        }
+
+        Color tint = new Color(1f, 0.2f, 0.2f, 1f);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer renderer = renderers[i];
+            if (renderer == null || renderer.sharedMaterial == null)
+            {
+                continue;
+            }
+
+            MaterialPropertyBlock propertyBlock = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(propertyBlock);
+            if (renderer.sharedMaterial.HasProperty("_BaseColor"))
+            {
+                propertyBlock.SetColor("_BaseColor", tint);
+            }
+            else if (renderer.sharedMaterial.HasProperty("_Color"))
+            {
+                propertyBlock.SetColor("_Color", tint);
+            }
+            else
+            {
+                continue;
+            }
+
+            renderer.SetPropertyBlock(propertyBlock);
+        }
+    }
+
+    private void RestoreRendererProperties()
+    {
+        if (renderers == null || defaultPropertyBlocks == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            if (renderers[i] != null)
+            {
+                renderers[i].SetPropertyBlock(defaultPropertyBlocks[i]);
             }
         }
     }

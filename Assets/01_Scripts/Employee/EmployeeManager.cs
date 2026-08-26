@@ -14,10 +14,73 @@ public sealed class EmployeeManager : MonoBehaviour
     private readonly Dictionary<int, RegisteredBuilding> registeredBuildings = new();
     private int nextEmployeeId = 1;
     private EmployeeDataSO runtimeSalesEmployeeData;
+    private float hunterAttackDamageIncreasePercent;
+    private float hunterAttackIntervalReductionPercent;
+    private float hunterAttackRangeIncreasePercent;
+    private float salesPaymentTimeReductionPercent;
+    private float carrierItemTransferTimeReductionPercent;
+    private float allEmployeeProcessingSpeedIncreasePercent;
+    private float allEmployeeMovementSpeedIncreasePercent;
 
     public event Action<EmployeeRuntimeData> EmployeeHired;
     public event Action<EmployeeRuntimeData> EmployeeRemoved;
     public event Action<EmployeeRuntimeData> EmployeeWorkStateChanged;
+    public event Action<float, float, float> HunterSkillModifiersChanged;
+    public event Action<float> SalesPaymentTimeReductionChanged;
+    public event Action<float> CarrierTransferTimeReductionChanged;
+    public event Action<float> AllEmployeeProcessingSpeedIncreaseChanged;
+    public event Action<float> AllEmployeeMovementSpeedIncreaseChanged;
+
+    public float HunterAttackDamageIncreasePercent => hunterAttackDamageIncreasePercent;
+    public float HunterAttackIntervalReductionPercent => hunterAttackIntervalReductionPercent;
+    public float HunterAttackRangeIncreasePercent => hunterAttackRangeIncreasePercent;
+    public float SalesPaymentTimeReductionPercent => salesPaymentTimeReductionPercent;
+    public float CarrierItemTransferTimeReductionPercent => carrierItemTransferTimeReductionPercent;
+    public float AllEmployeeProcessingSpeedIncreasePercent => allEmployeeProcessingSpeedIncreasePercent;
+    public float AllEmployeeMovementSpeedIncreasePercent => allEmployeeMovementSpeedIncreasePercent;
+
+    public void SetHunterAttackDamageIncreasePercent(float percent)
+    {
+        hunterAttackDamageIncreasePercent = Mathf.Max(0f, percent);
+        NotifyHunterSkillModifiersChanged();
+    }
+
+    // Reduces attack interval to increase attack speed.
+    public void SetHunterAttackIntervalReductionPercent(float percent)
+    {
+        hunterAttackIntervalReductionPercent = Mathf.Clamp(percent, 0f, 100f);
+        NotifyHunterSkillModifiersChanged();
+    }
+
+    public void SetHunterAttackRangeIncreasePercent(float percent)
+    {
+        hunterAttackRangeIncreasePercent = Mathf.Max(0f, percent);
+        NotifyHunterSkillModifiersChanged();
+    }
+
+    public void SetSalesPaymentTimeReductionPercent(float percent)
+    {
+        salesPaymentTimeReductionPercent = Mathf.Clamp(percent, 0f, 100f);
+        SalesPaymentTimeReductionChanged?.Invoke(salesPaymentTimeReductionPercent);
+    }
+
+    public void SetCarrierItemTransferTimeReductionPercent(float percent)
+    {
+        carrierItemTransferTimeReductionPercent = Mathf.Clamp(percent, 0f, 100f);
+        CarrierTransferTimeReductionChanged?.Invoke(carrierItemTransferTimeReductionPercent);
+    }
+
+    public void SetAllEmployeeProcessingSpeedIncreasePercent(float percent)
+    {
+        allEmployeeProcessingSpeedIncreasePercent = Mathf.Clamp(percent, 0f, 100f);
+        AllEmployeeProcessingSpeedIncreaseChanged?.Invoke(allEmployeeProcessingSpeedIncreasePercent);
+    }
+
+    public void SetAllEmployeeMovementSpeedIncreasePercent(float percent)
+    {
+        allEmployeeMovementSpeedIncreasePercent = Mathf.Max(0f, percent);
+        AllEmployeeMovementSpeedIncreaseChanged?.Invoke(allEmployeeMovementSpeedIncreasePercent);
+    }
 
     // HUD는 운반 직원 건물 설치 전에도 전역 명령 서비스를 조회할 수 있어야 합니다.
     private void Awake()
@@ -197,6 +260,14 @@ public sealed class EmployeeManager : MonoBehaviour
         }
 
         return runtimeSalesEmployeeData;
+    }
+
+    private void NotifyHunterSkillModifiersChanged()
+    {
+        HunterSkillModifiersChanged?.Invoke(
+            hunterAttackDamageIncreasePercent,
+            hunterAttackIntervalReductionPercent,
+            hunterAttackRangeIncreasePercent);
     }
 
     private sealed class RegisteredBuilding
