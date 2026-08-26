@@ -17,6 +17,8 @@ public sealed class HunterWorker : MonoBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackInterval = 2f;
     [SerializeField] private float attackDamage = 5f;
+    [SerializeField, Min(0.05f)] private float itemPickupDuration = 10f;
+    [SerializeField, Min(0.05f)] private float itemDeliveryDuration = 10f;
     [SerializeField] private int carryingCapacity = 20;
     [SerializeField] private GameObject attackEffect;
     [SerializeField, Min(0.05f)] private float targetSearchInterval = 0.25f;
@@ -39,8 +41,16 @@ public sealed class HunterWorker : MonoBehaviour
     private HunterStatModifiers statModifiers;
     private float baseMovementSpeed;
     private float baseAttackRange;
+    private float baseAttackInterval;
     private float baseAttackDamage;
     private int baseCarryingCapacity;
+    private float attackDamageIncreasePercent;
+    private float attackIntervalReductionPercent;
+    private float attackRangeIncreasePercent;
+    private float itemPickupElapsed;
+    private float itemDeliveryElapsed;
+    private float allEmployeeProcessingSpeedIncreasePercent;
+    private float allEmployeeMovementSpeedIncreasePercent;
     private NavMeshPath reusablePath;
     private float nextTargetSearchTime;
     private float monsterPathFailureSince = -1f;
@@ -65,6 +75,7 @@ public sealed class HunterWorker : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         baseMovementSpeed = movementSpeed;
         baseAttackRange = attackRange;
+        baseAttackInterval = attackInterval;
         baseAttackDamage = attackDamage;
         baseCarryingCapacity = carryingCapacity;
         reusablePath = new NavMeshPath();
@@ -148,6 +159,8 @@ public sealed class HunterWorker : MonoBehaviour
         collectingKillerDrop = false;
         nextTargetSearchTime = 0f;
         monsterPathFailureSince = -1f;
+        itemPickupElapsed = 0f;
+        itemDeliveryElapsed = 0f;
 
         ApplyStatModifiers(); 
         agent.stoppingDistance = 0.2f; 
@@ -162,6 +175,25 @@ public sealed class HunterWorker : MonoBehaviour
     public void SetStatModifiers(HunterStatModifiers modifiers)
     {
         statModifiers = modifiers;
+        ApplyStatModifiers();
+    }
+
+    public void SetSkillStatPercentModifiers(float damageIncreasePercent, float intervalReductionPercent, float rangeIncreasePercent)
+    {
+        attackDamageIncreasePercent = Mathf.Max(0f, damageIncreasePercent);
+        attackIntervalReductionPercent = Mathf.Clamp(intervalReductionPercent, 0f, 100f);
+        attackRangeIncreasePercent = Mathf.Max(0f, rangeIncreasePercent);
+        ApplyStatModifiers();
+    }
+
+    public void SetAllEmployeeProcessingSpeedIncreasePercent(float percent)
+    {
+        allEmployeeProcessingSpeedIncreasePercent = Mathf.Clamp(percent, 0f, 100f);
+    }
+
+    public void SetAllEmployeeMovementSpeedIncreasePercent(float percent)
+    {
+        allEmployeeMovementSpeedIncreasePercent = Mathf.Max(0f, percent);
         ApplyStatModifiers();
     }
 
@@ -258,6 +290,7 @@ public sealed class HunterWorker : MonoBehaviour
         if (cargo.Remaining <= 0) { state=State.Store; return; }
         if (Distance(drop.transform.position) > .3f)
         {
+            itemPickupElapsed = 0f;
             if (!Move(drop.transform.position, EmployeeWorkState.Moving))
             {
                 ReleaseDrop();
@@ -268,8 +301,11 @@ public sealed class HunterWorker : MonoBehaviour
         }
 
         Stop(EmployeeWorkState.Working);
+        if (!TryCompleteItemPickup()) return;
+
         ItemDataSO item = drop.Item;
         int collectedAmount = drop.TryCollectAmount(cargo.Remaining);
+        itemPickupElapsed = 0f;
 
         if (collectedAmount <= 0)
         {
@@ -301,12 +337,17 @@ public sealed class HunterWorker : MonoBehaviour
 
         if (Distance(transmitter.DepositPoint.position) > .3f)
         {
+            itemDeliveryElapsed = 0f;
             Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving);
             return;
         }
 
+        Stop(EmployeeWorkState.Working);
+        if (!TryCompleteItemDelivery()) return;
+
         int cargoBeforeDeposit = cargo.TotalAmount;
         cargo.TransferTo(transmitter.Inventory);
+        itemDeliveryElapsed = 0f;
 
         Stop(cargo.TotalAmount == cargoBeforeDeposit ? EmployeeWorkState.Idle : EmployeeWorkState.Working);
 
@@ -396,12 +437,27 @@ public sealed class HunterWorker : MonoBehaviour
         offset.y = 0f;
         return offset.magnitude;
     }
+    private bool TryCompleteItemPickup()
+    {
+        itemPickupElapsed += Time.deltaTime;
+        float duration = Mathf.Max(0.05f, itemPickupDuration * (1f - allEmployeeProcessingSpeedIncreasePercent / 100f));
+        return itemPickupElapsed >= duration;
+    }
+
+    private bool TryCompleteItemDelivery()
+    {
+        itemDeliveryElapsed += Time.deltaTime;
+        float duration = Mathf.Max(0.05f, itemDeliveryDuration * (1f - allEmployeeProcessingSpeedIncreasePercent / 100f));
+        return itemDeliveryElapsed >= duration;
+    }
+
     private void ApplyStatModifiers()
     {
-        movementSpeed = Mathf.Max(0.1f, baseMovementSpeed + statModifiers.MovementSpeedBonus);
+        movementSpeed = Mathf.Max(0.1f, (baseMovementSpeed + statModifiers.MovementSpeedBonus) * (1f + allEmployeeMovementSpeedIncreasePercent / 100f));
         carryingCapacity = Mathf.Max(1, baseCarryingCapacity + statModifiers.CarryingCapacityBonus);
-        attackDamage = Mathf.Max(0f, baseAttackDamage + statModifiers.AttackDamageBonus);
-        attackRange = Mathf.Max(0.1f, baseAttackRange + statModifiers.AttackRangeBonus);
+        attackDamage = Mathf.Max(0f, baseAttackDamage * (1f + attackDamageIncreasePercent / 100f) + statModifiers.AttackDamageBonus);
+        attackInterval = Mathf.Max(0.05f, baseAttackInterval * (1f - attackIntervalReductionPercent / 100f));
+        attackRange = Mathf.Max(0.1f, baseAttackRange * (1f + attackRangeIncreasePercent / 100f) + statModifiers.AttackRangeBonus);
 
         if (agent != null) agent.speed = movementSpeed;
         cargo.SetCapacity(carryingCapacity);

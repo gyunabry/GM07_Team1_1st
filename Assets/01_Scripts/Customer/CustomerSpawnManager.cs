@@ -22,9 +22,14 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     private ICustomerCurrency currency;
     private Coroutine replenishRoutine;
     private float patienceBonusSeconds;
+    private float patienceBonusPercent;
+    private float visitIntervalReductionPercent;
 
     public static CustomerSpawnManager Instance { get; private set; }
     public float PatienceBonusSeconds => patienceBonusSeconds;
+    public float PatienceBonusPercent => patienceBonusPercent;
+    public float VisitIntervalReductionPercent => visitIntervalReductionPercent;
+    public float VisitInterval => Mathf.Max(0.1f, spawnInterval * (1f - visitIntervalReductionPercent / 100f));
 
     private void Awake()
     {
@@ -89,6 +94,32 @@ public sealed class CustomerSpawnManager : MonoBehaviour
                 customers[i]?.SetPatienceBonusSeconds(patienceBonusSeconds);
             }
         }
+    }
+
+    // 스킬 효과가 레벨별 최종 인내심 증가율(예: 5, 10)을 전달한다.
+    public void SetPatienceIncreasePercent(float percent)
+    {
+        patienceBonusPercent = Mathf.Max(0f, percent);
+
+        foreach (CustomerCheckoutStation station in stations)
+        {
+            if (station?.Queue == null)
+            {
+                continue;
+            }
+
+            CustomerController[] customers = station.Queue.GetCustomersSnapshot();
+            for (int i = 0; i < customers.Length; i++)
+            {
+                customers[i]?.SetPatienceBonusPercent(patienceBonusPercent);
+            }
+        }
+    }
+
+    // 스킬 효과가 레벨별 최종 방문 간격 감소율(예: 5, 10)을 전달한다.
+    public void SetSpawnIntervalReductionPercent(float percent)
+    {
+        visitIntervalReductionPercent = Mathf.Clamp(percent, 0f, 100f);
     }
 
     // 전역 입·출구와 주문만 구성한다. 계산대는 CustomerCheckoutStation이 자동 등록한다.
@@ -168,6 +199,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         if (customer.OnSpawned(station.Queue, station.Checkout, exitTurnPoint, exitPoint, order, inventory, currency))
         {
             customer.SetPatienceBonusSeconds(patienceBonusSeconds);
+            customer.SetPatienceBonusPercent(patienceBonusPercent);
             customer.ExitCompleted += OnCustomerExitCompleted;
             customer.ExitFailed += OnCustomerExitFailed;
             return true;
@@ -313,7 +345,6 @@ public sealed class CustomerSpawnManager : MonoBehaviour
 
     private IEnumerator ReplenishCustomers()
     {
-        WaitForSeconds wait = new WaitForSeconds(spawnInterval);
         while (GetCustomerCount() < GetCustomerCapacity())
         {
             if (!SpawnOne())
@@ -321,7 +352,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
                 break;
             }
 
-            yield return wait;
+            yield return new WaitForSeconds(VisitInterval);
         }
 
         replenishRoutine = null;
