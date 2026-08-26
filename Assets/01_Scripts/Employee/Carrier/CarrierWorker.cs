@@ -33,6 +33,8 @@ public sealed class CarrierWorker : MonoBehaviour
     [SerializeField, Min(0.1f)] private float movementSpeed = 3.5f;
     [SerializeField, Min(1)] private int carryingCapacity = 10;
     [SerializeField, Min(0.05f)] private float stoppingDistance = 0.2f;
+    [SerializeField, Min(0.05f)] private float pickupDuration = 10f;
+    [SerializeField, Min(0.05f)] private float deliveryDuration = 10f;
     [SerializeField] private ItemInventory cargoInventory = new();
 
     private NavMeshAgent agent;
@@ -48,6 +50,12 @@ public sealed class CarrierWorker : MonoBehaviour
     private TaskState taskState;
     private bool hasCommand;
     private bool isInitialized;
+    private float pickupElapsed;
+    private float deliveryElapsed;
+    private float pickupTimeReductionPercent;
+    private float deliveryTimeReductionPercent;
+    private float baseMovementSpeed;
+    private float movementSpeedIncreasePercent;
 
     public EmployeeRuntimeData Employee => employee;
     public ItemInventory CargoInventory => cargoInventory;
@@ -60,6 +68,7 @@ public sealed class CarrierWorker : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        baseMovementSpeed = movementSpeed;
     }
 
     private void OnDisable()
@@ -101,6 +110,7 @@ public sealed class CarrierWorker : MonoBehaviour
                 if (HasArrived())
                 {
                     taskState = TaskState.WaitAtSource;
+                    pickupElapsed = 0f;
                     ProcessSource();
                 }
                 break;
@@ -111,6 +121,7 @@ public sealed class CarrierWorker : MonoBehaviour
                 if (HasArrived())
                 {
                     taskState = TaskState.WaitAtDestination;
+                    deliveryElapsed = 0f;
                     ProcessDestination();
                 }
                 break;
@@ -145,6 +156,8 @@ public sealed class CarrierWorker : MonoBehaviour
         hasCommand = false;
         taskState = TaskState.Idle;
         isInitialized = employee != null;
+        pickupElapsed = 0f;
+        deliveryElapsed = 0f;
 
         if (agent != null)
         {
@@ -163,6 +176,28 @@ public sealed class CarrierWorker : MonoBehaviour
     {
         materialStorage = sharedMaterialStorage;
         materialStoragePoint = sharedMaterialStoragePoint;
+    }
+
+    public void SetTransferTimeReductionPercents(float pickupReductionPercent, float deliveryReductionPercent)
+    {
+        pickupTimeReductionPercent = Mathf.Clamp(pickupReductionPercent, 0f, 100f);
+        deliveryTimeReductionPercent = Mathf.Clamp(deliveryReductionPercent, 0f, 100f);
+    }
+
+    public void SetMovementSpeedIncreasePercent(float percent)
+    {
+        movementSpeedIncreasePercent = Mathf.Max(0f, percent);
+        ApplyMovementSpeed();
+    }
+
+    private void ApplyMovementSpeed()
+    {
+        movementSpeed = Mathf.Max(0.1f, baseMovementSpeed * (1f + movementSpeedIncreasePercent / 100f));
+
+        if (agent != null)
+        {
+            agent.speed = movementSpeed;
+        }
     }
 
     public bool TryAssignCommand(CarrierCommandType type, ProductionBuilding targetBuilding)
@@ -206,6 +241,8 @@ public sealed class CarrierWorker : MonoBehaviour
         hasCommand = false;
         isInitialized = false;
         taskState = TaskState.Idle;
+        pickupElapsed = 0f;
+        deliveryElapsed = 0f;
     }
 
     private void BeginCommandCycle()
@@ -226,16 +263,23 @@ public sealed class CarrierWorker : MonoBehaviour
 
     private void ProcessSource()
     {
+        if (!TryCompletePickup())
+        {
+            return;
+        }
+
         if (command.Type == CarrierCommandType.Material)
         {
             ItemDataSO inputItem = command.AssignedRecipe.Input;
             int moved = TransferUpToCapacity(materialStorage, cargoInventory, inputItem);
             if (moved <= 0)
             {
+                pickupElapsed = 0f;
                 SetWorkingState(EmployeeWorkState.Idle);
                 return;
             }
 
+            pickupElapsed = 0f;
             MoveTo(command.TargetBuilding.transform, TaskState.MoveToDestination);
             return;
         }
@@ -244,6 +288,7 @@ public sealed class CarrierWorker : MonoBehaviour
         int received = TransferUpToCapacity(command.TargetBuilding.OutputInventory, cargoInventory, outputItem);
         if (received <= 0)
         {
+            pickupElapsed = 0f;
             SetWorkingState(EmployeeWorkState.Idle);
             return;
         }
@@ -256,11 +301,17 @@ public sealed class CarrierWorker : MonoBehaviour
             return;
         }
 
+        pickupElapsed = 0f;
         MoveTo(counter.transform, TaskState.MoveToDestination);
     }
 
     private void ProcessDestination()
     {
+        if (!TryCompleteDelivery())
+        {
+            return;
+        }
+
         ItemDataSO item = command.Type == CarrierCommandType.Material
             ? command.AssignedRecipe.Input
             : command.AssignedRecipe.Output;
@@ -270,6 +321,7 @@ public sealed class CarrierWorker : MonoBehaviour
 
         if (destination == null || item == null)
         {
+            deliveryElapsed = 0f;
             SetWorkingState(EmployeeWorkState.Idle);
             return;
         }
@@ -277,10 +329,12 @@ public sealed class CarrierWorker : MonoBehaviour
         int moved = cargoInventory.TransferTo(destination, item, cargoInventory.GetAmount(item));
         if (moved <= 0 && cargoInventory.GetAmount(item) > 0)
         {
+            deliveryElapsed = 0f;
             SetWorkingState(EmployeeWorkState.Idle);
             return;
         }
 
+        deliveryElapsed = 0f;
         taskState = TaskState.Idle;
         SetWorkingState(EmployeeWorkState.Idle);
     }
@@ -450,6 +504,20 @@ public sealed class CarrierWorker : MonoBehaviour
 
         int remainingCarry = Mathf.Max(0, carryingCapacity - target.TotalAmount);
         return source.TransferTo(target, item, remainingCarry);
+    }
+
+    private bool TryCompletePickup()
+    {
+        SetWorkingState(EmployeeWorkState.Working);
+        pickupElapsed += Time.deltaTime;
+        return pickupElapsed >= Mathf.Max(0.05f, pickupDuration * (1f - pickupTimeReductionPercent / 100f));
+    }
+
+    private bool TryCompleteDelivery()
+    {
+        SetWorkingState(EmployeeWorkState.Working);
+        deliveryElapsed += Time.deltaTime;
+        return deliveryElapsed >= Mathf.Max(0.05f, deliveryDuration * (1f - deliveryTimeReductionPercent / 100f));
     }
 
     private void TransferAllCargo(ItemInventory destination)

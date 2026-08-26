@@ -8,10 +8,17 @@ using UnityEngine;
 public sealed class ShopCheckout : MonoBehaviour
 {
     private readonly Dictionary<IShopCheckoutOperator, int> operatorColliderCounts = new Dictionary<IShopCheckoutOperator, int>();
+    private float paymentDurationReductionPercent;
 
     public event Action OperatorPresenceChanged;
 
     public bool HasOperator => operatorColliderCounts.Count > 0;
+    public float PaymentDurationMultiplier => 1f - paymentDurationReductionPercent / 100f;
+
+    public void SetPaymentDurationReductionPercent(float percent)
+    {
+        paymentDurationReductionPercent = Mathf.Clamp(percent, 0f, 100f);
+    }
 
     private void Awake()
     {

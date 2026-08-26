@@ -49,6 +49,9 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
 
         employeeManager.EmployeeHired += HandleEmployeeHired;
         employeeManager.EmployeeRemoved += HandleEmployeeRemoved;
+        employeeManager.CarrierTransferTimeReductionChanged += ApplyCarrierTransferTimeReduction;
+        employeeManager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
+        employeeManager.AllEmployeeMovementSpeedIncreaseChanged += ApplyAllEmployeeMovementSpeedIncrease;
         commandService = FindFirstObjectByType<CarrierCommandService>();
         if (commandService == null)
         {
@@ -72,8 +75,11 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
 
         if (employeeManager != null)
         {
-            employeeManager.EmployeeHired -= HandleEmployeeHired;
-            employeeManager.EmployeeRemoved -= HandleEmployeeRemoved;
+        employeeManager.EmployeeHired -= HandleEmployeeHired;
+        employeeManager.EmployeeRemoved -= HandleEmployeeRemoved;
+        employeeManager.CarrierTransferTimeReductionChanged -= ApplyCarrierTransferTimeReduction;
+        employeeManager.AllEmployeeProcessingSpeedIncreaseChanged -= ApplyAllEmployeeProcessingSpeedIncrease;
+        employeeManager.AllEmployeeMovementSpeedIncreaseChanged -= ApplyAllEmployeeMovementSpeedIncrease;
         }
 
         commandService?.UnregisterController(this);
@@ -230,6 +236,8 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         worker.transform.rotation = homePoint.rotation;
         worker.Initialize(employeeManager, employee, homePoint);
         worker.ConfigureLogistics(materialStorage, materialStoragePoint);
+        ApplyCarrierTransferTimeReduction(worker, employeeManager.CarrierItemTransferTimeReductionPercent);
+        ApplyCarrierMovementSpeedIncrease(worker);
         workers.Add(employee.EmployeeId, worker);
     }
 
@@ -241,6 +249,46 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         }
 
         workers.Clear();
+    }
+
+    private void ApplyCarrierTransferTimeReduction(float transferTimeReductionPercent)
+    {
+        foreach (CarrierWorker worker in workers.Values)
+        {
+            ApplyCarrierTransferTimeReduction(worker, transferTimeReductionPercent);
+        }
+    }
+
+    private void ApplyCarrierTransferTimeReduction(CarrierWorker worker, float transferTimeReductionPercent)
+    {
+        if (worker == null || employeeManager == null)
+        {
+            return;
+        }
+
+        float totalReductionPercent = Mathf.Clamp(
+            transferTimeReductionPercent + employeeManager.AllEmployeeProcessingSpeedIncreasePercent,
+            0f,
+            100f);
+        worker.SetTransferTimeReductionPercents(totalReductionPercent, totalReductionPercent);
+    }
+
+    private void ApplyAllEmployeeProcessingSpeedIncrease(float _)
+    {
+        ApplyCarrierTransferTimeReduction(employeeManager.CarrierItemTransferTimeReductionPercent);
+    }
+
+    private void ApplyAllEmployeeMovementSpeedIncrease(float percent)
+    {
+        foreach (CarrierWorker worker in workers.Values)
+        {
+            worker?.SetMovementSpeedIncreasePercent(percent);
+        }
+    }
+
+    private void ApplyCarrierMovementSpeedIncrease(CarrierWorker worker)
+    {
+        worker?.SetMovementSpeedIncreasePercent(employeeManager.AllEmployeeMovementSpeedIncreasePercent);
     }
 
     private void ReturnWorker(int employeeId, CarrierWorker worker)

@@ -34,7 +34,10 @@ public sealed class HunterBuildingController : MonoBehaviour
         if (manager == null) return;
 
         manager.EmployeeHired += Hire; 
-        manager.EmployeeRemoved += Remove; 
+        manager.EmployeeRemoved += Remove;
+        manager.HunterSkillModifiersChanged += ApplyHunterSkillModifiers;
+        manager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
+        manager.AllEmployeeMovementSpeedIncreaseChanged += ApplyAllEmployeeMovementSpeedIncrease; 
 
         if (building.IsComplete) Register();
     }
@@ -47,6 +50,9 @@ public sealed class HunterBuildingController : MonoBehaviour
         {
             manager.EmployeeHired-=Hire;
             manager.EmployeeRemoved-=Remove;
+            manager.HunterSkillModifiersChanged -= ApplyHunterSkillModifiers;
+            manager.AllEmployeeProcessingSpeedIncreaseChanged -= ApplyAllEmployeeProcessingSpeedIncrease;
+            manager.AllEmployeeMovementSpeedIncreaseChanged -= ApplyAllEmployeeMovementSpeedIncrease;
         }
     }
 
@@ -115,6 +121,9 @@ public sealed class HunterBuildingController : MonoBehaviour
             transmitter, 
             homePoint
         );
+        ApplyHunterSkillModifiers(worker);
+        worker.SetAllEmployeeProcessingSpeedIncreasePercent(manager.AllEmployeeProcessingSpeedIncreasePercent);
+        worker.SetAllEmployeeMovementSpeedIncreasePercent(manager.AllEmployeeMovementSpeedIncreasePercent);
 
         workers[e.EmployeeId] = worker;
     }
@@ -141,6 +150,43 @@ public sealed class HunterBuildingController : MonoBehaviour
         }
 
         workers.Clear();
+    }
+
+    private void ApplyHunterSkillModifiers(float damageIncreasePercent, float intervalReductionPercent, float rangeIncreasePercent)
+    {
+        foreach (HunterWorker worker in workers.Values)
+        {
+            worker?.SetSkillStatPercentModifiers(damageIncreasePercent, intervalReductionPercent, rangeIncreasePercent);
+        }
+    }
+
+    private void ApplyAllEmployeeProcessingSpeedIncrease(float percent)
+    {
+        foreach (HunterWorker worker in workers.Values)
+        {
+            worker?.SetAllEmployeeProcessingSpeedIncreasePercent(percent);
+        }
+    }
+
+    private void ApplyAllEmployeeMovementSpeedIncrease(float percent)
+    {
+        foreach (HunterWorker worker in workers.Values)
+        {
+            worker?.SetAllEmployeeMovementSpeedIncreasePercent(percent);
+        }
+    }
+
+    private void ApplyHunterSkillModifiers(HunterWorker worker)
+    {
+        if (worker == null || manager == null)
+        {
+            return;
+        }
+
+        worker.SetSkillStatPercentModifiers(
+            manager.HunterAttackDamageIncreasePercent,
+            manager.HunterAttackIntervalReductionPercent,
+            manager.HunterAttackRangeIncreasePercent);
     }
 
     private bool TryResolveHuntingArea()
