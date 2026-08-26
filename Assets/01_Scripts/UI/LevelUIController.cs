@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 public class LevelUIController : MonoBehaviour
 {
-    [SerializeField] private Player player;
     [SerializeField] private TMP_Text levelText;
     [SerializeField] private Slider expSlider;
     [SerializeField] private TMP_Text expText;
@@ -17,7 +16,7 @@ public class LevelUIController : MonoBehaviour
 
         currencySystem.CurrencyChanged += HandleCurrencyChanged;
 
-        RefreshUI(currencySystem.Experience);
+        RefreshUI();
     }
 
     private void OnDestroy()
@@ -30,15 +29,15 @@ public class LevelUIController : MonoBehaviour
 
     private void HandleCurrencyChanged(int money, int exp)
     {
-        RefreshUI(exp);
+        RefreshUI();
     }
 
-    private void RefreshUI(int totalExp)
+    private void RefreshUI()
     {
-        levelText.text = $"{player.NowLevel}";
+        levelText.text = $"{currencySystem.Level}";
         expSlider.wholeNumbers = true;
 
-        if (player.IsMaxLevel)
+        if (currencySystem.IsMaxLevel)
         {
             expSlider.minValue = 0;
             expSlider.maxValue = 1;
@@ -49,11 +48,8 @@ public class LevelUIController : MonoBehaviour
         }
 
         // 레벨 경험치 구간
-        int levelStartExp = player.CurrentLevelStartExp;
-        int nextLevelExp = player.RequiredExpNextLevel;
-
-        int requiredExp = nextLevelExp - levelStartExp;
-        int currentExp = totalExp - levelStartExp;
+        int currentExp = currencySystem.CurrentExperience;
+        int requiredExp = currencySystem.RequiredExpNextLevel;
 
         currentExp = Mathf.Clamp(currentExp, 0, requiredExp);
 

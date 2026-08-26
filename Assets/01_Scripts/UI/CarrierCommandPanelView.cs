@@ -26,6 +26,8 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     private CarrierCommandService commandService;
     private CarrierCommandType currentType = CarrierCommandType.Material;
 
+    private bool isOpen;
+
     private void Awake()
     {
         employeeManager = UnityEngine.Object.FindFirstObjectByType<EmployeeManager>();
@@ -34,6 +36,7 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
         materialButton.onClick.AddListener(() => SelectType(CarrierCommandType.Material));
         productButton.onClick.AddListener(() => SelectType(CarrierCommandType.Product));
         SetVisible(false);
+        isOpen = false;
     }
 
     private void OnDestroy()
@@ -45,7 +48,16 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
 
     public void Toggle()
     {
-        SetVisible(!canvasGroup.interactable);
+        if (!isOpen)
+        {
+            Show();
+            isOpen = true;
+        }
+        else
+        {
+            Hide();
+            isOpen = false;
+        }
     }
 
     public void Show()
@@ -63,6 +75,7 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
         canvasGroup.alpha = visible ? 1f : 0f;
         canvasGroup.interactable = visible;
         canvasGroup.blocksRaycasts = visible;
+
         if (!visible) return;
 
         if (employeeManager != null)

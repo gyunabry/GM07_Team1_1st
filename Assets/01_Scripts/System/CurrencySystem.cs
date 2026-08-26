@@ -27,6 +27,12 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     32000, 35000, 40000, 44000};
     private int level = 1;
     public int Level => level;
+
+    public int CurrentExperience => nowExperience;
+    public bool IsMaxLevel => level > needExp.Count;
+
+    public int RequiredExpNextLevel => IsMaxLevel ? 0 : needExp[level - 1];
+
     private void Awake()
     {
         if (Instance == null)

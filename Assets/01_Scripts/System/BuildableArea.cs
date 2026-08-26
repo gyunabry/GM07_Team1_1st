@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,9 @@ public class BuildableArea : MonoBehaviour
     public Grid Grid => grid;
     public Collider PlacementSurface => placementSurface;
     public Transform BuildingContainer => buildingContainer;
+    public IReadOnlyList<RectInt> UnlockedAreas => unlockedAreas;
+
+    public event Action UnlockedAreaChanged;
 
     // 현재 영역 타입을 BuildingDataSO의 마스크와 비교할 때 사용
     public PlacementAreaMask AreaMask
@@ -106,12 +110,6 @@ public class BuildableArea : MonoBehaviour
 
         cell.z = 0;
         return grid.GetCellCenterWorld(cell);
-    }
-
-    // 공방 확장 시 호출해 배치 가능 영역 확장
-    public void UnlockArea(RectInt area)
-    {
-        unlockedAreas.Add(area);
     }
 
     public void SetGridVisible(bool visible)
@@ -208,6 +206,57 @@ public class BuildableArea : MonoBehaviour
     {
         cell.z = 0;
         return cell;
+    }
+
+    // 전달받은 영역이 정상적인 값인지 검사
+    public bool CanUnlockAreas(IReadOnlyList<RectInt> areas)
+    {
+        if (areas == null || areas.Count == 0)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < areas.Count; i++)
+        {
+            RectInt area = areas[i];
+
+            if (area.width <= 0 || area.height <= 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool UnlockAreas(IReadOnlyList<RectInt> areas)
+    {
+        if (!CanUnlockAreas(areas))
+        {
+            return false;
+        }
+
+        bool changed = false;
+
+        for (int i = 0; i < areas.Count; i++)
+        {
+            RectInt area = areas[i];
+
+            if (unlockedAreas.Contains(area))
+            {
+                continue;
+            }
+
+            unlockedAreas.Add(area);
+            changed = true;
+        }
+
+        if (changed)
+        {
+            UnlockedAreaChanged?.Invoke();
+        }
+
+        return true;
     }
 
     private void OnDrawGizmosSelected()
