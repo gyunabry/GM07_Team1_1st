@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 public class GameSceneManager : MonoBehaviour
 {
     private static GameSceneManager instance;
+
+    #region ΩÃ±€≈Ê
     public static GameSceneManager Instance
     {
         get
@@ -21,6 +23,7 @@ public class GameSceneManager : MonoBehaviour
             return instance;
         }
     }
+    #endregion
     private void Awake()
     {
         if (instance == null)
@@ -36,12 +39,15 @@ public class GameSceneManager : MonoBehaviour
             }
         }
     }
-    public void OnClickTitleScene()
+
+    public void LoadScene(EScene sceneType)
     {
-        SceneManager.LoadScene(0);
+        string sceneName = SceneNames.GetSceneName(sceneType);
+        SceneManager.LoadScene(sceneName);
     }
-    public void OnClickLoadScene()
+
+    public void ReloadCurrentScene()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
