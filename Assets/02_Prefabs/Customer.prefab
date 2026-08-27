@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 4706353336637869119}
   - component: {fileID: 494531173236003649}
   - component: {fileID: 2026093149321568500}
+  - component: {fileID: 838991994001232000}
+  - component: {fileID: 838991994001232001}
   m_Layer: 0
   m_Name: Customer
   m_TagString: Untagged
@@ -171,3 +173,28 @@ MonoBehaviour:
     ExperienceReward: 0
   paymentDuration: 1.5
   exitTimeout: 30
+--- !u!114 &838991994001232000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7190861646535615585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 202647609369bfa438317ef76a3f7695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerAnimationController
+  animator: {fileID: 0}
+--- !u!114 &838991994001232001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7190861646535615585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4e1c220b2ea4620962e54c032ef4cbd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomerPatienceVisual
