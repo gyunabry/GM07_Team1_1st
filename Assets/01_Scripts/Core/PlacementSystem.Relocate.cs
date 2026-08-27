@@ -19,7 +19,7 @@ public partial class PlacementSystem : MonoBehaviour
 
     public void BeginRelocateMode()
     {
-        if (CurrentMode != PlacementMode.None) return;
+        if (!IsBuildModeActive || CurrentMode != PlacementMode.None) return;
 
         ClearSelection();
         ChangeMode(PlacementMode.RelocateSelect);
@@ -33,8 +33,7 @@ public partial class PlacementSystem : MonoBehaviour
             return false;
         }
 
-        if (CurrentMode != PlacementMode.None &&
-            CurrentMode != PlacementMode.RelocateSelect)
+        if (CurrentMode != PlacementMode.RelocateSelect)
         {
             return false;
         }
@@ -173,6 +172,8 @@ public partial class PlacementSystem : MonoBehaviour
 
     public void ToggleRelocateMode()
     {
+        if (!IsBuildModeActive) return;
+
         // RelocateSelect / RelocatePlacement¶ó¸é None
         if (IsRelocateMode)
         {

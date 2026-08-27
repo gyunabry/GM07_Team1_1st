@@ -112,6 +112,7 @@ public class BuildModeController : MonoBehaviour
         if (IsBuildMode) return;
 
         IsBuildMode = true;
+        placementSystem.SetBuildModeActive(true);
 
         anim?.Kill();
 
@@ -134,6 +135,7 @@ public class BuildModeController : MonoBehaviour
         }
 
         IsBuildMode = false;
+        placementSystem.SetBuildModeActive(false);
 
         onBuildModeClosed?.Invoke();
 
