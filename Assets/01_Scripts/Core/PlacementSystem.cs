@@ -9,13 +9,22 @@ using UnityEngine;
 - Interior
  */
 
-public class PlacementSystem : MonoBehaviour
+public enum PlacementMode
+{
+    None,
+    PurchasePlacement,  // 시설 빌드 UI 아이콘 클릭
+    RelocateSelect,     // 재배치 선택
+    RelocatePlacement,  // 재배치 모드 중 시설 선택 상태
+    SellSelect,         // 판매 선택
+    SellConfirm         // 판매 모드 중 시설 선택 상태
+}
+
+public partial class PlacementSystem : MonoBehaviour
 {
     [Header("참조")]
     [SerializeField] private Grid grid;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private InputManager inputManager;
-    // [SerializeField] private BuildableArea buildableArea;
     [SerializeField] private List<BuildableArea> buildableAreas = new();
     [SerializeField] private Transform buildingContainer;
     [SerializeField] private EconomyModifierService economyModifier;
@@ -23,10 +32,11 @@ public class PlacementSystem : MonoBehaviour
     private BuildableArea currentArea;
 
     // 셀별로 어떤 건물이 점유 중인지 저장
-    private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
+    //private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
 
     // 현재 배치 대상으로 선택된 건물 데이터
     private BuildingDataSO selectedBuildingData;
+    private PlacedBuilding selectedPlacedBuilding;
     private GameObject previewObject;
     private Vector3Int currentCell;
 
@@ -34,28 +44,59 @@ public class PlacementSystem : MonoBehaviour
     private short rotationIndex;
     private bool canPlace;
 
-    public bool IsPlacementMode => selectedBuildingData != null;
-    public BuildingDataSO SelectedBuildingData => selectedBuildingData;
+    [field: SerializeField]
+    public PlacementMode CurrentMode { get; private set; }
+    public PlacedBuilding SelectedPlacedBuilding => selectedPlacedBuilding;
+
+    public bool ConsumeWorldInput => CurrentMode != PlacementMode.None;
+
+    // 배치 모드 여부
+    public bool IsPlacementMode =>
+        CurrentMode == PlacementMode.PurchasePlacement ||
+        CurrentMode == PlacementMode.RelocatePlacement;
+
+    public bool IsRelocateMode =>
+        CurrentMode == PlacementMode.RelocateSelect ||
+        CurrentMode == PlacementMode.RelocatePlacement;
+
+    public bool IsSellMode =>
+        CurrentMode == PlacementMode.SellSelect ||
+        CurrentMode == PlacementMode.SellConfirm;
+
+    public event Action<PlacementMode> ModeChanged;
+    public event Action<PlacedBuilding> SelectionChanged;
 
     public event Action<PlacedBuilding, BuildingDataSO> OnBuildingPlaced;
+    public event Action<PlacedBuilding> OnBuildingMoved;
+    public event Action<PlacedBuilding, int> OnBuildingSold;
 
     private void OnEnable()
     {
         if (inputManager == null) return;
 
         // 이벤트로 입력 처리
-        inputManager.OnClicked += PlaceBuilding;
-        inputManager.OnExit += CancelPlacement;
-        inputManager.OnRotation += RotatePreview;
+        //inputManager.OnClicked += PlaceBuilding;
+        //inputManager.OnExit += CancelPlacement;
+        //inputManager.OnRotation += RotatePreview;
+
+        inputManager.OnPrimaryClicked += HandlePrimaryClick;
+        inputManager.OnSecondaryClicked += HandleSecondaryClick;
+        inputManager.OnCancelPressed += CancelCurrentAction;
+        inputManager.OnBuildingLongPressed += HandleBuildingLongPressed;
     }
 
     private void OnDisable()
     {
         if (inputManager == null) return;
 
-        inputManager.OnClicked -= PlaceBuilding;
-        inputManager.OnExit -= CancelPlacement;
-        inputManager.OnRotation -= RotatePreview;
+        //inputManager.OnClicked -= PlaceBuilding;
+        //inputManager.OnExit -= CancelPlacement;
+        //inputManager.OnRotation -= RotatePreview;
+
+        inputManager.OnPrimaryClicked -= HandlePrimaryClick;
+        inputManager.OnSecondaryClicked -= HandleSecondaryClick;
+        inputManager.OnCancelPressed -= CancelCurrentAction;
+        inputManager.OnBuildingLongPressed -= HandleBuildingLongPressed;
     }
 
     private void Awake()
@@ -64,6 +105,11 @@ public class PlacementSystem : MonoBehaviour
         {
             mainCamera = Camera.main;
         }
+    }
+
+    private void Start()
+    {
+        RegisterPreplacedBuildings();
     }
 
     private void Update()
@@ -76,21 +122,63 @@ public class PlacementSystem : MonoBehaviour
 
     // BuildingDatabaseSO의 배열 인덱스로 건물 선택 후 프리뷰 생성
     // 버튼에 직접 연결해 사용
-    public void StartPlacement(BuildingDataSO buildingData)
+    public void StartPlacement(BuildingDataSO data)
     {
-        if (buildingData == null)
+        //if (buildingData == null)
+        //{
+        //    Debug.LogWarning("배치할 건물 데이터가 지정되지 않았습니다.");
+        //    return;
+        //}
+
+        //// 기존 선택된 건물 배치를 취소하기 위해 Cancel 호출
+        //CancelPlacement();
+
+        //selectedBuildingData = buildingData;
+        //rotationIndex = 0;
+
+        //CreatePreview();
+
+        StartPurchasePlacement(data);
+    }
+
+    public bool StartPurchasePlacement(BuildingDataSO data)
+    {
+        //if (CurrentMode != PlacementMode.None || data == null)
+        //{
+        //    return false;
+        //}
+
+        if (data == null) return false;
+
+        BuildingPurchaseStatus status = EvaluatePurchase(data);
+        if (!status.CanPurchase)
         {
-            Debug.LogWarning("배치할 건물 데이터가 지정되지 않았습니다.");
-            return;
+            return false;
         }
 
-        // 기존 선택된 건물 배치를 취소하기 위해 Cancel 호출
-        CancelPlacement();
+        if (CurrentMode == PlacementMode.PurchasePlacement &&
+            selectedBuildingData == data)
+        {
+            return true;
+        }
 
-        selectedBuildingData = buildingData;
+        // 기존 상태 종료
+        ExitCurrentMode();
+
+        selectedBuildingData = data;
         rotationIndex = 0;
 
         CreatePreview();
+
+        if (previewObject == null)
+        {
+            selectedBuildingData = null;
+            return false;
+        }
+
+        ChangeMode(PlacementMode.PurchasePlacement);
+
+        return true;
     }
     
     // 현재 배치 모드를 종료
@@ -109,6 +197,47 @@ public class PlacementSystem : MonoBehaviour
         previewObject = null;
     }
 
+    public void CancelCurrentAction()
+    {
+        switch (CurrentMode)
+        {
+            case PlacementMode.PurchasePlacement:
+                ClearPurchaseRuntime();
+                ChangeMode(PlacementMode.None);
+                break;
+
+            case PlacementMode.RelocatePlacement:
+                ClearRelocationRuntime();
+                ChangeMode(PlacementMode.RelocateSelect);
+                break;
+
+            case PlacementMode.SellConfirm:
+                ClearSelection();
+                ChangeMode(PlacementMode.SellSelect);
+                break;
+        }
+    }
+
+    public void ExitCurrentMode()
+    {
+        switch (CurrentMode)
+        {
+            case PlacementMode.PurchasePlacement:
+                ClearPurchaseRuntime();
+                break;
+
+            case PlacementMode.RelocatePlacement:
+                ClearRelocationRuntime();
+                break;
+
+            case PlacementMode.SellConfirm:
+                ClearSelection();
+                break;
+        }
+
+        ChangeMode(PlacementMode.None);
+    }
+
     // BuildingData의 프리뷰 프리팹을 생성
     public void CreatePreview()
     {
@@ -125,7 +254,7 @@ public class PlacementSystem : MonoBehaviour
     // 현재 마우스 위치를 기준으로 프리뷰 위치와 배치 가능 여부 갱신
     private void UpdatePreview()
     {
-        if (previewObject == null || inputManager == null || grid == null) return;
+        if (previewObject == null || inputManager == null) return;
 
         if (inputManager.IsPointerOverUI())
         {
@@ -141,7 +270,7 @@ public class PlacementSystem : MonoBehaviour
 
         currentArea = FindBuildableArea(hitCollider);
 
-        if (currentArea == null)
+        if (currentArea == null || currentArea.Grid == null)
         {
             HidePreview();
             return;
@@ -150,12 +279,12 @@ public class PlacementSystem : MonoBehaviour
         previewObject.SetActive(true);
 
         // 해당 월드 위치가 어떤 셀에 있는지 저장
-        currentCell = grid.WorldToCell(worldPos);
+        currentCell = currentArea.Grid.WorldToCell(worldPos);
         currentCell.z = 0;
 
         Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
 
-        Vector3 previewPos = GetBuildingCenter(currentCell, rotatedSize);
+        Vector3 previewPos = GetBuildingCenter(currentArea.Grid, currentCell, rotatedSize);
         previewPos.y = 0;
 
         previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
@@ -195,7 +324,7 @@ public class PlacementSystem : MonoBehaviour
 
         List<Vector3Int> cells = GetOccupiedCells(currentCell, rotatedSize);
 
-        Vector3 buildingPos = GetBuildingCenter(currentCell, rotatedSize);
+        Vector3 buildingPos = GetBuildingCenter(currentArea.Grid, currentCell, rotatedSize);
         buildingPos.y = 0;
 
         GameObject buildingObj = Instantiate(
@@ -218,11 +347,6 @@ public class PlacementSystem : MonoBehaviour
                 cells
             );
 
-            // 설치된 건물이 차지하는 모든 셀을 등록
-            foreach (Vector3Int cell in cells)
-            {
-                occupiedCells.Add(cell, placedBuilding);
-            }
         }
 
         placedBuilding.BeginConstruction();
@@ -233,10 +357,11 @@ public class PlacementSystem : MonoBehaviour
         UpdatePreview();
     }
 
+    #region 유틸
     // 건물이 차지할 모든 셀이 비어있는지 검사
     private bool IsCellsAvailable(BuildableArea area, Vector3Int originCell, Vector2Int size)
     {
-        if (area == null) return false;
+        if (area == null || selectedBuildingData == null) return false;
 
         if (!area.CanPlaceBuilding(selectedBuildingData, originCell, size))
         {
@@ -252,13 +377,11 @@ public class PlacementSystem : MonoBehaviour
             }
         }
 
-        foreach (Vector3Int cell in GetOccupiedCells(originCell, size))
-        {
-            if (occupiedCells.ContainsKey(cell))
-            {
-                return false;
-            }
-        }
+        List<Vector3Int> cells = GetOccupiedCells(originCell, size);
+
+        // 구매 배치 모드에서는 null
+        // 재배치 모드에서는 자신의 기존 점유만 무시
+        return area.AreCellsAvailable(cells, selectedPlacedBuilding);
 
         //for (int x = 0; x < size.x; x++)
         //{
@@ -280,7 +403,7 @@ public class PlacementSystem : MonoBehaviour
         //    }
         //}
 
-        return true;
+
     }
 
     // 건물이 차지할 셀 목록을 생성
@@ -301,12 +424,12 @@ public class PlacementSystem : MonoBehaviour
     }
 
     // 건물이 차지하는 전체 셀 영역의 중앙 위치를 반환
-    private Vector3 GetBuildingCenter(Vector3Int originCell, Vector2Int size)
+    private Vector3 GetBuildingCenter(Grid targetGrid, Vector3Int originCell, Vector2Int size)
     {
         Vector3Int lastCell = originCell + new Vector3Int(size.x - 1, size.y - 1, 0);
 
-        Vector3 firstCenter = grid.GetCellCenterWorld(originCell);
-        Vector3 lastCenter = grid.GetCellCenterWorld(lastCell);
+        Vector3 firstCenter = targetGrid.GetCellCenterWorld(originCell);
+        Vector3 lastCenter = targetGrid.GetCellCenterWorld(lastCell);
 
         Vector3 center = (firstCenter + lastCenter) * 0.5f;
         center.y = 0f;
@@ -331,7 +454,7 @@ public class PlacementSystem : MonoBehaviour
             0f
         );
     }
-
+    
     private void UpdatePreviewVisual(bool isValid)
     {
         if (!previewObject.TryGetComponent(out BuildingPreview buildingPreview))
@@ -343,11 +466,11 @@ public class PlacementSystem : MonoBehaviour
     }
 
     // 해당 셀이 이미 점유된 상태인지 반환
-    public bool IsCellOccupied(Vector3Int cell)
-    {
-        cell.z = 0;
-        return occupiedCells.ContainsKey(cell);
-    }
+    //public bool IsCellOccupied(Vector3Int cell)
+    //{
+    //    cell.z = 0;
+    //    return occupiedCells.ContainsKey(cell);
+    //}
 
     private BuildableArea FindBuildableArea(Collider hitColldier)
     {
@@ -375,6 +498,166 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
+    private void ChangeMode(PlacementMode nextMode)
+    {
+        if (CurrentMode == nextMode) return;
+
+        CurrentMode = nextMode;
+        ModeChanged?.Invoke(CurrentMode);
+    }
+
+    private void TryConfirmPurchase()
+    {
+        if (CurrentMode != PlacementMode.PurchasePlacement ||
+            currentArea == null ||
+            !canPlace ||
+            selectedBuildingData == null)
+        {
+            return;
+        }
+
+        BuildingPurchaseStatus status = EvaluatePurchase(selectedBuildingData);
+
+        if (!status.CanPurchase) return;
+
+        Vector2Int rotatedSize = GetRotatedSize(selectedBuildingData.Size, rotationIndex);
+
+        List<Vector3Int> cells = GetOccupiedCells(currentCell, rotatedSize);
+
+        if (!currentArea.AreCellsAvailable(cells))
+        {
+            UpdatePreview();
+            return;
+        }
+
+        Vector3 buildingPos = GetBuildingCenter(currentArea.Grid, currentCell, rotatedSize);
+
+        GameObject buildingObj = Instantiate(
+            selectedBuildingData.BuildingPrefab,
+            buildingPos,
+            GetRotation(rotationIndex),
+            buildingContainer
+        );
+
+        if (!buildingObj.TryGetComponent(out PlacedBuilding placedBuilding))
+        {
+            Destroy(buildingObj);
+            return;
+        }
+
+        placedBuilding.Initialize(
+                selectedBuildingData,
+                currentArea,
+                currentCell,
+                rotationIndex,
+                cells
+        );
+
+        if (!currentArea.TryOccupy(placedBuilding, cells))
+        {
+            Destroy(buildingObj);
+            UpdatePreview();
+            return;
+        }
+
+        if (!CurrencySystem.Instance.TrySpendMoney(status.FinalCost))
+        {
+            currentArea.Release(placedBuilding, cells);
+            Destroy(buildingObj);
+            return;
+        }
+
+        buildingObj.name = selectedBuildingData.BuildingName;
+
+        placedBuilding.BeginConstruction();
+
+        OnBuildingPlaced?.Invoke(placedBuilding, selectedBuildingData);
+
+        UpdatePreview();
+    }
+
+    private void ClearPurchaseRuntime()
+    {
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+        }
+
+        previewObject = null;
+        selectedBuildingData = null;
+        selectedPlacedBuilding = null;
+        currentArea = null;
+        rotationIndex = 0;
+        canPlace = false;
+
+        SelectionChanged?.Invoke(null);
+    }
+
+    // 게임 시작 시 배치되어 있는 시설을 점유셀에 등록하는 메서드
+    private void RegisterPreplacedBuildings()
+    {
+        if (buildingContainer == null) return;
+
+        PlacedBuilding[] buildings = buildingContainer.GetComponentsInChildren<PlacedBuilding>(true);
+
+        foreach (PlacedBuilding building in buildings)
+        {
+            if (building == null || building.Data == null || building.AssignedArea != null)
+            {
+                continue;
+            }
+
+            TryRegisterPreplacedBuildings(building);
+        }
+    }
+
+    private bool TryRegisterPreplacedBuildings(PlacedBuilding building)
+    {
+        short buildingRotationIndex = (short)(Mathf.RoundToInt(building.transform.eulerAngles.y / 90f) % 4);
+
+        Vector2Int rotatedSize = GetRotatedSize(building.Data.Size, buildingRotationIndex);
+
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area == null || area.Grid == null || !area.IsBuildableAllowed(building.Data))
+            {
+                continue;
+            }
+
+            Vector3Int centerCell = area.Grid.WorldToCell(building.transform.position);
+
+            centerCell.z = 0;
+
+            Vector3Int originCell = centerCell - new Vector3Int(rotatedSize.x / 2, rotatedSize.y / 2, 0);
+
+            if (!area.CanPlaceBuilding(building.Data, originCell, rotatedSize))
+            {
+                continue;
+            }
+
+            List<Vector3Int> cells = GetOccupiedCells(originCell, rotatedSize);
+
+            if (!area.TryOccupy(building, cells))
+            {
+                continue;
+            }
+
+            building.ApplyPlacement(
+                area,
+                originCell,
+                buildingRotationIndex,
+                cells,
+                building.transform.position,
+                building.transform.rotation
+            );
+
+            return true;
+        }
+
+        Debug.LogWarning($"사전 배치 시설 등록에 실패했습니다 : {building.BuildingName}");
+        return false;
+    }
+
     // 임시 메서드
     private static bool IsHunterBuilding(BuildingDataSO buildingData)
     {
@@ -385,4 +668,54 @@ public class PlacementSystem : MonoBehaviour
 
         return buildingData.BuildingPrefab.TryGetComponent<HunterBuildingController>(out _);
     }
+    #endregion
+
+    #region 이벤트 핸들러
+    // 좌클릭 처리
+    private void HandlePrimaryClick()
+    {
+        switch (CurrentMode)
+        {
+            case PlacementMode.PurchasePlacement:
+                TryConfirmPurchase();
+                break;
+
+            case PlacementMode.RelocateSelect:
+                TrySelectRelocateTarget();
+                break;
+
+            case PlacementMode.RelocatePlacement:
+                TryConfirmRelocation();
+                break;
+
+            case PlacementMode.SellSelect:
+                TrySelectSellTargetPointer();
+                break;
+
+            case PlacementMode.SellConfirm:
+                break; 
+        }
+    }
+
+    // 우클릭 처리
+    private void HandleSecondaryClick()
+    {
+        if (CurrentMode == PlacementMode.PurchasePlacement || 
+            CurrentMode == PlacementMode.RelocatePlacement)
+        {
+            RotatePreview();
+        }
+    }
+
+    private void HandleBuildingLongPressed(PlacedBuilding building)
+    {
+        if (CurrentMode != PlacementMode.None && 
+            CurrentMode != PlacementMode.RelocateSelect)
+        {
+            return;
+        }
+
+        TryBeginRelocate(building);
+    }
+    #endregion
 }

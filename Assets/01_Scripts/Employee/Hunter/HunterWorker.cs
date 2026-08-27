@@ -300,9 +300,6 @@ public sealed class HunterWorker : MonoBehaviour
             return;
         }
 
-        Stop(EmployeeWorkState.Working);
-        if (!TryCompleteItemPickup()) return;
-
         ItemDataSO item = drop.Item;
         int collectedAmount = drop.TryCollectAmount(cargo.Remaining);
         itemPickupElapsed = 0f;

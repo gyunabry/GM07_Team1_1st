@@ -5,6 +5,6 @@ public class S00_ProductionSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-        context.productionMachine.SetProductionSpeedMultiplier(skillData.value[nowLevel]);
+        
     }
 }

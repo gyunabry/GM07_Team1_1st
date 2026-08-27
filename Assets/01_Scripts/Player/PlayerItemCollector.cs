@@ -2,13 +2,43 @@ using UnityEngine;
 
 public class PlayerItemCollector : MonoBehaviour
 {
+    [Header("수집 대상 레이어")]
     [SerializeField] private LayerMask collectableLayer;
 
+    [Header("획득 반경")]
+    [SerializeField] private float magnetRange = 2.4f;
+
     private PlayerInventory playerInventory;
+    private SphereCollider collectionCollider;
+
+    private float baseRange;
+    private float bonusRangeRate;
+
+    private bool rangeInitialzed;
+
+    public float BaseRange
+    {
+        get
+        {
+            EnsureRangeInitialized();
+            return baseRange;
+        }
+    }
+
+    public float Range
+    {
+        get
+        {
+            EnsureRangeInitialized();
+            return collectionCollider.radius;
+        }
+    }
 
     private void Awake()
     {
         playerInventory = GetComponentInParent<PlayerInventory>();
+
+        EnsureRangeInitialized();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,6 +68,42 @@ public class PlayerItemCollector : MonoBehaviour
         if (collectable == null) return;
 
         collectable.TryCollect(playerInventory.Inventory);
+    }
+
+    private void EnsureRangeInitialized()
+    {
+        if (rangeInitialzed) return;
+
+        collectionCollider = GetComponent<SphereCollider>();
+
+        if (collectionCollider == null) return;
+
+        baseRange = Mathf.Max(0f, collectionCollider.radius);
+        bonusRangeRate = 0f;
+        rangeInitialzed = true;
+    }
+
+    public void AddRangeBonusRate(float rate)
+    {
+        EnsureRangeInitialized();
+        if (!rangeInitialzed) return;
+
+        bonusRangeRate += Mathf.Max(0f, rate);
+        ApplyRange();
+    }
+
+    public void ResetRangeBonus()
+    {
+        EnsureRangeInitialized();
+        if (!rangeInitialzed) return;
+
+        bonusRangeRate = 0f;
+        ApplyRange();
+    }
+
+    private void ApplyRange()
+    {
+        collectionCollider.radius = baseRange * (1f + bonusRangeRate);
     }
 
     private bool IsCollectableLayer(int layer)

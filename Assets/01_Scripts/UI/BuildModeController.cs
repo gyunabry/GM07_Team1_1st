@@ -2,6 +2,8 @@ using DG.Tweening;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using UnityEngine.UI;
+using TMPro;
 
 public class BuildModeController : MonoBehaviour
 {
@@ -9,6 +11,21 @@ public class BuildModeController : MonoBehaviour
     [SerializeField] private Canvas buildMenuCanvas;
     [SerializeField] private List<BuildableArea> buildableAreas = new();
     [SerializeField] private InputManager inputManager;
+
+    [Header("배치 시스템")]
+    [SerializeField] private PlacementSystem placementSystem;
+
+    [Header("편집 모드 버튼")]
+    [SerializeField] private Button editModeButton;
+    [SerializeField] private Button sellModeButton;
+
+    [Header("판매 확인 UI")]
+    [SerializeField] private Button sellConfirmButton;
+    [SerializeField] private Button sellCancelButton;
+
+    [Header("현재 배치 모드 표시")]
+    [SerializeField] private GameObject currentPlacementMode;
+    [SerializeField] private TMP_Text currentPlacementModeText;
 
     [Header("이벤트")]
     [SerializeField] private UnityEvent onBuildModeClosed;
@@ -45,7 +62,20 @@ public class BuildModeController : MonoBehaviour
     {
         if (inputManager != null)
         {
-            inputManager.OnExit += CloseBuildMode;
+            inputManager.OnCancelPressed += CloseBuildMode;
+        }
+
+        if (placementSystem != null)
+        {
+            placementSystem.ModeChanged += HandlePlacementModeChanged;
+
+            editModeButton?.onClick.AddListener(placementSystem.ToggleRelocateMode);
+            sellModeButton?.onClick.AddListener(placementSystem.ToggleSellMode);
+
+            sellConfirmButton?.onClick.AddListener(placementSystem.ConfirmSell);
+            sellCancelButton?.onClick.AddListener(placementSystem.CancelCurrentAction);
+
+            HandlePlacementModeChanged(placementSystem.CurrentMode);
         }
     }
 
@@ -53,7 +83,18 @@ public class BuildModeController : MonoBehaviour
     {
         if (inputManager != null)
         {
-            inputManager.OnExit -= CloseBuildMode;
+            inputManager.OnCancelPressed -= CloseBuildMode;
+        }
+
+        if (placementSystem != null)
+        {
+            placementSystem.ModeChanged -= HandlePlacementModeChanged;
+
+            editModeButton?.onClick.RemoveListener(placementSystem.ToggleRelocateMode);
+            sellModeButton?.onClick.RemoveListener(placementSystem.ToggleSellMode);
+
+            sellConfirmButton?.onClick.RemoveListener(placementSystem.ConfirmSell);
+            sellCancelButton?.onClick.RemoveListener(placementSystem.CancelCurrentAction);
         }
 
         anim?.Kill();
@@ -117,6 +158,52 @@ public class BuildModeController : MonoBehaviour
             if (area == null) continue;
 
             area.SetGridVisible(visible);
+        }
+    }
+
+    private void HandlePlacementModeChanged(PlacementMode mode)
+    {
+        bool isEditMode =
+            mode == PlacementMode.RelocateSelect ||
+            mode == PlacementMode.RelocatePlacement;
+
+        bool isSellMode =
+            mode == PlacementMode.SellSelect ||
+            mode == PlacementMode.SellConfirm;
+
+        bool showCurrentMode = isEditMode || isSellMode;
+
+        if (currentPlacementMode != null)
+        {
+            currentPlacementMode.SetActive(showCurrentMode);
+        }
+
+        if (currentPlacementModeText != null)
+        {
+            if (isEditMode)
+            {
+                currentPlacementModeText.text = "재배치 모드";
+            }
+
+            if (isSellMode)
+            {
+                currentPlacementModeText.text = "판매 모드";
+            }
+        }
+
+        SetSellConfirmVisible(mode == PlacementMode.SellConfirm);
+    }
+
+    private void SetSellConfirmVisible(bool visible)
+    {
+        if (sellConfirmButton != null)
+        {
+            sellConfirmButton.gameObject.SetActive(visible);
+        }
+
+        if (sellCancelButton != null)
+        {
+            sellCancelButton.gameObject.SetActive(visible);
         }
     }
 }
