@@ -13,6 +13,11 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public event Action<int, int> CurrencyChanged;
     public event Action LevelUp;
 
+    // DOTween 이벤트
+    public event Action OnGoldChanged;
+    public event Action OnGoldEarned;
+    public event Action OnGoldSpent;
+
     public int Money => money;
     public int Experience => experience;
 
@@ -52,6 +57,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         nowExperience += experienceAmount;
 
         CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
+        OnGoldEarned?.Invoke();
     }
 
     public void GrantMoney(int amount)
@@ -81,6 +88,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         money -= amount;
 
         CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
+        OnGoldSpent?.Invoke();
         return true;
     }
     public bool TrySpendExp(int amount)
@@ -105,6 +114,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public void TestButton()
     {
         CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
     }
 
     private void CheckLevelUp()
