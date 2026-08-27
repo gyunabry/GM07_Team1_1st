@@ -1,22 +1,23 @@
-ï»¿using System;
+using System;
 using UnityEngine;
 
 /*
-[íŒë§¤ íë¦„]
-1. í”Œë ˆì´ì–´ê°€ íŒë§¤ëŒ€ ì•ˆìª½ ìƒí˜¸ì‘ìš© ì˜ì—­ì— ì„œë©´ ì•„ì´í…œì´ ì°½ê³ ë¡œ ì´ë™ (ìë™ ìš´ë°˜ ì§ì› ë™ì¼?)
-2. ì†ë‹˜ì´ íŒë§¤ëŒ€ ì•ì— ë„ì°©
-3. ì›í•˜ëŠ” ìƒí’ˆì´ ì—†ë‹¤ë©´ ì¸ë‚´ ì‹œê°„ ë™ì•ˆ ëŒ€ê¸°
-4. ìƒí’ˆê³¼ íŒë§¤ ë‹´ë‹¹ìê°€ ìˆë‹¤ë©´ íŒë§¤ ì‹œê°„ ì‹œì‘
-5. ì¼ì • ì‹œê°„ ë™ì•ˆ ì¡°ê±´ì´ ìœ ì§€ë˜ë©´ ìš”êµ¬ ìƒí’ˆì„ ì°¨ê°í•˜ê³  ëˆê³¼ ê²½í—˜ì¹˜ ì§€ê¸‰
-6. ë‹´ë‹¹ìê°€ íŒë§¤ ìœ„ì¹˜ë¥¼ ë²—ì–´ë‚˜ê±°ë‚˜ ì¬ê³ ê°€ ì‚¬ë¼ì§€ë©´ íŒë§¤ ì¤‘ë‹¨ (íŒë§¤ ì§„í–‰ë„ëŠ” ì´ˆê¸°í™”)
+[ÆÇ¸Å Èå¸§]
+1. ÇÃ·¹ÀÌ¾î°¡ ÆÇ¸Å´ë ¾ÈÂÊ »óÈ£ÀÛ¿ë ¿µ¿ª¿¡ ¼­¸é ¾ÆÀÌÅÛÀÌ Ã¢°í·Î ÀÌµ¿ (ÀÚµ¿ ¿î¹İ Á÷¿ø µ¿ÀÏ?)
+2. ¼Õ´ÔÀÌ ÆÇ¸Å´ë ¾Õ¿¡ µµÂø
+3. ¿øÇÏ´Â »óÇ°ÀÌ ¾ø´Ù¸é ÀÎ³» ½Ã°£ µ¿¾È ´ë±â
+4. »óÇ°°ú ÆÇ¸Å ´ã´çÀÚ°¡ ÀÖ´Ù¸é ÆÇ¸Å ½Ã°£ ½ÃÀÛ
+5. ÀÏÁ¤ ½Ã°£ µ¿¾È Á¶°ÇÀÌ À¯ÁöµÇ¸é ¿ä±¸ »óÇ°À» Â÷°¨ÇÏ°í µ·°ú °æÇèÄ¡ Áö±Ş
+6. ´ã´çÀÚ°¡ ÆÇ¸Å À§Ä¡¸¦ ¹ş¾î³ª°Å³ª Àç°í°¡ »ç¶óÁö¸é ÆÇ¸Å Áß´Ü (ÆÇ¸Å ÁøÇàµµ´Â ÃÊ±âÈ­)
  */
 
-// íŒë§¤ëŒ€ ë°°ì¹˜ ì‹œ OperationAreaì— ì§ì› ìë™ ë°°ì¹˜
+// ÆÇ¸Å´ë ¹èÄ¡ ½Ã OperationArea¿¡ Á÷¿ø ÀÚµ¿ ¹èÄ¡
 
 public class SalesCounter : MonoBehaviour
 {
-    [Header("ê³ ê° ì‹œìŠ¤í…œ")]
+    [Header("°í°´ ½Ã½ºÅÛ")]
     [SerializeField] private CustomerCheckoutStation checkoutStation;
+    [SerializeField] private PlacementSystem placementSystem;
 
     private PlacedBuilding placedBuilding;
     private CounterInventory counterInventory;
@@ -26,7 +27,7 @@ public class SalesCounter : MonoBehaviour
         ? CounterInventory.Instance.Inventory 
         : null;
 
-    // ê±´ì„¤ì´ ì™„ë£Œë˜ì–´ì•¼ íŒë§¤ëŒ€ ìš´ì˜ ê°€ëŠ¥
+    // °Ç¼³ÀÌ ¿Ï·áµÇ¾î¾ß ÆÇ¸Å´ë ¿î¿µ °¡´É
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
 
     public bool IsOpen => checkoutStation != null && checkoutStation.IsAvailable;
@@ -37,6 +38,7 @@ public class SalesCounter : MonoBehaviour
     {
         placedBuilding = GetComponent<PlacedBuilding>();
         checkoutStation = GetComponentInChildren<CustomerCheckoutStation>(true);
+        placementSystem ??= FindAnyObjectByType<PlacementSystem>();
 
         if (placedBuilding != null)
         {
@@ -52,25 +54,40 @@ public class SalesCounter : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if (placementSystem != null)
+        {
+            placementSystem.OnBuildingMoved += HandleBuildingMoved;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (placementSystem != null)
+        {
+            placementSystem.OnBuildingMoved -= HandleBuildingMoved;
+        }
+    }
     private void Start()
     {
         counterInventory = CounterInventory.Instance;
 
         if (counterInventory == null)
         {
-            Debug.LogError("ì „ì—­ íŒë§¤ëŒ€ ì¸ë²¤í† ë¦¬ê°€ í•„ìš”í•©ë‹ˆë‹¤.");
+            Debug.LogError("Àü¿ª ÆÇ¸Å´ë ÀÎº¥Åä¸®°¡ ÇÊ¿äÇÕ´Ï´Ù.");
             checkoutStation?.CloseStation();
             return;
         }
 
         if (checkoutStation == null)
         {
-            Debug.LogError("ì²´í¬ì•„ì›ƒ ìŠ¤í…Œì´ì…˜ì´ í•„ìš”í•©ë‹ˆë‹¤.");
+            Debug.LogError("Ã¼Å©¾Æ¿ô ½ºÅ×ÀÌ¼ÇÀÌ ÇÊ¿äÇÕ´Ï´Ù.");
             return;
         }
     }
 
-    // íŒë§¤ëŒ€ ì´ë™, íšŒì „, ì² ê±° ì „ì— í˜¸ì¶œ
+    // ÆÇ¸Å´ë ÀÌµ¿, È¸Àü, Ã¶°Å Àü¿¡ È£Ãâ
     public void CloseCounter()
     {
         bool wasOpen = IsOpen;
@@ -83,7 +100,7 @@ public class SalesCounter : MonoBehaviour
         }
     }
 
-    // ì´ë™, íšŒì „, NavMesh ë°˜ì˜ì´ ëë‚˜ê³  í˜¸ì¶œ
+    // ÀÌµ¿, È¸Àü, NavMesh ¹İ¿µÀÌ ³¡³ª°í È£Ãâ
     public bool OpenCounter()
     {
         if (!CanOperate || checkoutStation == null)
@@ -111,5 +128,17 @@ public class SalesCounter : MonoBehaviour
     private void HandleBuildingStateChanged()
     {
         StateChanged?.Invoke();
+    }
+    private void HandleBuildingMoved(PlacedBuilding building)
+    {
+        if (building != placedBuilding || !CanOperate)
+        {
+            return;
+        }
+
+        // ±âÁ¸ ¼Õ´ÔÀº ÀÌÀü ÆÇ¸Å´ë À§Ä¡¸¦ ¸ñÀûÁö·Î °®°í ÀÖÀ¸¹Ç·Î ´ë±â¿­À» ºñ¿î´Ù.
+        // ÆÇ¸Å´ë¸¦ ´Ù½Ã ¿­¸é CustomerSpawnManager°¡ »õ À§Ä¡ ±âÁØÀ¸·Î ¼Õ´ÔÀ» Ã¤¿î´Ù.
+        CloseCounter();
+        OpenCounter();
     }
 }
