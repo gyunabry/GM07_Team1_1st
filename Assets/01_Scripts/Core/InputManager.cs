@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 /* 
 우클릭 이동으로 수정
@@ -16,28 +17,76 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
+    [Header("입력 액션")]
+    [SerializeField] private InputActionReference primaryPointerAction;
+
+    [Header("레이캐스트 설정")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask placementLayer;
+    [SerializeField] private LayerMask buildingLayer;
     [SerializeField] private Camera mainCamera;
 
-    private Vector3 lastPos;
+    public event Action OnPrimaryClicked;
+    public event Action OnSecondaryClicked;
+    public event Action OnCancelPressed;
+    public event Action<PlacedBuilding> OnBuildingLongPressed;
 
-    public event Action OnClicked, OnExit, OnRotation;
+    private void OnEnable()
+    {
+        if (primaryPointerAction == null) return;
+
+        primaryPointerAction.action.performed += HandlePrimaryPerformed;
+        primaryPointerAction.action.Enable();
+    }
+
+    private void OnDisable()
+    {
+        if (primaryPointerAction == null) return;
+
+        primaryPointerAction.action.performed -= HandlePrimaryPerformed;
+        primaryPointerAction.action.Disable();
+    }
 
     private void Update()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame && !IsPointerOverUI())
+        if (Mouse.current != null &&
+            Mouse.current.rightButton.wasPressedThisFrame && 
+            !IsPointerOverUI())
         {
-            OnClicked?.Invoke();
+            OnSecondaryClicked?.Invoke();
         }
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+
+        if (Keyboard.current != null &&
+            Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            OnExit?.Invoke();
+            OnCancelPressed?.Invoke();
         }
-        if (Keyboard.current.rKey.wasPressedThisFrame)
+    }
+
+    private void HandlePrimaryPerformed(InputAction.CallbackContext context) 
+    {
+        if (IsPointerOverUI()) return;
+
+        if (context.interaction is HoldInteraction)
         {
-            OnRotation?.Invoke();
+            HandleBuildingHold();
+            return;
         }
+
+        if (context.interaction is TapInteraction)
+        {
+            OnPrimaryClicked?.Invoke();
+        }
+    }
+
+    private void HandleBuildingHold()
+    {
+        if (!TryGetBuilding(out PlacedBuilding building))
+        {
+            return;
+        }
+
+        OnBuildingLongPressed?.Invoke(building);
     }
 
     // 마우스가 UI 위에 있다면 false 반환
@@ -63,6 +112,27 @@ public class InputManager : MonoBehaviour
 
         worldPosition = hit.point;
         return true;
+    }
+
+    public bool TryGetBuilding(out PlacedBuilding building)
+    {
+        building = null;
+
+        if (mainCamera == null || Mouse.current == null)
+        {
+            return false;
+        }
+
+        Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
+
+        if (!Physics.Raycast(ray, out RaycastHit hit, 1000f, buildingLayer, QueryTriggerInteraction.Ignore))
+        {
+            return false;
+        }
+
+        building = hit.collider.GetComponentInParent<PlacedBuilding>();
+
+        return building != null;
     }
 
     public bool TryGetPlacementHit(out Vector3 worldPosition, out Collider hitCollider)

@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    [Header("참조")]
+    [SerializeField] private PlacementSystem placementSystem;
+
     [Header("툴팁 설정")]
     [SerializeField] private BuildingInfoTooltip tooltip;
     [SerializeField] private BuildingDataSO buildingData;
@@ -38,11 +41,12 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.CurrencyChanged += HandleCurrencyChanged;
+            CurrencySystem.Instance.LevelUp += HandleLevelUp;
         }
 
         if (FacilityManager.Instance != null)
         {
-            FacilityManager.Instance.FacilityCountChanged += HandleFacilityCountChanged;
+            FacilityManager.Instance.FacilityInfoChanged += HandleFacilityInfoChanged;
         }
     }
 
@@ -51,11 +55,12 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.CurrencyChanged -= HandleCurrencyChanged;
+            CurrencySystem.Instance.LevelUp -= HandleLevelUp;
         }
 
         if (FacilityManager.Instance != null)
         {
-            FacilityManager.Instance.FacilityCountChanged -= HandleFacilityCountChanged;
+            FacilityManager.Instance.FacilityInfoChanged -= HandleFacilityInfoChanged;
         }
     }
 
@@ -69,14 +74,28 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
         tooltip.HideTooltip();
     }
 
-    private void HandleCurrencyChanged(int money, int exp)
+    private void HandleLevelUp()
     {
-        RefreshInteractable(money);
+        RefreshView();
     }
 
-    private void HandleFacilityCountChanged(BuildingDataSO data, int currentCount)
+    private void HandleCurrencyChanged(int money, int exp)
     {
-        if (data == buildingData)
+        RefreshView();
+    }
+
+    private void HandleFacilityInfoChanged(BuildingDataSO data)
+    {
+        bool isSameBuilding = data == buildingData;
+
+        // 버튼에 할당된 시설과 data의 시설이 같은 태그를 가졌는지 검사
+        bool isSameProductionGroup =
+            data != null &&
+            buildingData != null &&
+            data.BuildingTag == BuildingTag.Production &&
+            buildingData.BuildingTag == BuildingTag.Production;
+
+        if (isSameBuilding || isSameProductionGroup)
         {
             RefreshView();
         }
@@ -84,42 +103,34 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     private void RefreshView()
     {
-        if (buildingData == null) return;
+        if (buildingData == null || placementSystem == null) return;
+
+        BuildingPurchaseStatus status = placementSystem.EvaluatePurchase(buildingData);
 
         if (facilityName != null) facilityName.text = buildingData.BuildingName;
-        if (facilityPrice != null) facilityPrice.text = $"{buildingData.BuildCost:N0}G";
-
-        // FacilityManager에 저장된 시설별 개수를 저장
-        int placedCount = FacilityManager.Instance != null ? FacilityManager.Instance.GetPlacedCount(buildingData) : 0;
 
         if (facilityCount != null)
         {
-            facilityCount.text = $"{placedCount} / 3"; // TODO: 최대 배치 가능 개수 정의 필요
+            facilityCount.text = $"{status.CurrentCount} / {status.MaxCount}";
         }
 
-        int currentMoney = CurrencySystem.Instance != null ? CurrencySystem.Instance.Money : 0;
+        if (facilityPrice != null) facilityPrice.text = $"{status.FinalCost:N0}G";
 
-        RefreshInteractable(currentMoney);
-    }
+        if (button != null) button.interactable = status.CanPurchase;
 
-    public void RefreshInteractable(int currentMoney)
-    {
-        if (buildingData == null) return;
+        bool levelBlocked = (status.BlockReasons & PurchaseBlockReason.Level) != 0;
 
-        // 현재 소지 금액이 해당 시설을 짓는데 충분한지 검사
-        bool hasEnoughMoney = CurrencySystem.Instance != null && currentMoney >= buildingData.BuildCost;
-        // 해당 시설의 배치가능 수가 남아있는지 검사
-        bool hasPlacementSlot = FacilityManager.Instance != null && FacilityManager.Instance.CanPlace(buildingData);
+        bool moneyBlocked = (status.BlockReasons & PurchaseBlockReason.Money) != 0;
 
-        if (button != null) button.interactable = hasEnoughMoney && hasPlacementSlot;
+        bool limitBlocked = (status.BlockReasons & PurchaseBlockReason.PlacementLimit) != 0;
 
         if (facilityName != null)
         {
-            facilityName.color = hasEnoughMoney ? defaultNameColor : disableColor;
+            facilityName.color = levelBlocked || limitBlocked ? disableColor : defaultNameColor;
         }
         if (facilityPrice != null)
         {
-            facilityPrice.color = hasEnoughMoney ? defaultNameColor : disableColor;
+            facilityPrice.color = moneyBlocked ? disableColor : defaultNameColor;
         }
     }
 }

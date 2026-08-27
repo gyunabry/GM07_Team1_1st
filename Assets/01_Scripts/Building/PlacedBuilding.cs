@@ -16,23 +16,28 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     [SerializeField] private GameObject constructionObject;
     [SerializeField] private GameObject completedObject;
 
+    [SerializeField] private BuildingDataSO data;
+
     [Header("테스트용 시설 상태")]
     [SerializeField] private BuildingState state = BuildingState.Constructing;
-
-    public BuildingDataSO Data { get; private set; }
-    public Vector3Int OriginCell { get; private set; }
-    public short RotationIndex { get; private set; }
 
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
 
+    public BuildingDataSO Data => data;
+    public Vector3Int OriginCell { get; private set; }
+    public short RotationIndex { get; private set; }
+
+    public IReadOnlyList<Vector3Int> OccupiedCells => occupiedCells;
     // 해당 시설이 어느 영역에 있는지 담는 프로퍼티
     public BuildableArea AssignedArea { get; private set; }
     public BuildingState State => state;
     public float ConstructionProgress { get; private set; }
     public bool IsComplete => State == BuildingState.Completed;
+    public BuildingSelectionVisual SelectionVisual { get; private set; }
 
     public event Action OnStateChanged;
+    public event Action OnPlacementChanged;
     public event Action<PlacedBuilding> OnConstructionCompleted;
 
     public string BuildingName => Data.BuildingName;
@@ -53,7 +58,7 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         IEnumerable<Vector3Int> cells
     ) 
     {
-        Data = data;
+        this.data = data;
         AssignedArea = assignedArea;
         OriginCell = originCell;
         RotationIndex = rotationIndex;
@@ -70,6 +75,30 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         completedObject?.SetActive(false);
 
         OnStateChanged?.Invoke();
+    }
+
+    public void ApplyPlacement(
+        BuildableArea assignedArea,
+        Vector3Int originCell,
+        short rotationIndex,
+        IEnumerable<Vector3Int> cells,
+        Vector3 worldPosition,
+        Quaternion worldRotation)
+    {
+        AssignedArea = assignedArea;
+        OriginCell = originCell;
+        RotationIndex = (short)(rotationIndex % 4);
+
+        occupiedCells.Clear();
+
+        if (cells != null)
+        {
+            occupiedCells.AddRange(cells);
+        }
+
+        transform.SetPositionAndRotation(worldPosition, worldRotation);
+
+        OnPlacementChanged?.Invoke();
     }
 
     public void BeginConstruction()

@@ -334,6 +334,59 @@ Transform:
   - {fileID: 3716450351369181084}
   m_Father: {fileID: 1694295960140826187}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4379322799211307012
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3056742574624684897}
+  - component: {fileID: 3300932521524843358}
+  m_Layer: 9
+  m_Name: SelectionCollider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3056742574624684897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379322799211307012}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1694295960140826187}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &3300932521524843358
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4379322799211307012}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.5896039, y: 1.0378731, z: 1.0522356}
+  m_Center: {x: 0.05778742, y: 0.58703095, z: -0.06843269}
 --- !u!1 &4565696559194028200
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,6 +884,7 @@ Transform:
   m_Children:
   - {fileID: 7182863776599312249}
   - {fileID: 5502004402615702700}
+  - {fileID: 3056742574624684897}
   - {fileID: 3930410399307874733}
   - {fileID: 1871250395386672213}
   m_Father: {fileID: 0}
@@ -895,9 +949,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ProductionBuilding
   availableRecipes:
-  - {fileID: 11400000, guid: 47fdf777250cf67469b7f6925048e66b, type: 2}
-  - {fileID: 11400000, guid: 5f3d4b81a9ce7524ea78b1ba9c6c7b42, type: 2}
-  - {fileID: 11400000, guid: 849e4e889d5c95041bb4523c40c10127, type: 2}
+  - {fileID: 11400000, guid: 757b9e44b981c77459cc78997f063962, type: 2}
+  - {fileID: 11400000, guid: ca3373e6eeef1434b9b8050a80885b91, type: 2}
+  - {fileID: 11400000, guid: 686892f28420efa4cbcee692aff64b00, type: 2}
   - {fileID: 11400000, guid: 609cadeb163d7634ea03ffed06a34199, type: 2}
   - {fileID: 11400000, guid: 1d2c2d7a88393e84ab05a570fc732178, type: 2}
   - {fileID: 11400000, guid: 2316e3fee05d4104db8b71da7b14e75b, type: 2}

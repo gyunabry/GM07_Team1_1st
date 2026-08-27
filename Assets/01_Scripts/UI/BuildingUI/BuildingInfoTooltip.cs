@@ -72,7 +72,7 @@ public class BuildingInfoTooltip : MonoBehaviour
             if (manager != null)
             {
                 int currentCount = manager.GetPlacedCount(data);
-                int maxCount = 3; // TODO: 추후 시설별 최대 배치 가능 수 정의 필요
+                int maxCount = manager.GetPlacementLimit(data);
 
                 buildingCount.text = $"{currentCount} / {maxCount}";
             }
