@@ -20,7 +20,6 @@ public class LevelUpPopUp : MonoBehaviour
     {
         currencySystem.LevelUp += Instance_LevelUp;
         levelUpText = levelUpPopUp.GetComponentsInChildren<TextMeshProUGUI>();
-        Debug.Log(levelUpText.Length);
         levelUpPopUp.gameObject.SetActive(false);
     }
     private void OnDisable()

@@ -29,6 +29,7 @@ public class AttackPoint : MonoBehaviour
     {
         if ((layer & (1 << other.gameObject.layer)) == 0) return;
         Enemy enemy = other.gameObject.GetComponent<Enemy>();
+        AudioManager.Instance.PlaySFX(ESFXType.Hit_MagicArrow);
         enemy.TakeDamage(attackDamage);
         poolManager.ReturnPool(this);
     }

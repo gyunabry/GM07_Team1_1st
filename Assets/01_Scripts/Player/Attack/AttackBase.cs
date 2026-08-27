@@ -38,6 +38,7 @@ public class AttackBase : IAttack
             foreach (var that in enemy)
             {
                 Enemy ene = that.GetComponent<Enemy>();
+                AudioManager.Instance.PlaySFX(ESFXType.Hit_FireCircle);
                 ene.TakeDamage(AttackDamage);
             }
         }
@@ -54,6 +55,7 @@ public class AttackBase : IAttack
                 if(Vector3.Angle(data.forward, thatDir) < data.spreadAngle)
                 {
                     Enemy ene = that.GetComponent<Enemy>();
+                    AudioManager.Instance.PlaySFX(ESFXType.Hit_ChasingSickle);
                     ene.TakeDamage(AttackDamage);
                 }
             }
@@ -74,6 +76,7 @@ public class AttackBase : IAttack
             foreach (var that in enemy)
             {
                 Enemy ene = that.GetComponent<Enemy>();
+                AudioManager.Instance.PlaySFX(ESFXType.Hit_FlowerThorns);
                 ene.TakeDamage(AttackDamage);
             }
         }

@@ -233,7 +233,7 @@ MonoBehaviour:
   descName: {fileID: 5462845401516987310}
   descNeed: {fileID: 3234138641515553245}
   descDesc: {fileID: 176728726363232590}
-  monsterPoolManager: {fileID: 1306151101374603641, guid: 09ddc4d3c18497c4b8b8b785871a5794, type: 3}
+  poolManager: {fileID: 0}
 --- !u!1 &1858965419869024526
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,7 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
