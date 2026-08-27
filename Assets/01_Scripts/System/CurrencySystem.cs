@@ -19,6 +19,11 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public event Action<int, int> CurrencyChanged;
     public event Action LevelUp;
 
+    // DOTween 이벤트
+    public event Action OnGoldChanged;
+    public event Action OnGoldEarned;
+    public event Action OnGoldSpent;
+
     public int Money => money;
     public int Experience => experience;
 
