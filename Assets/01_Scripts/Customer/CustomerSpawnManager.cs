@@ -251,15 +251,18 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     {
         CustomerOrder fallbackOrder = customerPrefab != null ? customerPrefab.DefaultOrder : default;
         RecipeUnlockManager unlockManager = RecipeUnlockManager.Instance;
-        if (unlockManager != null)
+        CustomerOrderGenerator generator = new CustomerOrderGenerator(unlockManager);
+        if (generator.TryCreateOrder(fallbackOrder, out CustomerOrder generatedOrder))
         {
-            CustomerOrderGenerator generator = new CustomerOrderGenerator(unlockManager);
-            if (generator.TryCreateOrder(fallbackOrder, out CustomerOrder generatedOrder))
-            {
-                return generatedOrder;
-            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Debug.Log($"Customer order generated: {generatedOrder.Items[0].ItemId.ItemId}");
+#endif
+            return generatedOrder;
         }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        Debug.LogWarning("Customer order fallback: no valid product candidate was found.", this);
+#endif
         return fallbackOrder;
     }
 
