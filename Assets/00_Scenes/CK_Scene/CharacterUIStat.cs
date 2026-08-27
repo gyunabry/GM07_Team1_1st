@@ -12,6 +12,10 @@ public class CharacterUIStat : MonoBehaviour
     [SerializeField] TextMeshProUGUI text3;
     [SerializeField] TextMeshProUGUI text4;
 
+    private void Awake()
+    {
+        Instance_LevelUp();
+    }
     private void OnEnable()
     {
         currencySystem.LevelUp += Instance_LevelUp;
@@ -20,8 +24,7 @@ public class CharacterUIStat : MonoBehaviour
     {
         currencySystem.LevelUp -= Instance_LevelUp;
     }
-
-    private void Instance_LevelUp()
+    public void Instance_LevelUp()
     {
         text1.text = $"{ player.attackDamage + player.baseAttackDamage}";
         text2.text = $"{ player.attackSpeed + player.baseAttackSpeed}";
