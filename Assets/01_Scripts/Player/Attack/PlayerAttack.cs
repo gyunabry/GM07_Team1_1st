@@ -52,7 +52,7 @@ public class PlayerAttack : MonoBehaviour
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = true;
+            aud.unlock = false;
             aud.equip = false;
             if(attackData.sprite != null)
             {
@@ -187,7 +187,7 @@ public class PlayerAttack : MonoBehaviour
             };
             ad.distance = MagicArrowSO.distance;
             enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
-            ad.attackDamage = (MagicArrowSO.attackDamage + player.baseAttackDamage + upgrade[1].damage) * ((100 + player.attackDamage) / 100);
+            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (MagicArrowSO.attackDamage  + upgrade[1].damage);
             ad.attackSpeed = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed + player.baseAttackSpeed) + player.attackSpeed;
             ad.projectileCount = MagicArrowSO.projectileCount + upgrade[1].projectileCount;
             if(enemyIn == null)
@@ -209,6 +209,7 @@ public class PlayerAttack : MonoBehaviour
                 }
                 if (enemyIn.Length > 0)
                 {
+                    AudioManager.Instance.PlaySFX(ESFXType.Active_MagicArrow);
                     attack.MagicArrow(ad.attackDamage, ad, poolManager, layer);
                     if(i == ad.projectileCount - 1)
                     {
@@ -228,10 +229,11 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = (FireCircleSO.attackDamage + upgrade[2].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FireCircleSO.attackDamage + upgrade[2].damage);
             ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackDamage) + player.attackSpeed;
             ad.distance = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance;
-            
+
+            AudioManager.Instance.PlaySFX(ESFXType.Active_FireCircle);
             attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
             particleManager.GetParticle(1, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
 
@@ -247,11 +249,12 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
                 forward = transform.forward
             };
-            ad.attackDamage = (ChasingSickleSO.attackDamage + upgrade[0].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (ChasingSickleSO.attackDamage + upgrade[0].damage);
             ad.attackSpeed = (ChasingSickleSO.attackSpeed + upgrade[0].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
             ad.distance = ChasingSickleSO.distance + upgrade[0].distance;
             ad.spreadAngle = ChasingSickleSO.spreadAngle;
 
+            AudioManager.Instance.PlaySFX(ESFXType.Active_ChasingSickle);
             attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
             particleManager.GetParticle(2, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
 
@@ -266,7 +269,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = transform.position,
             };
-            ad.attackDamage = (LightningRaySO.attackDamage + upgrade[3].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (LightningRaySO.attackDamage + upgrade[3].damage);
             ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[3].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
             ad.distance = LightningRaySO.distance + upgrade[3].distance + player.baseAttackDistance;
             ad.spreadAngle = LightningRaySO.spreadAngle;
@@ -289,7 +292,8 @@ public class PlayerAttack : MonoBehaviour
                 }   
             Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
             Quaternion targetRota = Quaternion.LookRotation(dir);
-            particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage, ad.distance, ad.attackSpeed);
+                AudioManager.Instance.PlaySFX(ESFXType.Active_LightningRay);
+                particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage, ad.distance, ad.attackSpeed);
             }
             else
             {
@@ -309,12 +313,13 @@ public class PlayerAttack : MonoBehaviour
             {
                 position = randomPosi,
             };
-            ad.attackDamage = (FlowerThornsSO.attackDamage + upgrade[4].damage + player.baseAttackDamage) * ((100 + player.attackDamage) / 100);
+            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FlowerThornsSO.attackDamage + upgrade[4].damage);
             ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[4].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
             ad.distance = FlowerThornsSO.distance + upgrade[4].distance + player.baseAttackDistance;
             
             giz = randomPosi;
             dis = ad.distance;
+            AudioManager.Instance.PlaySFX(ESFXType.Active_FlowerThorns);
             attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
             particleManager.GetParticle(4, randomPosi, transform.rotation, 0, ad.distance, ad.attackSpeed);
 

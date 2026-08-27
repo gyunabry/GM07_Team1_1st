@@ -7,8 +7,11 @@ public class S39_ChasingSickle : SkillEffectSO
     {
         foreach (var unlock in context.playerAttack.attackUnlockDatas)
         {
+            Debug.Log(unlock.attackID);
+            Debug.Log(skillData.skillID);
             if (unlock.attackID == skillData.skillID)
             {
+                Debug.Log("언락 실행");
                 unlock.unlock = true;
             }
         }
