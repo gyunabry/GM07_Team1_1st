@@ -5,6 +5,6 @@ public class S32_HeatProductPrice : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.economyModifierService.AddProcessBonusRatio(ProcessType.Heat, skillData.value[nowLevel]);
     }
 }

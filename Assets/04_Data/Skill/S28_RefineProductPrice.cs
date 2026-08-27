@@ -5,6 +5,6 @@ public class S28_RefineProductPrice : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.economyModifierService.AddProcessBonusRatio(ProcessType.Refine, skillData.value[nowLevel]);
     }
 }
