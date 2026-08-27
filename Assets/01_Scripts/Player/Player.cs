@@ -7,7 +7,6 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] Slider expSlider;
     [SerializeField] CurrencySystem currencySystem;
     public NavMeshAgent navMeshAgent;
     private int nowLevel = 0;
