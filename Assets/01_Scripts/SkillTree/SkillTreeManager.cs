@@ -34,19 +34,22 @@ public class SkillTreeManager : MonoBehaviour
                 {
                     if(!(skill.skillNeedSkillPoint == 0))
                     {
-                        if (effectContext.player.skillPoint >= skill.skillNeedSkillPoint && !(skill.skillMaxLevel < state.skillLevel))
+                        if (effectContext.player.skillPoint >= skill.skillNeedSkillPoint && !(skill.skillMaxLevel <= state.skillLevel))
                         {
                             effectContext.player.skillPoint -= skill.skillNeedSkillPoint;
                             state.skillLevel++;
-                            skill.effect.SkillEffect(effectContext, skill, state.skillLevel);
                         }
                     }
                     else if (!(skill.skillNeedMoney == 0))
                     {
-                        if (effectContext.currencySystem.TrySpendMoney(skill.skillNeedMoney))
+                        if (effectContext.currencySystem.TrySpendMoney(skill.skillNeedMoney) && !(skill.skillMaxLevel <= state.skillLevel))
                         {
                             state.skillLevel++;
                         }
+                    }
+                    else if(!(skill.skillMaxLevel <= state.skillLevel))
+                    {
+                        state.skillLevel++;
                     }
                 }
             }
@@ -111,7 +114,7 @@ public class SkillTreeManager : MonoBehaviour
             {
                 if(skillID.skillID == skill.skillID)
                 {
-                    skillID.effect.SkillEffect(effectContext, skillID, skill.skillLevel);
+                    skillID.effect.SkillEffect(effectContext, skillID, skill.skillLevel - 1);
                 }
             }
         }
@@ -140,9 +143,9 @@ public class SkillTreeManager : MonoBehaviour
     }
     public void ResetEffect()
     {
-        effectContext.player.attackDamage = 0;
-        effectContext.player.attackSpeed = 0;
-        effectContext.player.attackDistance = 0;
+        effectContext.player.attackDamage = 20;
+        effectContext.player.attackSpeed = 1;
+        effectContext.player.attackDistance = 1;
         
          for (int i = 0; i < effectContext.playerAttack.upgrade.Length; i++)
          {
@@ -154,6 +157,6 @@ public class SkillTreeManager : MonoBehaviour
                 effectContext.playerAttack.upgrade[i].projectileCount = 0;
             }
         }
-        effectContext.player.navMeshAgent.speed = 3.5f;
+        effectContext.player.navMeshAgent.speed = 5f;
     }
 }
