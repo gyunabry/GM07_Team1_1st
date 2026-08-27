@@ -61,6 +61,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
         // UI? ???湲곕뒫? ???뚮┝留?諛쏆븘??媛곸옄 ?꾩슂??泥섎━瑜??쒕떎.
         CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
+        OnGoldEarned?.Invoke();
     }
 
     // ?덈쭔 蹂댁긽?쇰줈 以??뚮룄 ?ы솕 蹂寃?泥섎━? ?대깽???몄텧? GrantReward??留↔릿??
@@ -94,6 +96,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
         // 援щℓ???깃났??蹂댁쑀 ?덉씠 諛붾뚯뿀?쇰?濡?HUD? ????쒖뒪?쒖뿉 ?뚮┛??
         CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
+        OnGoldSpent?.Invoke();
         return true;
     }
     public bool TrySpendExp(int amount)
@@ -118,6 +122,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public void TestButton()
     {
         CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
     }
 
 
