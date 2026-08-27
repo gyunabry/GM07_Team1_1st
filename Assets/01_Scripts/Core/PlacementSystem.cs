@@ -12,7 +12,7 @@ using UnityEngine;
 public enum PlacementMode
 {
     None,
-    PurchasePlacement,  // 시설 빌드 UI 아이콘 클릭
+    PurchasePlacement,  // 구매할 시설 선택 상태
     RelocateSelect,     // 재배치 선택
     RelocatePlacement,  // 재배치 모드 중 시설 선택 상태
     SellSelect,         // 판매 선택
@@ -43,6 +43,8 @@ public partial class PlacementSystem : MonoBehaviour
     // 0 : 0도 / 1: 90도 / 2: 180도 / 3: 270도
     private short rotationIndex;
     private bool canPlace;
+
+    public bool IsBuildModeActive { get; private set; }
 
     [field: SerializeField]
     public PlacementMode CurrentMode { get; private set; }
@@ -668,6 +670,16 @@ public partial class PlacementSystem : MonoBehaviour
 
         return buildingData.BuildingPrefab.TryGetComponent<HunterBuildingController>(out _);
     }
+
+    public void SetBuildModeActive(bool active)
+    {
+        IsBuildModeActive = active;
+
+        if (!active && CurrentMode != PlacementMode.None)
+        {
+            ExitCurrentMode();
+        }
+    }
     #endregion
 
     #region 이벤트 핸들러
@@ -709,8 +721,17 @@ public partial class PlacementSystem : MonoBehaviour
 
     private void HandleBuildingLongPressed(PlacedBuilding building)
     {
-        if (CurrentMode != PlacementMode.None && 
-            CurrentMode != PlacementMode.RelocateSelect)
+        if (!IsBuildModeActive)
+        {
+            return;
+        }
+
+        if (CurrentMode == PlacementMode.None)
+        {
+            BeginRelocateMode();
+        }
+
+        if (CurrentMode != PlacementMode.RelocateSelect)
         {
             return;
         }
