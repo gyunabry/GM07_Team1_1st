@@ -48,25 +48,25 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
 
     public void Toggle()
     {
-        if (!isOpen)
+        if (isOpen)
         {
-            Show();
-            isOpen = true;
+            Hide();
         }
         else
         {
-            Hide();
-            isOpen = false;
+            Show();
         }
     }
 
     public void Show()
     {
+        isOpen = true;
         SetVisible(true);
     }
 
     public void Hide()
     {
+        isOpen = false;
         SetVisible(false);
     }
 

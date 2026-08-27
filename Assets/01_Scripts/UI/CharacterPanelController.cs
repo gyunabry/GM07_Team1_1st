@@ -109,6 +109,11 @@ public class CharacterPanelController : MonoBehaviour
         }
     }
 
+    public void Hide()
+    {
+        SetVisible(false);
+    }
+
     private void SetVisible(bool visible)
     {
         isOpen = visible;

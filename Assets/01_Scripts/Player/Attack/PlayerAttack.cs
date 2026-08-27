@@ -52,7 +52,7 @@ public class PlayerAttack : MonoBehaviour
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = true;
+            aud.unlock = false;
             aud.equip = false;
             if(attackData.sprite != null)
             {
@@ -97,15 +97,15 @@ public class PlayerAttack : MonoBehaviour
                 {
                     switch (i)
                     {
-                        case 1:
+                        case 43:
                             co[i] = StartCoroutine(MagicArrow()); break;
-                        case 2:
+                        case 47:
                             co[i] = StartCoroutine(FireCircle()); break;
-                        case 3:
+                        case 39:
                             co[i] = StartCoroutine(ChasingSickle()); break;
-                        case 4:
+                        case 51:
                             co[i] = StartCoroutine(LightningRay()); break;
-                        case 5:
+                        case 55:
                             co[i] = StartCoroutine(FlowerThorns()); break;
                         default: break;
                     }
@@ -159,15 +159,15 @@ public class PlayerAttack : MonoBehaviour
             {
                 switch (i)
                 {
-                    case 1:
+                    case 43:
                         co[i] = StartCoroutine(MagicArrow()); break;
-                    case 2:
+                    case 47:
                         co[i] = StartCoroutine(FireCircle()); break;
-                    case 3:
+                    case 39:
                         co[i] = StartCoroutine(ChasingSickle()); break;
-                    case 4:
+                    case 51:
                         co[i] = StartCoroutine(LightningRay()); break;
-                    case 5:
+                    case 55:
                         co[i] = StartCoroutine(FlowerThorns()); break;
                     default: break;
                 }
