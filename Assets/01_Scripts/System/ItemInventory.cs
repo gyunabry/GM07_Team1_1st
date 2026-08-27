@@ -62,10 +62,14 @@ public sealed class ItemInventory
 
     public event Action InventoryChanged;
 
+    //DOTween 추가
+    public event Action OnInventoryChanged;
+
     public void SetBonusCapacity(int value)
     {
         bonusCapacity = Mathf.Max(0, value);
         InventoryChanged?.Invoke();
+        OnInventoryChanged?.Invoke();
     }
 
     public int GetAmount(ItemDataSO item)
@@ -88,6 +92,7 @@ public sealed class ItemInventory
         if (added > 0)
         {
             InventoryChanged?.Invoke();
+            OnInventoryChanged?.Invoke();
         }
 
         return added;
@@ -100,6 +105,7 @@ public sealed class ItemInventory
         if (removed > 0)
         {
             InventoryChanged?.Invoke();
+            OnInventoryChanged?.Invoke();
         }
 
         return removed;
@@ -127,6 +133,7 @@ public sealed class ItemInventory
         }
 
         InventoryChanged?.Invoke();
+        OnInventoryChanged?.Invoke();
 
         return true;
     }
@@ -152,6 +159,7 @@ public sealed class ItemInventory
 
         InventoryChanged?.Invoke();
         target.InventoryChanged?.Invoke();
+        OnInventoryChanged?.Invoke();
 
         return movable;
     }
