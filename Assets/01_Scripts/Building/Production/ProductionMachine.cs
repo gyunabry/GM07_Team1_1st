@@ -21,6 +21,8 @@ public class ProductionMachine
     private RecipeDataSO activeRecipe;
 
     private float elapsedTime;
+    private float bonusProductionChance;
+    private int pendingOutputAmount;
 
     // 스킬 효과가 반영된 생산 시간 
     private float effectiveDuration;
@@ -148,11 +150,19 @@ public class ProductionMachine
                     return;
                 }
 
+                if (pendingOutputAmount <= 0)
+                {
+                    bool bonusSucceded = UnityEngine.Random.value < bonusProductionChance;
+
+                    pendingOutputAmount = bonusSucceded ? 2 : 1;
+                }
+
                 // 생산 시간이 끝났다면 결과 인벤토리에 추가 시도
                 // 인벤토리가 꽉차있다면 0 반환
-                int added = outputInventory.Add(activeRecipe.Output, 1);
+                int added = outputInventory.Add(activeRecipe.Output, pendingOutputAmount);
 
-                if (added != 1)
+                // 생산물이 아직 남아있다면 대기 모드
+                if (pendingOutputAmount > 0)
                 {
                     SetState(ProductionState.WaitingForOutputSpace);
                     return;
@@ -163,6 +173,7 @@ public class ProductionMachine
                 activeRecipe = null;
                 elapsedTime = 0f;
                 effectiveDuration = 0f;
+                pendingOutputAmount = 0;
 
                 ProgressChanged?.Invoke(0f);
                 ProductionComplete?.Invoke(completedRecipe);
@@ -232,5 +243,10 @@ public class ProductionMachine
 
         // ex) 6초 * 0.8 = 5초
         return Mathf.Max(0.01f, recipe.ProductionTime * durationMultiplier);
+    }
+
+    public void SetBonusProductionChance(float chanceRatio)
+    {
+        bonusProductionChance = Mathf.Clamp01(chanceRatio);
     }
 }

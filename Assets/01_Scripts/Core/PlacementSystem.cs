@@ -107,6 +107,11 @@ public partial class PlacementSystem : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        RegisterPreplacedBuildings();
+    }
+
     private void Update()
     {
         // 건설 모드가 아니라면 즉시 반환
@@ -550,7 +555,7 @@ public partial class PlacementSystem : MonoBehaviour
 
         if (!currentArea.TryOccupy(placedBuilding, cells))
         {
-            Destroy(placedBuilding);
+            Destroy(buildingObj);
             UpdatePreview();
             return;
         }
@@ -558,7 +563,7 @@ public partial class PlacementSystem : MonoBehaviour
         if (!CurrencySystem.Instance.TrySpendMoney(status.FinalCost))
         {
             currentArea.Release(placedBuilding, cells);
-            Destroy(placedBuilding);
+            Destroy(buildingObj);
             return;
         }
 
@@ -586,6 +591,71 @@ public partial class PlacementSystem : MonoBehaviour
         canPlace = false;
 
         SelectionChanged?.Invoke(null);
+    }
+
+    // 게임 시작 시 배치되어 있는 시설을 점유셀에 등록하는 메서드
+    private void RegisterPreplacedBuildings()
+    {
+        if (buildingContainer == null) return;
+
+        PlacedBuilding[] buildings = buildingContainer.GetComponentsInChildren<PlacedBuilding>(true);
+
+        foreach (PlacedBuilding building in buildings)
+        {
+            if (building == null || building.Data == null || building.AssignedArea != null)
+            {
+                continue;
+            }
+
+            TryRegisterPreplacedBuildings(building);
+        }
+    }
+
+    private bool TryRegisterPreplacedBuildings(PlacedBuilding building)
+    {
+        short buildingRotationIndex = (short)(Mathf.RoundToInt(building.transform.eulerAngles.y / 90f) % 4);
+
+        Vector2Int rotatedSize = GetRotatedSize(building.Data.Size, buildingRotationIndex);
+
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area == null || area.Grid == null || !area.IsBuildableAllowed(building.Data))
+            {
+                continue;
+            }
+
+            Vector3Int centerCell = area.Grid.WorldToCell(building.transform.position);
+
+            centerCell.z = 0;
+
+            Vector3Int originCell = centerCell - new Vector3Int(rotatedSize.x / 2, rotatedSize.y / 2, 0);
+
+            if (!area.CanPlaceBuilding(building.Data, originCell, rotatedSize))
+            {
+                continue;
+            }
+
+            List<Vector3Int> cells = GetOccupiedCells(originCell, rotatedSize);
+
+            if (!area.TryOccupy(building, cells))
+            {
+                continue;
+            }
+
+            building.ApplyPlacement(
+                area,
+                originCell,
+                buildingRotationIndex,
+                cells,
+                building.transform.position,
+                building.transform.rotation
+            );
+
+            return true;
+        }
+
+        Debug.LogWarning($"사전 배치 시설 등록에 실패했습니다 : {building.BuildingName}");
+        return false;
     }
 
     // 임시 메서드

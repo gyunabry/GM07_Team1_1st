@@ -36,20 +36,23 @@ public readonly struct BuildingPurchaseStatus
 
 public partial class PlacementSystem : MonoBehaviour
 {
-    [SerializeField] private Player player;
-
     public BuildingPurchaseStatus EvaluatePurchase(BuildingDataSO data)
     {
         if (data == null) return default;
 
+        CurrencySystem currencySystem = CurrencySystem.Instance;
+
         int finalCost = economyModifier.GetBuildCost(data);
+
         int currentCount = FacilityManager.Instance.GetPlacedCount(data);
-        int playerLevel = player != null ? player.NowLevel : 0;
-        int currentMoney = CurrencySystem.Instance.Money;
+        int maxCount = FacilityManager.Instance.GetPlacementLimit(data);
+
+        int currentLevel = currencySystem != null ? currencySystem.Level : 0;
+        int currentMoney = currencySystem.Money;
 
         PurchaseBlockReason reasons = PurchaseBlockReason.None;
 
-        if (playerLevel < data.RequiredLevel)
+        if (currentLevel < data.RequiredLevel)
         {
             reasons |= PurchaseBlockReason.Level;
         }
@@ -59,7 +62,7 @@ public partial class PlacementSystem : MonoBehaviour
             reasons |= PurchaseBlockReason.Money;
         }
 
-        if (currentCount >= data.PlacementLimit)
+        if (currentCount >= maxCount)
         {
             reasons |= PurchaseBlockReason.PlacementLimit;
         }
@@ -67,7 +70,7 @@ public partial class PlacementSystem : MonoBehaviour
         return new BuildingPurchaseStatus(
             finalCost,
             currentCount,
-            data.PlacementLimit,
+            maxCount,
             reasons
         );
     }

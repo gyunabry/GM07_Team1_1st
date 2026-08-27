@@ -149,6 +149,109 @@ MonoBehaviour:
   inventory:
     capacity: 20
     entries: []
+--- !u!1 &2280687891102091479
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7810520106135625611}
+  - component: {fileID: 4594496697931293496}
+  - component: {fileID: 4116270342163431550}
+  - component: {fileID: 1169212744294248023}
+  - component: {fileID: 1490055343293791467}
+  m_Layer: 0
+  m_Name: WorkshopExpansionSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7810520106135625611
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2280687891102091479}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 684614707514807010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4594496697931293496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2280687891102091479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b61cefbb276717a47a6634ad64b025cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorkshopExpansionManager
+  expansions:
+  - {fileID: 11400000, guid: ba1bd13ea1366c142ae76f3ab632a2ce, type: 2}
+  - {fileID: 11400000, guid: 9b8b081c698350f47ad5d2e2e7e6df67, type: 2}
+  - {fileID: 11400000, guid: 55e01083fa4019543a4a9cfeeb8742f2, type: 2}
+  expansionUnit: 4
+  player: {fileID: 0}
+  workshopArea: {fileID: 0}
+  navMeshSurface: {fileID: 4842265015553419280}
+  preview: {fileID: 1169212744294248023}
+  visualController: {fileID: 4116270342163431550}
+  saveService: {fileID: 1490055343293791467}
+--- !u!114 &4116270342163431550
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2280687891102091479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11e98e07a5ae3d74a8b35f470bb64a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorkshopStageVisualController
+  stages:
+  - floorRoot: {fileID: 0}
+    wallRoot: {fileID: 0}
+  - floorRoot: {fileID: 0}
+    wallRoot: {fileID: 0}
+  - floorRoot: {fileID: 0}
+    wallRoot: {fileID: 0}
+--- !u!114 &1169212744294248023
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2280687891102091479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa60f992f8512f0409cadfd6e40a0416, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorkshopExpansionPreview
+  visualController: {fileID: 4116270342163431550}
+  previewMaterial: {fileID: 2100000, guid: c2898b57eea2bf54c85e8be3b807f2d8, type: 2}
+--- !u!114 &1490055343293791467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2280687891102091479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c015bf1b2afec9a4195e3096a38da2fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorkshopExpansionSaveService
 --- !u!1 &3218947324264860921
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,6 +392,7 @@ Transform:
   - {fileID: 886917403993443804}
   - {fileID: 6166718173558937801}
   - {fileID: 1349247063224590920}
+  - {fileID: 7810520106135625611}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7293180575848846353
@@ -414,7 +518,7 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_UseGeometry: 0
+  m_UseGeometry: 1
   m_DefaultArea: 0
   m_GenerateLinks: 0
   m_IgnoreNavMeshAgent: 1
@@ -424,7 +528,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 45c4ec040afc0ea4e80269db5b8575ab, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 9f8277c47f60bca45a0841ee0180d549, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &8336680834424567778
 GameObject:
@@ -472,6 +576,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CurrencySystem
   money: 2000
   experience: 0
+  nowExperience: 0
 --- !u!1 &8770157076762750981
 GameObject:
   m_ObjectHideFlags: 0

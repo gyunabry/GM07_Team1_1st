@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using TMPro;
 
 public class BuildModeController : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class BuildModeController : MonoBehaviour
     [Header("판매 확인 UI")]
     [SerializeField] private Button sellConfirmButton;
     [SerializeField] private Button sellCancelButton;
+
+    [Header("현재 배치 모드 표시")]
+    [SerializeField] private GameObject currentPlacementMode;
+    [SerializeField] private TMP_Text currentPlacementModeText;
 
     [Header("이벤트")]
     [SerializeField] private UnityEvent onBuildModeClosed;
@@ -158,14 +163,33 @@ public class BuildModeController : MonoBehaviour
 
     private void HandlePlacementModeChanged(PlacementMode mode)
     {
-        //bool isEditMode = 
-        //    mode == PlacementMode.RelocateSelect || 
-        //    mode == PlacementMode.RelocatePlacement;
+        bool isEditMode =
+            mode == PlacementMode.RelocateSelect ||
+            mode == PlacementMode.RelocatePlacement;
 
-        //bool isSellMode =
-        //    mode == PlacementMode.SellSelect ||
-        //    mode == PlacementMode.SellConfirm;
+        bool isSellMode =
+            mode == PlacementMode.SellSelect ||
+            mode == PlacementMode.SellConfirm;
 
+        bool showCurrentMode = isEditMode || isSellMode;
+
+        if (currentPlacementMode != null)
+        {
+            currentPlacementMode.SetActive(showCurrentMode);
+        }
+
+        if (currentPlacementModeText != null)
+        {
+            if (isEditMode)
+            {
+                currentPlacementModeText.text = "재배치 모드";
+            }
+
+            if (isSellMode)
+            {
+                currentPlacementModeText.text = "판매 모드";
+            }
+        }
 
         SetSellConfirmVisible(mode == PlacementMode.SellConfirm);
     }

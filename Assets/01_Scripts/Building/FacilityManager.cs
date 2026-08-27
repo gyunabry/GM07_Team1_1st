@@ -15,8 +15,13 @@ public class FacilityManager : MonoBehaviour
 
     // 시설별 개수를 저장할 딕셔너리
     private readonly Dictionary<BuildingDataSO, int> placedCounts = new();
+    private readonly Dictionary<BuildingDataSO, int> placementLimits = new();
 
     public event Action<BuildingDataSO, int> FacilityCountChanged;
+    public event Action<BuildingDataSO> FacilityInfoChanged;
+
+    // 생산 시설 두 종류가 수를 공유하므로 별도로 관리
+    private int productionPlacedCount;
 
     private void Awake()
     {
@@ -57,6 +62,11 @@ public class FacilityManager : MonoBehaviour
     {
         if (data == null) return 0;
 
+        if (data.BuildingTag == BuildingTag.Production)
+        {
+            return productionPlacedCount;
+        }
+
         return placedCounts.TryGetValue(data, out int count) ? count : 0;
     }
 
@@ -65,23 +75,51 @@ public class FacilityManager : MonoBehaviour
         if (data == null) return 0;
 
         // 데이터 상에서 최대 설치 가능한 시설 개수
-        return Mathf.Max(0, 3);
+        return Mathf.Max(0, GetPlacementLimit(data) - GetPlacedCount(data));
+    }
+
+    public int GetPlacementLimit(BuildingDataSO data)
+    {
+        if (data == null) return 0;
+
+        return placementLimits.TryGetValue(data, out int limit) ? limit : data.PlacementLimit;
     }
 
     public bool CanPlace(BuildingDataSO data)
     {
         // 설치 가능 수보다 적을 때만 배치 가능
-        return data != null && GetPlacedCount(data) < 3;
+        return data != null && GetPlacedCount(data) < GetPlacementLimit(data);
+    }
+
+    public void SetPlacementLimit(BuildingDataSO data, int limit)
+    {
+        if (data == null) return;
+
+        limit = Mathf.Max(0, limit);
+
+        int preLimit = GetPlacementLimit(data);
+
+        if (preLimit == limit) return;
+
+        placementLimits[data] = limit;
+        FacilityInfoChanged?.Invoke(data);
     }
 
     private void HandleBuildingPlaced(PlacedBuilding building, BuildingDataSO data)
     {
         if (building == null || data == null) return;
 
-        int newCount = GetPlacedCount(data) + 1;
-        placedCounts[data] = newCount;
+        if (data.BuildingTag == BuildingTag.Production)
+        {
+            productionPlacedCount++;
+        }
+        else
+        {
+            int newCount = GetPlacedCount(data) + 1;
+            placedCounts[data] = newCount;
+        }
 
-        FacilityCountChanged?.Invoke(data, newCount);
+        FacilityInfoChanged?.Invoke(data);
     }
 
     private void HandleBuildingSold(PlacedBuilding building, int refund)
@@ -90,11 +128,18 @@ public class FacilityManager : MonoBehaviour
 
         BuildingDataSO data = building.Data;
 
-        int newCount = Mathf.Max(0, GetPlacedCount(data) - 1);
+        if (data.BuildingTag == BuildingTag.Production)
+        {
+            productionPlacedCount = Mathf.Max(0, productionPlacedCount - 1);
+        }
+        else
+        {
+            int newCount = Mathf.Max(0, GetPlacedCount(data) - 1);
 
-        // 실제 배치 수 갱신
-        placedCounts[data] = newCount;
+            // 실제 배치 수 갱신
+            placedCounts[data] = newCount;
+        }
 
-        FacilityCountChanged?.Invoke(data, newCount);
+        FacilityInfoChanged?.Invoke(data);
     }
 }

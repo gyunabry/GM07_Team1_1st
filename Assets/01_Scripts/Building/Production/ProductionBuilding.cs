@@ -61,6 +61,8 @@ public class ProductionBuilding : MonoBehaviour
 
     private void OnEnable()
     {
+        ProductionSkillRegistry.Register(this);
+
         SubscribeInventoryEvents();
         SubscribeMachineEvents();
 
@@ -69,6 +71,8 @@ public class ProductionBuilding : MonoBehaviour
 
     private void OnDisable()
     {
+        ProductionSkillRegistry.Unregister(this);
+
         UnsubscribeInventoryEvents();
         UnsubscribeMachineEvents();
 
@@ -99,6 +103,16 @@ public class ProductionBuilding : MonoBehaviour
         if (!CanProcess(recipe)) return false;
 
         return machine.TrySetRecipe(recipe);
+    }
+
+    public void ApplySkillModifiers(ProductionSkillModifiers modifiers)
+    {
+        inputInventory.SetBonusCapacity(modifiers.StorageCapacityBonus);
+        outputInventory.SetBonusCapacity(modifiers.StorageCapacityBonus);
+
+        machine.SetProductionSpeedMultiplier(modifiers.ProductionTimeReductionRatio);
+
+        machine.SetBonusProductionChance(modifiers.ProductionBonusChance);
     }
 
     #region 이벤트 구독

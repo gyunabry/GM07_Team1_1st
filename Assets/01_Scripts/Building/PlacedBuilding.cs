@@ -16,13 +16,15 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     [SerializeField] private GameObject constructionObject;
     [SerializeField] private GameObject completedObject;
 
+    [SerializeField] private BuildingDataSO data;
+
     [Header("테스트용 시설 상태")]
     [SerializeField] private BuildingState state = BuildingState.Constructing;
 
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
 
-    public BuildingDataSO Data { get; private set; }
+    public BuildingDataSO Data => data;
     public Vector3Int OriginCell { get; private set; }
     public short RotationIndex { get; private set; }
 
@@ -56,7 +58,7 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         IEnumerable<Vector3Int> cells
     ) 
     {
-        Data = data;
+        this.data = data;
         AssignedArea = assignedArea;
         OriginCell = originCell;
         RotationIndex = rotationIndex;
