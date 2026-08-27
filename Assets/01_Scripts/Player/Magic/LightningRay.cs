@@ -30,6 +30,7 @@ public class LightningRay : MonoBehaviour
         Enemy ene = other.gameObject.GetComponent<Enemy>();
         if (ene != null)
         {
+            AudioManager.Instance.PlaySFX(ESFXType.Hit_LightningRay);
             ene.TakeDamage(damage);
         }
     }
