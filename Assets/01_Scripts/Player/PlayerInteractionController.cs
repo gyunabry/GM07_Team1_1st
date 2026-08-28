@@ -8,9 +8,9 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     [SerializeField] private LayerMask interactionLayer;
     [SerializeField] private PlayerInteractionDetector detector;
     [SerializeField] private BuildingUIRouter buildingUIRouter;
+    [SerializeField] private EmployeeHirePanel employeeHirePanel;
 
     private IInteractable activeInteractable;
-    private GameObject employeeUIInstance;
     private bool isEmployeeUIOpen;
 
     private void Awake()
@@ -91,37 +91,28 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             activeInteractable = buildingComponent.GetComponent<IInteractable>();
         }
 
-        if (employeeUIInstance != null)
-        {
-            employeeUIInstance.SetActive(false);
-        }
+        employeeHirePanel?.gameObject.SetActive(false);
 
         isEmployeeUIOpen = false;
         buildingUIRouter.Open(building);
     }
 
-    public void OpenEmployeeUI(GameObject employeeUIPrefab, IInteractable source)
+    public void OpenEmployeeUI(IInteractable source)
     {
-        if (employeeUIPrefab == null || source == null)
+        if (employeeHirePanel == null || source == null)
         {
             return;
         }
 
-        if (employeeUIInstance == null)
-        {
-            employeeUIInstance = Instantiate(employeeUIPrefab);
-        }
+        employeeHirePanel.gameObject.SetActive(true);
 
         if (source is Component sourceComponent)
         {
-            EmployeeHirePanel employeeHirePanel = employeeUIInstance.GetComponent<EmployeeHirePanel>();
             employeeHirePanel?.Bind(sourceComponent.GetComponent<PlacedBuilding>());
         }
 
         activeInteractable = source;
         isEmployeeUIOpen = true;
-        employeeUIInstance.transform.localScale = Vector3.one;
-        employeeUIInstance.SetActive(true);
     }
 
     private void HandleInteractableExited(IInteractable exitedInteractable)
@@ -133,7 +124,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
 
         if (isEmployeeUIOpen)
         {
-            employeeUIInstance?.SetActive(false);
+            employeeHirePanel?.gameObject.SetActive(false);
             isEmployeeUIOpen = false;
         }
         else

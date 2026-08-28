@@ -23,6 +23,8 @@ public sealed class ShopCustomerQueue : MonoBehaviour
     private readonly List<CustomerController> customers = new List<CustomerController>();
     private readonly List<Vector3> crowdSlots = new List<Vector3>();
     private readonly Dictionary<CustomerController, Vector3> assignedSlots = new Dictionary<CustomerController, Vector3>();
+    private CustomerController serviceCustomer;
+    private ICustomerInventory inventory;
     private bool isAcceptingCustomers = true;
     private float generatedCrowdDepth;
     private float generatedCrowdWidth;
@@ -38,6 +40,11 @@ public sealed class ShopCustomerQueue : MonoBehaviour
         crowdSlotSpacing = Mathf.Max(0.1f, slotSpacing);
         crowdAgentRadius = Mathf.Max(0.1f, slotSpacing * 0.52f);
         maxCustomers = Mathf.Max(1, capacity);
+    }
+
+    private void OnDestroy()
+    {
+        BindInventory(null);
     }
 
     // 계산대가 NavMesh 갱신 후 다시 열릴 때 호출한다.
@@ -61,7 +68,7 @@ public sealed class ShopCustomerQueue : MonoBehaviour
         // 대기 위치 간격은 Agent 지름보다 넓어야 회피 때문에 군집 영역 밖으로 밀리지 않는다.
         float effectiveSlotSpacing = Mathf.Max(crowdSlotSpacing, crowdAgentRadius * 2f + 0.1f);
         int columns = Mathf.Max(1, crowdColumns);
-        int waitingCustomerCapacity = Mathf.Max(0, maxCustomers - 1);
+        int waitingCustomerCapacity = maxCustomers;
         int rows = Mathf.Max(1, Mathf.CeilToInt(waitingCustomerCapacity / (float)columns));
         generatedCrowdWidth = (columns - 1) * effectiveSlotSpacing + crowdSlotJitter * 2f;
         generatedCrowdDepth = Mathf.Max(
@@ -106,21 +113,24 @@ public sealed class ShopCustomerQueue : MonoBehaviour
 
         PrepareCrowdSlots();
         customers.Add(customer);
+        BindInventory(customer.InventoryService);
+        RefreshServiceCustomer();
 
-        if (customers.Count == 1)
+        if (serviceCustomer == customer)
         {
             return customer.MoveToCheckout(checkoutFront.position, frontCustomerRadius);
         }
 
-        if (!TryAssignCrowdSlot(customer, out Vector3 destination))
+        ReassignWaitingCustomers();
+        if (!assignedSlots.ContainsKey(customer))
         {
             customers.Remove(customer);
+            RefreshServiceCustomer();
             Debug.LogWarning("Not enough valid crowd waiting positions on the NavMesh for this checkout.", this);
             return false;
         }
 
-        customer.SetNavigationRadius(crowdAgentRadius);
-        return customer.QueueMovement != null && customer.QueueMovement.SetDestination(destination);
+        return true;
     }
 
     public void Leave(CustomerController customer)
@@ -131,21 +141,28 @@ public sealed class ShopCustomerQueue : MonoBehaviour
         }
 
         assignedSlots.Remove(customer);
+        if (serviceCustomer == customer)
+        {
+            serviceCustomer = null;
+        }
         if (customers.Count == 0)
         {
+            BindInventory(null);
             return;
         }
 
         // 새 맨 앞 손님만 자기 군집 위치를 비우고 계산대로 이동한다.
-        CustomerController nextCustomer = customers[0];
-        assignedSlots.Remove(nextCustomer);
-        MoveFrontCustomerToCheckout();
-        ReassignWaitingCustomers();
+        RefreshServiceCustomer();
     }
 
     public bool IsFront(CustomerController customer)
     {
         return customers.Count > 0 && customers[0] == customer;
+    }
+
+    public bool IsSelectedForService(CustomerController customer)
+    {
+        return serviceCustomer == customer;
     }
 
     public void SetAcceptingCustomers(bool value)
@@ -172,12 +189,12 @@ public sealed class ShopCustomerQueue : MonoBehaviour
 
     public bool MoveFrontCustomerToCheckout()
     {
-        if (customers.Count == 0 || checkoutFront == null)
+        if (serviceCustomer == null || checkoutFront == null)
         {
             return false;
         }
 
-        return customers[0].MoveToCheckout(checkoutFront.position, frontCustomerRadius);
+        return serviceCustomer.MoveToCheckout(checkoutFront.position, frontCustomerRadius);
     }
 
     private void Update()
@@ -188,10 +205,10 @@ public sealed class ShopCustomerQueue : MonoBehaviour
         }
 
         nextDisplacementCheckTime = Time.time + displacementCheckInterval;
-        for (int i = 1; i < customers.Count; i++)
+        for (int i = 0; i < customers.Count; i++)
         {
             CustomerController customer = customers[i];
-            if (customer != null && customer.QueueMovement != null && customer.QueueMovement.IsOutsideDestination(displacedCustomerTolerance))
+            if (customer != null && customer != serviceCustomer && customer.QueueMovement != null && customer.QueueMovement.IsOutsideDestination(displacedCustomerTolerance))
             {
                 // 다른 계산대의 퇴장 손님에게 밀린 경우에만 기존 목적지 경로를 재개한다.
                 // 목적지가 같으면 CustomerController의 캐시가 새 CalculatePath를 생략한다.
@@ -242,10 +259,10 @@ public sealed class ShopCustomerQueue : MonoBehaviour
     {
         assignedSlots.Clear();
 
-        for (int i = 1; i < customers.Count; i++)
+        for (int i = 0; i < customers.Count; i++)
         {
             CustomerController customer = customers[i];
-            if (customer == null)
+            if (customer == null || customer == serviceCustomer)
             {
                 continue;
             }
@@ -258,6 +275,63 @@ public sealed class ShopCustomerQueue : MonoBehaviour
 
             customer.SetNavigationRadius(crowdAgentRadius);
             customer.QueueMovement?.SetDestination(destination);
+        }
+    }
+
+    private void RefreshServiceCustomer()
+    {
+        CustomerController nextServiceCustomer = GetNextServiceCustomer();
+        if (serviceCustomer == nextServiceCustomer)
+        {
+            return;
+        }
+
+        serviceCustomer = nextServiceCustomer;
+        ReassignWaitingCustomers();
+
+        if (serviceCustomer != null)
+        {
+            assignedSlots.Remove(serviceCustomer);
+            MoveFrontCustomerToCheckout();
+        }
+    }
+
+    private CustomerController GetNextServiceCustomer()
+    {
+        if (serviceCustomer != null && customers.Contains(serviceCustomer)
+            && (serviceCustomer.IsPaymentCompleted || serviceCustomer.CanFulfillOrder()))
+        {
+            return serviceCustomer;
+        }
+
+        for (int i = 0; i < customers.Count; i++)
+        {
+            CustomerController customer = customers[i];
+            if (customer != null && customer.CanFulfillOrder())
+            {
+                return customer;
+            }
+        }
+
+        return null;
+    }
+
+    private void BindInventory(ICustomerInventory inventoryService)
+    {
+        if (inventory == inventoryService)
+        {
+            return;
+        }
+
+        if (inventory != null)
+        {
+            inventory.InventoryChanged -= RefreshServiceCustomer;
+        }
+
+        inventory = inventoryService;
+        if (inventory != null)
+        {
+            inventory.InventoryChanged += RefreshServiceCustomer;
         }
     }
 

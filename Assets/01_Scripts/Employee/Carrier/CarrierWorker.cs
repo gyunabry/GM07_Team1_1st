@@ -59,6 +59,8 @@ public sealed class CarrierWorker : MonoBehaviour
 
     public EmployeeRuntimeData Employee => employee;
     public ItemInventory CargoInventory => cargoInventory;
+    public float MovementSpeed => movementSpeed;
+    public int CarryingCapacity => carryingCapacity;
     public bool HasCommand => hasCommand;
     public bool IsAvailableForCommand => isInitialized && !hasCommand && taskState == TaskState.Idle;
     public CarrierCommand CurrentCommand => command;
