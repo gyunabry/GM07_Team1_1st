@@ -233,7 +233,7 @@ public class PlayerAttack : MonoBehaviour
                 position = transform.position,
             };
             ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FireCircleSO.attackDamage + upgrade[2].damage);
-            ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackDamage) + player.attackSpeed;
+            ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackSpeed) + player.attackSpeed;
             ad.distance = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance + player.attackDistance;
 
             AudioManager.Instance.PlaySFX(ESFXType.Active_FireCircle);
