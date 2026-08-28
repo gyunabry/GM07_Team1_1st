@@ -27,7 +27,6 @@ public class SkillTreeButton : MonoBehaviour
         text = GetComponentInChildren<TextMeshProUGUI>();
         skillTreeManager.SkillUnlockCheck();
         lockObject = GetComponentsInChildren<RectTransform>();
-        Debug.Log(lockObject.Length);
         if(poolManager == null)
         {
             poolManager = FindAnyObjectByType<PoolManager>();
