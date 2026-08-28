@@ -11,6 +11,7 @@ public class CharacterPanelController : MonoBehaviour
     [Header("ÂüÁ¶")]
     [SerializeField] private Player player;
     [SerializeField] private SkillTreeManager skillTreeManager;
+    [SerializeField] private EmployeeManager employeeManager;
 
     [SerializeField] private BuildingDataSO productionBuilding;
     [SerializeField] private BuildingDataSO salesBuilding;
@@ -171,16 +172,16 @@ public class CharacterPanelController : MonoBehaviour
 
         if (maxHunterCount != null)
         {
-            int current = FacilityManager.Instance.GetPlacedCount(hunterBuilding);
-            int limit = FacilityManager.Instance.GetPlacementLimit(hunterBuilding);
+            int current = employeeManager.HunterEmployeeCount;
+            int limit = employeeManager.GetHiringLimit(EmployeeRole.Hunter);
 
             maxHunterCount.text = $"{current} / {limit}";
         }
 
         if (maxCarrierCount != null)
         {
-            int current = FacilityManager.Instance.GetPlacedCount(carrierBuilding);
-            int limit = FacilityManager.Instance.GetPlacementLimit(carrierBuilding);
+            int current = employeeManager.CarrierEmployeeCount;
+            int limit = employeeManager.GetHiringLimit(EmployeeRole.Carrier);
 
             maxCarrierCount.text = $"{current} / {limit}";
         }

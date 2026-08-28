@@ -10,6 +10,7 @@ public class FacilityLevelBonus : MonoBehaviour
     {
         public int level;
 
+        
         public int productionLimit;
         public int salesLimit;
     }
