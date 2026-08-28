@@ -5,6 +5,6 @@ public class S04_ProductionBuildingStorageUpgrade : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        ProductionSkillRegistry.AddStorageCapacityBonus((int)skillData.value[nowLevel]);
     }
 }

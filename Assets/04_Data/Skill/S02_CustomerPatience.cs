@@ -5,6 +5,6 @@ public class S02_CustomerPatience : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.customerSpawnManager.SetPatienceIncreasePercent(skillData.value[nowLevel]);
     }
 }
