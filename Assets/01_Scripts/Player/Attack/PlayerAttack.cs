@@ -52,7 +52,7 @@ public class PlayerAttack : MonoBehaviour
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = true;
+            aud.unlock = false;
             aud.equip = false;
             if(attackData.sprite != null)
             {

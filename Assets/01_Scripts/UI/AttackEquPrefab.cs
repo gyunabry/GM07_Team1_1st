@@ -7,6 +7,7 @@ public class AttackEquPrefab : MonoBehaviour
 
     private AttackEquHud ownerSlot;
     private string attackID;
+    private bool unlock;
 
     //public PlayerAttack playerAttack;
     //public AttackEquHud attackEquHud;
@@ -14,14 +15,23 @@ public class AttackEquPrefab : MonoBehaviour
     //public string equID;
     //public int slotIndex;
 
-    public void Bind(AttackEquHud slot, string id, Sprite sprite)
+    public void Bind(AttackEquHud slot, string id, Sprite sprite, bool unlocked)
     {
         ownerSlot = slot;
         attackID = id;
+        unlock = unlocked;
 
         if (skillIcon != null)
         {
             skillIcon.sprite = sprite;
+        }
+        if(unlocked == true)
+        {
+            RectTransform[] rect = GetComponentsInChildren<RectTransform>();
+            if(rect.Length > 6)
+            {
+                rect[6].gameObject.SetActive(false);
+            }
         }
     }
 
@@ -40,7 +50,10 @@ public class AttackEquPrefab : MonoBehaviour
         {
             return;
         }
-
+        if (unlock == false)
+        {
+            return;
+        }
         AttackEquHud slot = ownerSlot;
         string selectedAttackId = attackID;
 
