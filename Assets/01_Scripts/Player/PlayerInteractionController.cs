@@ -112,8 +112,15 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             employeeUIInstance = Instantiate(employeeUIPrefab);
         }
 
+        if (source is Component sourceComponent)
+        {
+            EmployeeHirePanel employeeHirePanel = employeeUIInstance.GetComponent<EmployeeHirePanel>();
+            employeeHirePanel?.Bind(sourceComponent.GetComponent<PlacedBuilding>());
+        }
+
         activeInteractable = source;
         isEmployeeUIOpen = true;
+        employeeUIInstance.transform.localScale = Vector3.one;
         employeeUIInstance.SetActive(true);
     }
 
