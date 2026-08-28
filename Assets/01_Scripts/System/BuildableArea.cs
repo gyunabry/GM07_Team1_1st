@@ -8,8 +8,8 @@ public class BuildableArea : MonoBehaviour
     [SerializeField] private AreaType areaType;
     [SerializeField] private Grid grid;
     [SerializeField] private Collider placementSurface;
-    [SerializeField] private Transform buildingContainer;
     [SerializeField] private GameObject gridView;
+    [SerializeField] private Collider cameraBounds;
 
     // 현재 해금되어 시설 배치가 가능한 영역
     [SerializeField] private List<RectInt> unlockedAreas = new();
@@ -21,8 +21,8 @@ public class BuildableArea : MonoBehaviour
     public AreaType AreaType => areaType;
     public Grid Grid => grid;
     public Collider PlacementSurface => placementSurface;
-    public Transform BuildingContainer => buildingContainer;
     public IReadOnlyList<RectInt> UnlockedAreas => unlockedAreas;
+    public Collider CameraBounds => cameraBounds;
 
     public event Action UnlockedAreaChanged;
 
@@ -257,6 +257,20 @@ public class BuildableArea : MonoBehaviour
         }
 
         return true;
+    }
+
+    public bool ContainsWorldXZ(Vector3 position)
+    {
+        Collider areaCollider = placementSurface;
+
+        if (areaCollider == null) return false;
+
+        Bounds bounds = areaCollider.bounds;
+
+        return position.x >= bounds.min.x &&
+            position.x <= bounds.max.x &&
+            position.z >= bounds.min.z &&
+            position.z <= bounds.max.z;
     }
 
     private void OnDrawGizmosSelected()

@@ -12,6 +12,10 @@ public class BuildModeController : MonoBehaviour
     [SerializeField] private List<BuildableArea> buildableAreas = new();
     [SerializeField] private InputManager inputManager;
 
+    [Header("카메라 제어")]
+    [SerializeField] private Transform player;
+    [SerializeField] private CameraModeController cameraModeController;
+
     [Header("배치 시스템")]
     [SerializeField] private PlacementSystem placementSystem;
 
@@ -36,10 +40,11 @@ public class BuildModeController : MonoBehaviour
     [SerializeField] private Ease openEase = Ease.OutBack;
     [SerializeField] private Ease closeEase = Ease.InCubic;
 
-    private BuildableArea area;
     private Vector2 visiblePos;
     private Vector2 hiddenPos;
     private Sequence anim;
+
+    private BuildableArea activeArea;
 
     public bool IsBuildMode { get; private set; }
 
@@ -62,7 +67,7 @@ public class BuildModeController : MonoBehaviour
     {
         if (inputManager != null)
         {
-            inputManager.OnCancelPressed += CloseBuildMode;
+            inputManager.OnCancelPressed += HandleCancelAction;
         }
 
         if (placementSystem != null)
@@ -83,7 +88,7 @@ public class BuildModeController : MonoBehaviour
     {
         if (inputManager != null)
         {
-            inputManager.OnCancelPressed -= CloseBuildMode;
+            inputManager.OnCancelPressed -= HandleCancelAction;
         }
 
         if (placementSystem != null)
@@ -111,6 +116,11 @@ public class BuildModeController : MonoBehaviour
     {
         if (IsBuildMode) return;
 
+        if (TryFindPlayerArea(out activeArea))
+        {
+            cameraModeController?.EnterEdgeScroll(activeArea.CameraBounds);
+        }
+
         IsBuildMode = true;
         placementSystem.SetBuildModeActive(true);
 
@@ -133,6 +143,9 @@ public class BuildModeController : MonoBehaviour
         {
             return;
         }
+
+        cameraModeController?.FollowPlayer();
+        activeArea = null;
 
         IsBuildMode = false;
         placementSystem.SetBuildModeActive(false);
@@ -207,5 +220,46 @@ public class BuildModeController : MonoBehaviour
         {
             sellCancelButton.gameObject.SetActive(visible);
         }
+    }
+
+    private bool TryFindPlayerArea(out BuildableArea foundArea)
+    {
+        foundArea = null;
+
+        if (player == null) return false;
+
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area != null && area.ContainsWorldXZ(player.position))
+            {
+                foundArea = area;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void HandleCancelAction()
+    {
+        if (placementSystem != null && placementSystem.IsPlacementMode)
+        {
+            placementSystem.CancelCurrentAction();
+            return;
+        }
+
+        if (placementSystem != null && placementSystem.IsRelocateMode)
+        {
+            placementSystem.CancelCurrentAction();
+            return;
+        }
+
+        if (placementSystem != null && placementSystem.IsSellMode)
+        {
+            placementSystem.CancelCurrentAction();
+            return;
+        }
+
+        CloseBuildMode();
     }
 }

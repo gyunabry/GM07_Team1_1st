@@ -15,6 +15,11 @@ public class CurrencyUIControler : MonoBehaviour
     {
         originTextScale = currencyText.rectTransform.localScale;
         originIconScale = currencyIcon.rectTransform.localScale;
+
+        if (CurrencySystem.Instance != null)
+        {
+            RefreshCoin(CurrencySystem.Instance.Money);
+        }
     }
 
     private void Start()

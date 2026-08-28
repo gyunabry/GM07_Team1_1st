@@ -1709,9 +1709,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8797949092590679179}
-        m_TargetAssemblyTypeName: CharacterPanelController, Assembly-CSharp
-        m_MethodName: ToggleUI
+      - m_Target: {fileID: 7215779072557255921}
+        m_TargetAssemblyTypeName: HUDButtonController, Assembly-CSharp
+        m_MethodName: OpenCharacterPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3939,6 +3939,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   inputManager: {fileID: 0}
+  player: {fileID: 0}
+  cameraModeController: {fileID: 0}
   placementSystem: {fileID: 0}
   editModeButton: {fileID: 2514617795963823612}
   sellModeButton: {fileID: 6436573780478043713}
@@ -4218,7 +4220,7 @@ MonoBehaviour:
   graphicRaycaster: {fileID: 855443479864299237}
   buildingName: {fileID: 4361826628237760321}
   capacityText: {fileID: 3646153425680816258}
-  contentRoot: {fileID: 384184615694740760}
+  contentRoot: {fileID: 6550990315401205854}
   itemViewPrefab: {fileID: 162598145531071272, guid: c57466c57eb350c4c9b593445cf34959, type: 3}
   slotCount: 24
   storageDecomposition: {fileID: 0}
@@ -9442,9 +9444,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4021451035819603679}
-        m_TargetAssemblyTypeName: CarrierCommandPanelView, Assembly-CSharp
-        m_MethodName: Toggle
+      - m_Target: {fileID: 7215779072557255921}
+        m_TargetAssemblyTypeName: HUDButtonController, Assembly-CSharp
+        m_MethodName: OpenEmployeePanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -10621,6 +10623,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7363723303429686853}
+  - component: {fileID: 7215779072557255921}
   m_Layer: 0
   m_Name: HUDController
   m_TagString: Untagged
@@ -10650,6 +10653,20 @@ Transform:
   - {fileID: 8284197562652674667}
   m_Father: {fileID: 9096043136973909751}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7215779072557255921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130029116239206036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35abc9d96f7c475438d9a2dd0e17c308, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDButtonController
+  characterPanel: {fileID: 8797949092590679179}
+  employeePanel: {fileID: 4021451035819603679}
 --- !u!1 &2139769969434023487
 GameObject:
   m_ObjectHideFlags: 0

@@ -23,6 +23,8 @@ public class IntegratedTransmitter : MonoBehaviour
         {
             placedBuilding.OnConstructionCompleted += HandleConstructionCompleted;
         }
+
+        StorageSkillRegistry.Register(inventory);
     }
 
     private void Start()
@@ -36,6 +38,8 @@ public class IntegratedTransmitter : MonoBehaviour
         {
             placedBuilding.OnConstructionCompleted -= HandleConstructionCompleted;
         }
+
+        StorageSkillRegistry.Unregister(inventory);
     }
 
     public int TryGiveOne(ItemInventory targetInventory)

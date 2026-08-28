@@ -50,7 +50,7 @@ public partial class PlacementSystem : MonoBehaviour
     public PlacementMode CurrentMode { get; private set; }
     public PlacedBuilding SelectedPlacedBuilding => selectedPlacedBuilding;
 
-    public bool ConsumeWorldInput => CurrentMode != PlacementMode.None;
+    public bool ConsumeWorldInput => IsBuildModeActive || CurrentMode != PlacementMode.None;
 
     // 배치 모드 여부
     public bool IsPlacementMode =>
@@ -76,14 +76,9 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (inputManager == null) return;
 
-        // 이벤트로 입력 처리
-        //inputManager.OnClicked += PlaceBuilding;
-        //inputManager.OnExit += CancelPlacement;
-        //inputManager.OnRotation += RotatePreview;
-
         inputManager.OnPrimaryClicked += HandlePrimaryClick;
         inputManager.OnSecondaryClicked += HandleSecondaryClick;
-        inputManager.OnCancelPressed += CancelCurrentAction;
+        //inputManager.OnCancelPressed += CancelCurrentAction;
         inputManager.OnBuildingLongPressed += HandleBuildingLongPressed;
     }
 
@@ -91,13 +86,9 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (inputManager == null) return;
 
-        //inputManager.OnClicked -= PlaceBuilding;
-        //inputManager.OnExit -= CancelPlacement;
-        //inputManager.OnRotation -= RotatePreview;
-
         inputManager.OnPrimaryClicked -= HandlePrimaryClick;
         inputManager.OnSecondaryClicked -= HandleSecondaryClick;
-        inputManager.OnCancelPressed -= CancelCurrentAction;
+        //inputManager.OnCancelPressed -= CancelCurrentAction;
         inputManager.OnBuildingLongPressed -= HandleBuildingLongPressed;
     }
 
@@ -158,9 +149,11 @@ public partial class PlacementSystem : MonoBehaviour
             return false;
         }
 
+        // 현재 선택된 시설과 같은 시설 버튼을 클릭했을 때 반환
         if (CurrentMode == PlacementMode.PurchasePlacement &&
             selectedBuildingData == data)
         {
+            CancelCurrentAction();
             return true;
         }
 
@@ -208,9 +201,17 @@ public partial class PlacementSystem : MonoBehaviour
                 ChangeMode(PlacementMode.None);
                 break;
 
+            case PlacementMode.RelocateSelect:
+                ChangeMode(PlacementMode.None);
+                break;
+
             case PlacementMode.RelocatePlacement:
                 ClearRelocationRuntime();
                 ChangeMode(PlacementMode.RelocateSelect);
+                break;
+
+            case PlacementMode.SellSelect:
+                ChangeMode(PlacementMode.None);
                 break;
 
             case PlacementMode.SellConfirm:
@@ -291,7 +292,10 @@ public partial class PlacementSystem : MonoBehaviour
 
         previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
 
-        canPlace = IsCellsAvailable(currentArea, currentCell, rotatedSize);
+        bool isPositionValid = IsCellsAvailable(currentArea, currentCell, rotatedSize);
+        bool isPurchaseValid = CurrentMode != PlacementMode.PurchasePlacement || EvaluatePurchase(selectedBuildingData).CanPurchase;
+
+        canPlace = isPositionValid && isPurchaseValid;
 
         UpdatePreviewVisual(canPlace);
     }

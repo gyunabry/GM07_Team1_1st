@@ -29,6 +29,16 @@ public class CounterInventory : MonoBehaviour, ICustomerInventory
         }
     }
 
+    private void OnEnable()
+    {
+        StorageSkillRegistry.Register(inventory);
+    }
+
+    private void OnDisable()
+    {
+        StorageSkillRegistry.Unregister(inventory);
+    }
+
     private void OnDestroy()
     {
         if (Instance == this)
