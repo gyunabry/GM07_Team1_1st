@@ -21078,6 +21078,7 @@ GameObject:
   - component: {fileID: 5522121928477671149}
   - component: {fileID: 8673438878105141473}
   - component: {fileID: 8564164272641386279}
+  - component: {fileID: 2093334353162802442}
   m_Layer: 5
   m_Name: SkillPoint_Hud
   m_TagString: Untagged
@@ -21144,6 +21145,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2093334353162802442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054706874028797026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03ad8684706155b4384dc2a5c0562756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreePointHud
+  player: {fileID: 0}
+  skillTreeManager: {fileID: 0}
 --- !u!1 &3082464631842786399
 GameObject:
   m_ObjectHideFlags: 0
@@ -35326,9 +35341,9 @@ RectTransform:
   - {fileID: 6961489801590144425}
   m_Father: {fileID: 7352634008747823994}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 991}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &9216998575963016632
@@ -41850,9 +41865,9 @@ RectTransform:
   - {fileID: 3410071607362652651}
   m_Father: {fileID: 491879158585241772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 539.9994}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 2000}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &6098080756900252426
@@ -48563,9 +48578,9 @@ RectTransform:
   - {fileID: 6965800552677955961}
   m_Father: {fileID: 7392224833521320318}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 539.99945}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 2000}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &7035345541218582569
@@ -50188,9 +50203,9 @@ RectTransform:
   - {fileID: 9114909155670054992}
   m_Father: {fileID: 3718925388149275287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1080}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &4662265808874262713
@@ -52307,7 +52322,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7352634008747823994
 RectTransform:
   m_ObjectHideFlags: 0
@@ -52325,8 +52340,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -450}
-  m_SizeDelta: {x: 0, y: 900}
+  m_AnchoredPosition: {x: 0, y: -451.5}
+  m_SizeDelta: {x: 0, y: 903}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4858060879604314477
 CanvasRenderer:
@@ -60966,6 +60981,7 @@ GameObject:
   - component: {fileID: 3203904250122229364}
   - component: {fileID: 5045880895534175371}
   - component: {fileID: 3296519280360304868}
+  - component: {fileID: 7968709006110053917}
   m_Layer: 5
   m_Name: Coin_Hud
   m_TagString: Untagged
@@ -61032,6 +61048,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7968709006110053917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754895847079554685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9596756d5e9552478474ef19340af99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeCoinHud
+  currencySystem: {fileID: 0}
 --- !u!1 &8766836728833210449
 GameObject:
   m_ObjectHideFlags: 0
