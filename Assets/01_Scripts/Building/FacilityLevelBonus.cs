@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class FacilityLevelBonus : MonoBehaviour
 {
@@ -18,25 +17,22 @@ public class FacilityLevelBonus : MonoBehaviour
     [SerializeField] private BuildingDatabaseSO buildingDatabase;
     [SerializeField] private List<LevelFacilityLimit> limits = new();
 
-    private void OnEnable()
+    private void Start()
     {
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp += HandleLevelUp;
         }
+
+        ApplyCurrentLevelLimits();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp -= HandleLevelUp;
         }
-    }
-
-    private void Start()
-    {
-        ApplyCurrentLevelLimits();
     }
 
     private void HandleLevelUp()
