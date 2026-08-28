@@ -22,7 +22,7 @@ public class LightningRay : MonoBehaviour
     }
     IEnumerator PlayCo()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
         poolManager.ReturnPool(this);
     }
     private void OnTriggerEnter(Collider other)

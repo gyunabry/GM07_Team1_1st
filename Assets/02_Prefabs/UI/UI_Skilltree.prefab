@@ -3460,7 +3460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3718925388149275287
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6650,6 +6650,7 @@ GameObject:
   - component: {fileID: 2693009666853384571}
   - component: {fileID: 6970020864245388861}
   - component: {fileID: 4907151422482527017}
+  - component: {fileID: 4449718842745069012}
   m_Layer: 5
   m_Name: UI_Skilltree
   m_TagString: Untagged
@@ -6731,7 +6732,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &4907151422482527017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6749,6 +6750,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &4449718842745069012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944507519415504259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 087585a8d9ac9e34e8aaf35d98a86a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeScale
+  zoomSpeed: 0.1
+  minZoom: 0.5
+  maxZoom: 3
 --- !u!1 &962768859544269981
 GameObject:
   m_ObjectHideFlags: 0
@@ -21062,6 +21078,7 @@ GameObject:
   - component: {fileID: 5522121928477671149}
   - component: {fileID: 8673438878105141473}
   - component: {fileID: 8564164272641386279}
+  - component: {fileID: 2093334353162802442}
   m_Layer: 5
   m_Name: SkillPoint_Hud
   m_TagString: Untagged
@@ -21128,6 +21145,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2093334353162802442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3054706874028797026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03ad8684706155b4384dc2a5c0562756, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreePointHud
+  player: {fileID: 0}
+  skillTreeManager: {fileID: 0}
 --- !u!1 &3082464631842786399
 GameObject:
   m_ObjectHideFlags: 0
@@ -35310,9 +35341,9 @@ RectTransform:
   - {fileID: 6961489801590144425}
   m_Father: {fileID: 7352634008747823994}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 991}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &9216998575963016632
@@ -37430,34 +37461,34 @@ RectTransform:
   - {fileID: 6882383922074431655}
   - {fileID: 5663664783726978659}
   - {fileID: 5166491248242097517}
-  - {fileID: 7209103518609405303}
-  - {fileID: 442490552467652767}
   - {fileID: 8535568359684665329}
-  - {fileID: 7295945375794023874}
   - {fileID: 3996801631091731515}
   - {fileID: 2459807146965703485}
-  - {fileID: 1202288828765482714}
-  - {fileID: 2966614117805186429}
-  - {fileID: 5985309991605259108}
-  - {fileID: 860929157996313252}
   - {fileID: 8061496677358287511}
-  - {fileID: 7447224316846936948}
   - {fileID: 5141418769056187138}
   - {fileID: 2788079541721896489}
-  - {fileID: 5485242871595324010}
-  - {fileID: 1779410539195530069}
   - {fileID: 7569032065380356411}
-  - {fileID: 1232879666843157176}
-  - {fileID: 4683373928129319618}
-  - {fileID: 1509688111169143626}
+  - {fileID: 2966614117805186429}
   - {fileID: 1301701357825443189}
-  - {fileID: 5565614943794608492}
   - {fileID: 753866758065164875}
-  - {fileID: 1660874799210849373}
-  - {fileID: 622202103337971037}
-  - {fileID: 3653256262786633107}
   - {fileID: 403421090206744000}
   - {fileID: 7946738612034447720}
+  - {fileID: 5985309991605259108}
+  - {fileID: 7447224316846936948}
+  - {fileID: 1509688111169143626}
+  - {fileID: 860929157996313252}
+  - {fileID: 622202103337971037}
+  - {fileID: 7209103518609405303}
+  - {fileID: 7295945375794023874}
+  - {fileID: 4683373928129319618}
+  - {fileID: 1779410539195530069}
+  - {fileID: 1232879666843157176}
+  - {fileID: 1202288828765482714}
+  - {fileID: 3653256262786633107}
+  - {fileID: 5485242871595324010}
+  - {fileID: 5565614943794608492}
+  - {fileID: 442490552467652767}
+  - {fileID: 1660874799210849373}
   m_Father: {fileID: 6961489801590144425}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -41834,9 +41865,9 @@ RectTransform:
   - {fileID: 3410071607362652651}
   m_Father: {fileID: 491879158585241772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 539.9994}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 2000}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &6098080756900252426
@@ -48547,9 +48578,9 @@ RectTransform:
   - {fileID: 6965800552677955961}
   m_Father: {fileID: 7392224833521320318}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 539.99945}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 2000}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &7035345541218582569
@@ -50172,9 +50203,9 @@ RectTransform:
   - {fileID: 9114909155670054992}
   m_Father: {fileID: 3718925388149275287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 1080}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &4662265808874262713
@@ -52309,8 +52340,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -450}
-  m_SizeDelta: {x: 0, y: 900}
+  m_AnchoredPosition: {x: 0, y: -451.5}
+  m_SizeDelta: {x: 0, y: 903}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4858060879604314477
 CanvasRenderer:
@@ -60950,6 +60981,7 @@ GameObject:
   - component: {fileID: 3203904250122229364}
   - component: {fileID: 5045880895534175371}
   - component: {fileID: 3296519280360304868}
+  - component: {fileID: 7968709006110053917}
   m_Layer: 5
   m_Name: Coin_Hud
   m_TagString: Untagged
@@ -61016,6 +61048,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7968709006110053917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754895847079554685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9596756d5e9552478474ef19340af99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeCoinHud
+  currencySystem: {fileID: 0}
 --- !u!1 &8766836728833210449
 GameObject:
   m_ObjectHideFlags: 0

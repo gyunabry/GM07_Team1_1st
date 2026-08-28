@@ -5,6 +5,6 @@ public class S22_StaffMoveSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.employeeManager.SetAllEmployeeMovementSpeedIncreasePercent(skillData.value[nowLevel]);
     }
 }

@@ -748,11 +748,11 @@ MonoBehaviour:
   buildingProfiles:
   - buildingId: B10
     employeeData: {fileID: 11400000, guid: 10a6e090f7c20ee4e99820664bb38122, type: 2}
-    maxEmployees: 3
+    maxEmployees: 5
     automaticHireCount: 1
   - buildingId: B11
     employeeData: {fileID: 11400000, guid: fbddff4d63c778e449f4ee90a82c31ef, type: 2}
-    maxEmployees: 3
+    maxEmployees: 20
     automaticHireCount: 1
 --- !u!1 &8921850648760782774
 GameObject:
@@ -908,6 +908,14 @@ PrefabInstance:
     - target: {fileID: 1923986898043015105, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: skillDesc
+      value: 
+      objectReference: {fileID: -2091524813546945963, guid: 950846757cf8ed0428a4677b9488ddba, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: skillDescCount
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: hunterWorkerPrefab

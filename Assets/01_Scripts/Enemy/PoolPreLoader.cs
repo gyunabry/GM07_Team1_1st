@@ -16,6 +16,7 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private LightningRay lightningRayPrefab;
     [SerializeField] private AttackEquPrefab buttonPrefab;
     [SerializeField] private SkillTreePopUp skillTreePopUpPrefab;
+    [SerializeField] private SkillDesc skillDesc;
 
     [Header("생성 개수")]
     [SerializeField] private int carrierCount;
@@ -29,6 +30,7 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private int lightningRayCount;
     [SerializeField] private int buttonCount;
     [SerializeField] private int skillTreePopUpCount;
+    [SerializeField] private int skillDescCount;
 
     private bool setup = false;
 
@@ -53,6 +55,7 @@ public class PoolPreLoader : MonoBehaviour
         PoolManager.Instance.PreLoadPool(lightningRayPrefab, lightningRayCount);
         PoolManager.Instance.PreLoadPool(buttonPrefab, buttonCount);
         PoolManager.Instance.PreLoadPool(skillTreePopUpPrefab, skillTreePopUpCount);
+        PoolManager.Instance.PreLoadPool(skillDesc, skillDescCount);
         setup = true;
     }
 
