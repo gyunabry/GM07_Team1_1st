@@ -94,7 +94,6 @@ public class AttackEquHud : MonoBehaviour
             //    prefabButton.attackID = attackData.attackID;
             //}
 
-            if (!attackData.unlock) continue;
 
             AttackEquPrefab prefabButton = poolManager.GetPool<AttackEquPrefab>();
 
@@ -102,7 +101,7 @@ public class AttackEquHud : MonoBehaviour
 
             prefabButton.transform.SetParent(layoutWidth.transform);
 
-            prefabButton.Bind(this, attackData.attackID, attackData.sprite);
+            prefabButton.Bind(this, attackData.attackID, attackData.sprite, attackData.unlock);
         }
     }
 
