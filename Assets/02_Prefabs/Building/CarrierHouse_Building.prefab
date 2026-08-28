@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8319832385445970220}
   - component: {fileID: 8988559815828119427}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: SelectionCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 7857088858023071885}
   - component: {fileID: 4608639707572081600}
   - component: {fileID: 6437487196589022880}
+  - component: {fileID: 3218988720250446819}
   m_Layer: 0
   m_Name: CarrierHouse_Building
   m_TagString: Untagged
@@ -167,6 +168,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CarrierEmployeeBuildingController
   carrierEmployeePrefab: {fileID: 4163047715311570166, guid: 1599bbb658fdda3479d5ee9219203b84, type: 3}
   homePoint: {fileID: 2602607097385799315}
+--- !u!114 &3218988720250446819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6016816390121928499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d8daedb4a9b42b3a8f28cd50f53a181, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::EmployeeBuildingInteractable
+  interactionName: "\uC9C1\uC6D0 \uC815\uBCF4"
+  interactionPoint: {fileID: 0}
+  isEnabled: 1
+  outlineObject: {fileID: 6702485401793285261}
+  employeeUIPrefab: {fileID: 7025921007154224555, guid: 037ed22b413a91e42851bdcac67a305a, type: 3}
 --- !u!1 &6702485401793285261
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,12 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 직원의 공통 고용 수명주기와 건물 소속만 관리합니다.
-/// 건물 시스템은 구매/로드 완료 후 TryRegisterBuilding을, 판매 직전에는
-/// TryUnregisterBuilding을 호출해야 합니다.
+/// 직원??공통 고용 ?�명주기?� 건물 ?�속�?관리합?�다.
+/// 건물 ?�스?��? 구매/로드 ?�료 ??TryRegisterBuilding?? ?�매 직전?�는
+/// TryUnregisterBuilding???�출?�야 ?�니??
 /// </summary>
 public sealed class EmployeeManager : MonoBehaviour
 {
+    private static readonly int[] HunterHiringLimitsByLevel =
+    {
+        0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5
+    };
+
+    private static readonly int[] CarrierHiringLimitsByLevel =
+    {
+        0, 0, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20
+    };
+
     [SerializeField] private List<EmployeeBuildingProfile> buildingProfiles = new();
 
     private readonly Dictionary<int, RegisteredBuilding> registeredBuildings = new();
@@ -21,6 +31,7 @@ public sealed class EmployeeManager : MonoBehaviour
     private float carrierItemTransferTimeReductionPercent;
     private float allEmployeeProcessingSpeedIncreasePercent;
     private float allEmployeeMovementSpeedIncreasePercent;
+    private CurrencySystem currencySystem;
 
     public event Action<EmployeeRuntimeData> EmployeeHired;
     public event Action<EmployeeRuntimeData> EmployeeRemoved;
@@ -30,6 +41,7 @@ public sealed class EmployeeManager : MonoBehaviour
     public event Action<float> CarrierTransferTimeReductionChanged;
     public event Action<float> AllEmployeeProcessingSpeedIncreaseChanged;
     public event Action<float> AllEmployeeMovementSpeedIncreaseChanged;
+    public event Action EmployeeHiringLimitChanged;
 
     public float HunterAttackDamageIncreasePercent => hunterAttackDamageIncreasePercent;
     public float HunterAttackIntervalReductionPercent => hunterAttackIntervalReductionPercent;
@@ -82,7 +94,7 @@ public sealed class EmployeeManager : MonoBehaviour
         AllEmployeeMovementSpeedIncreaseChanged?.Invoke(allEmployeeMovementSpeedIncreasePercent);
     }
 
-    // HUD는 운반 직원 건물 설치 전에도 전역 명령 서비스를 조회할 수 있어야 합니다.
+    // HUD???�반 직원 건물 ?�치 ?�에???�역 명령 ?�비?��? 조회?????�어???�니??
     private void Awake()
     {
         if (GetComponent<CarrierCommandService>() == null)
@@ -91,8 +103,25 @@ public sealed class EmployeeManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        currencySystem = CurrencySystem.Instance;
+        if (currencySystem != null)
+        {
+            currencySystem.LevelUp += HandleLevelUp;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (currencySystem != null)
+        {
+            currencySystem.LevelUp -= HandleLevelUp;
+        }
+    }
+
     /// <summary>
-    /// 직원 건물을 등록하고 프로필에 지정된 기본 인원을 자동 고용합니다.
+    /// 직원 건물???�록?�고 ?�로?�에 지?�된 기본 ?�원???�동 고용?�니??
     /// </summary>
     public bool TryRegisterBuilding(PlacedBuilding building)
     {
@@ -110,8 +139,8 @@ public sealed class EmployeeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 판매대에 고정된 판매 직원 한 명을 등록합니다.
-    /// 판매 직원은 별도 Inspector 프로필 없이 런타임 데이터로 관리합니다.
+    /// ?�매?�??고정???�매 직원 ??명을 ?�록?�니??
+    /// ?�매 직원?� 별도 Inspector ?�로???�이 ?��????�이?�로 관리합?�다.
     /// </summary>
     public bool TryRegisterSalesBuilding(PlacedBuilding building)
     {
@@ -119,7 +148,7 @@ public sealed class EmployeeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 건물에 소속된 모든 직원을 제거합니다. 건물 판매/파괴 전에 호출해야 합니다.
+    /// 건물???�속??모든 직원???�거?�니?? 건물 ?�매/?�괴 ?�에 ?�출?�야 ?�니??
     /// </summary>
     public bool TryUnregisterBuilding(PlacedBuilding building)
     {
@@ -138,18 +167,40 @@ public sealed class EmployeeManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 정원 내에서 직원 한 명을 추가 고용합니다. 비용 검증은 후속 경제 시스템 연동 시 추가합니다.
+    /// ?�원 ?�에??직원 ??명을 추�? 고용?�니?? 비용 검증�? ?�속 경제 ?�스???�동 ??추�??�니??
     /// </summary>
     public bool TryHireAdditional(PlacedBuilding building, out EmployeeRuntimeData employee)
     {
         employee = null;
-        if (!TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) || registeredBuilding.Employees.Count >= registeredBuilding.MaxEmployees)
+        if (!TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) || !CanHire(registeredBuilding))
         {
             return false;
         }
 
         employee = Hire(registeredBuilding);
         return true;
+    }
+
+    public bool CanHireAdditional(PlacedBuilding building)
+    {
+        return TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) && CanHire(registeredBuilding);
+    }
+
+    public int GetHiringLimit(EmployeeRole role)
+    {
+        CurrencySystem currentCurrencySystem = currencySystem != null ? currencySystem : CurrencySystem.Instance;
+        if (currentCurrencySystem == null)
+        {
+            return int.MaxValue;
+        }
+
+        int level = currentCurrencySystem.Level;
+        return role switch
+        {
+            EmployeeRole.Hunter => GetLimitForLevel(HunterHiringLimitsByLevel, level),
+            EmployeeRole.Carrier => GetLimitForLevel(CarrierHiringLimitsByLevel, level),
+            _ => int.MaxValue
+        };
     }
 
     public bool TryRemoveEmployee(EmployeeRuntimeData employee)
@@ -206,6 +257,23 @@ public sealed class EmployeeManager : MonoBehaviour
         return employee;
     }
 
+    private bool CanHire(RegisteredBuilding registeredBuilding)
+    {
+        if (registeredBuilding == null || registeredBuilding.Employees.Count >= registeredBuilding.MaxEmployees)
+        {
+            return false;
+        }
+
+        // ������ ���� �ѵ��� ��ü ���� ���� �ƴ϶� �ǹ� �� ä�� ������ �� �ִ� �ο��̴�.
+        return registeredBuilding.Employees.Count < GetHiringLimit(registeredBuilding.EmployeeData.Role);
+    }
+
+    private static int GetLimitForLevel(int[] limits, int level)
+    {
+        int index = Mathf.Clamp(level, 1, limits.Length - 1);
+        return limits[index];
+    }
+
     private bool TryGetRegisteredBuilding(PlacedBuilding building, out RegisteredBuilding registeredBuilding)
     {
         registeredBuilding = null;
@@ -246,6 +314,11 @@ public sealed class EmployeeManager : MonoBehaviour
         int hireCount = Mathf.Clamp(automaticHireCount, 0, registeredBuilding.MaxEmployees);
         for (int i = 0; i < hireCount; i++)
         {
+            if (!CanHire(registeredBuilding))
+            {
+                break;
+            }
+
             Hire(registeredBuilding);
         }
 
@@ -256,7 +329,7 @@ public sealed class EmployeeManager : MonoBehaviour
     {
         if (runtimeSalesEmployeeData == null)
         {
-            runtimeSalesEmployeeData = EmployeeDataSO.CreateRuntime("runtime-sales-employee", "판매 직원", EmployeeRole.Sales);
+            runtimeSalesEmployeeData = EmployeeDataSO.CreateRuntime("runtime-sales-employee", "?�매 직원", EmployeeRole.Sales);
         }
 
         return runtimeSalesEmployeeData;
@@ -268,6 +341,11 @@ public sealed class EmployeeManager : MonoBehaviour
             hunterAttackDamageIncreasePercent,
             hunterAttackIntervalReductionPercent,
             hunterAttackRangeIncreasePercent);
+    }
+
+    private void HandleLevelUp()
+    {
+        EmployeeHiringLimitChanged?.Invoke();
     }
 
     private sealed class RegisteredBuilding
