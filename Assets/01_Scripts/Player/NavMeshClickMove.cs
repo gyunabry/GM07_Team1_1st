@@ -119,7 +119,7 @@ public class NavMeshClickMove : MonoBehaviour
         hasDestination = true;
         agent.SetPath(calculatePath);
         destinationMarker.gameObject.SetActive(true);
-        destinationMarker.position = destination + Vector3.up * 0.05f;
+        destinationMarker.position = destination;
     }
 
     //(예비 구현)비용 변경 시, 마지막 목적지까지 새로운 경로 계산

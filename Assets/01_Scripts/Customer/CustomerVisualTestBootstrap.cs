@@ -42,7 +42,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
         surface.BuildNavMesh();
 
         new GameObject("EmployeeManager").AddComponent<EmployeeManager>();
-        new GameObject("TestCounterInventory").AddComponent<CounterInventory>();
+        CounterInventory testCounterInventory = new GameObject("TestCounterInventory").AddComponent<CounterInventory>();
 
         ProductionBuilding productionBuilding = CreateProductionBuilding(new Vector3(-1.5f, 0f, -3.5f));
         // 생산 건물 반대편에 임시 운반 직원 건물과 전송기를 둔다.
@@ -71,13 +71,13 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
             ExperienceReward = 5
         });
         new GameObject("PoolManager").AddComponent<PoolManager>();
-        CustomerVisualTestServices testServices = new GameObject("TestServices").AddComponent<CustomerVisualTestServices>();
+        // CustomerVisualTestServices is no longer used. Reuse the test counter inventory instead.
         currencySystem = new GameObject("CurrencySystem").AddComponent<CurrencySystem>();
         CustomerSpawnManager spawnManager = new GameObject("CustomerSpawnManager").AddComponent<CustomerSpawnManager>();
         CreateCurrencyDisplay();
 
         spawnManager.Configure(customerTemplate, entrance, exitTurn, exit, 2.5f);
-        spawnManager.BindServices(testServices, currencySystem);
+        spawnManager.BindServices(testCounterInventory, currencySystem);
     }
 
     // CustomerVisualTest에서만 사용하는 임시 재화 표시 UI다.
@@ -436,6 +436,7 @@ public sealed class CustomerVisualTestBootstrap : MonoBehaviour
 }
 
 // 테스트 씬에서만 사용하는 임시 결제 서비스
+#if false
 public sealed class CustomerVisualTestServices : MonoBehaviour, ICustomerInventory
 {
     public event Action InventoryChanged;
@@ -451,3 +452,4 @@ public sealed class CustomerVisualTestServices : MonoBehaviour, ICustomerInvento
         return canConsume;
     }
 }
+#endif

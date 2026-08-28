@@ -1,26 +1,27 @@
+using DG.Tweening;
 using System.Collections;
 using TMPro;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class LevelUpPopUp : MonoBehaviour
 {
-    [SerializeField] private RectTransform levelUpPopUp;
     [SerializeField] private Player player;
     [SerializeField] private CurrencySystem currencySystem;
 
-    private GameObject a;
+    [Header("UI 연결")]
+    [SerializeField] private GameObject levelUpPopUp;
+    [SerializeField] private CanvasGroup levelUpCanvasGroup;
+    [SerializeField] private CanvasGroup levelUpInfoCanvasGroup;
 
     private TextMeshProUGUI[] levelUpText;
     private int nowLevel = 0;
     private Coroutine co;
-    
 
     private void OnEnable()
     {
         currencySystem.LevelUp += Instance_LevelUp;
         levelUpText = levelUpPopUp.GetComponentsInChildren<TextMeshProUGUI>();
-        levelUpPopUp.gameObject.SetActive(false);
+        levelUpPopUp.SetActive(false);
     }
     private void OnDisable()
     {
@@ -29,9 +30,11 @@ public class LevelUpPopUp : MonoBehaviour
 
     private void Instance_LevelUp()
     {
-        levelUpPopUp.gameObject.SetActive(true);
-        co = StartCoroutine(DestroyPopUp());
-        for(int i = 1; i < 20; i += 2)
+        //levelUpPopUp.SetActive(true);
+        //co = StartCoroutine(DestroyPopUp());
+        PopUpOpen();
+
+        for (int i = 1; i < 20; i += 2)
         {
             switch (i)
             {
@@ -94,10 +97,48 @@ public class LevelUpPopUp : MonoBehaviour
         }
         nowLevel++;
     }
-    IEnumerator DestroyPopUp()
+    //IEnumerator DestroyPopUp()
+    //{
+    //    yield return new WaitForSeconds(5f);
+    //    levelUpPopUp.gameObject.SetActive(false);
+    //    co = null;
+    //}
+
+    //DOTWeen 애니메이션
+    private void PopUpOpen()
     {
-        yield return new WaitForSeconds(5f);
-        levelUpPopUp.gameObject.SetActive(false);
-        co = null;
+        // 0. 상태/애니메이션 초기화
+        levelUpCanvasGroup.DOKill();
+        levelUpInfoCanvasGroup.DOKill();
+
+        levelUpPopUp.SetActive(true);
+        levelUpCanvasGroup.alpha = 0.0f;
+        levelUpInfoCanvasGroup.alpha = 0.0f;
+
+        // 1. 레벨업 시 팝업창 서서히 등장
+        levelUpCanvasGroup.DOFade(1.0f, 0.3f);
+        levelUpInfoCanvasGroup.DOFade(1.0f, 0.3f);
+
+        Sequence sequence = DOTween.Sequence();
+
+        // 2. 대기 후 서서히 사라짐
+        sequence.AppendInterval(3.0f);
+        sequence.OnComplete(() =>
+        {
+            levelUpCanvasGroup.DOFade(0.0f, 0.8f);
+            levelUpInfoCanvasGroup.DOFade(0.0f, 0.8f).OnComplete(() =>
+            {
+                // 3. DOTween 재생 종료 후 비활성화
+                PopUpClose();
+            });
+        });
+    }
+
+    private void PopUpClose()
+    {
+        levelUpCanvasGroup.alpha = 0.0f;
+        levelUpInfoCanvasGroup.alpha = 0.0f;
+
+        levelUpPopUp.SetActive(false);
     }
 }

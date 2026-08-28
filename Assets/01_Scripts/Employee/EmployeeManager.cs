@@ -50,6 +50,8 @@ public sealed class EmployeeManager : MonoBehaviour
     public float CarrierItemTransferTimeReductionPercent => carrierItemTransferTimeReductionPercent;
     public float AllEmployeeProcessingSpeedIncreasePercent => allEmployeeProcessingSpeedIncreasePercent;
     public float AllEmployeeMovementSpeedIncreasePercent => allEmployeeMovementSpeedIncreasePercent;
+    public int HunterEmployeeCount => GetHiredEmployeeCount(EmployeeRole.Hunter);
+    public int CarrierEmployeeCount => GetHiredEmployeeCount(EmployeeRole.Carrier);
 
     public void SetHunterAttackDamageIncreasePercent(float percent)
     {
@@ -201,6 +203,20 @@ public sealed class EmployeeManager : MonoBehaviour
             EmployeeRole.Carrier => GetLimitForLevel(CarrierHiringLimitsByLevel, level),
             _ => int.MaxValue
         };
+    }
+
+    public int GetHiredEmployeeCount(EmployeeRole role)
+    {
+        int count = 0;
+        foreach (RegisteredBuilding registeredBuilding in registeredBuildings.Values)
+        {
+            if (registeredBuilding.EmployeeData.Role == role)
+            {
+                count += registeredBuilding.Employees.Count;
+            }
+        }
+
+        return count;
     }
 
     public bool TryRemoveEmployee(EmployeeRuntimeData employee)

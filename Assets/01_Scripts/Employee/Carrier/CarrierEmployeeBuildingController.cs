@@ -20,6 +20,21 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
     private Transform materialStoragePoint;
     private bool registeredByThisComponent;
 
+    public bool TryGetEmployeeStats(out float movementSpeed, out int carryingCapacity)
+    {
+        movementSpeed = 0f;
+        carryingCapacity = 0;
+
+        if (carrierEmployeePrefab == null)
+        {
+            return false;
+        }
+
+        movementSpeed = carrierEmployeePrefab.MovementSpeed;
+        carryingCapacity = carrierEmployeePrefab.CarryingCapacity;
+        return true;
+    }
+
     private void Awake()
     {
         placedBuilding = GetComponent<PlacedBuilding>();

@@ -267,6 +267,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
   constructionObject: {fileID: 8950724445563811342}
   completedObject: {fileID: 5312220441689371578}
+  data: {fileID: 0}
   state: 0
 --- !u!208 &4755671542319241803
 NavMeshObstacle:
@@ -313,7 +314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntegratedTransmitter
   inventory:
-    capacity: 20
+    capacity: 500
     entries: []
 --- !u!1 &8950724445563811342
 GameObject:

@@ -55,6 +55,10 @@ public sealed class HunterWorker : MonoBehaviour
     private float nextTargetSearchTime;
     private float monsterPathFailureSince = -1f;
 
+    public float MovementSpeed => movementSpeed;
+    public float AttackDamage => attackDamage;
+    public int CarryingCapacity => carryingCapacity;
+
     public string DebugStatus
     {
         get

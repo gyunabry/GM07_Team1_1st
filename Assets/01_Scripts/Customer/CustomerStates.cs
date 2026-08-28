@@ -22,13 +22,13 @@ public sealed class CustomerVisitState : ICustomerState
             return;
         }
 
-        if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.Queue.IsInCheckoutRange(controller))
+        if (controller.Queue != null && controller.Queue.IsSelectedForService(controller) && controller.Queue.IsInCheckoutRange(controller))
         {
             controller.StateMachine.ChangeState(new CustomerOrderState(controller));
             return;
         }
 
-        if (controller.Queue != null && !controller.Queue.IsFront(controller) && controller.HasArrived())
+        if (controller.Queue != null && !controller.Queue.IsSelectedForService(controller) && controller.HasArrived())
         {
             controller.StopInQueue();
         }
@@ -51,7 +51,13 @@ public sealed class CustomerOrderState : ICustomerState
             return;
         }
 
-        if (controller.Queue != null && controller.Queue.IsFront(controller) && controller.Queue.IsInCheckoutRange(controller))
+        if (controller.Queue != null && !controller.Queue.IsSelectedForService(controller))
+        {
+            controller.StateMachine.ChangeState(new CustomerVisitState(controller));
+            return;
+        }
+
+        if (controller.Queue != null && controller.Queue.IsSelectedForService(controller) && controller.Queue.IsInCheckoutRange(controller))
         {
             controller.StateMachine.ChangeState(new CustomerIdleState(controller));
         }
@@ -88,6 +94,12 @@ public sealed class CustomerIdleState : ICustomerState
         // 담당자가 자리를 비우면 진행 중인 계산도 취소한다.
         if (controller.TryHandlePatienceTimeout())
         {
+            return;
+        }
+
+        if (controller.Queue == null || !controller.Queue.IsSelectedForService(controller))
+        {
+            controller.StateMachine.ChangeState(new CustomerVisitState(controller));
             return;
         }
 

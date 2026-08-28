@@ -16,20 +16,32 @@ public enum CameraMode
 [RequireComponent(typeof(CinemachineCamera))]
 public class CameraModeController : MonoBehaviour
 {
-    [Header("References")]
+    [Header("참조")]
     [SerializeField] private CinemachineCamera cinemachineCamera;
     [SerializeField] private Transform playerFollowTarget;
-    [SerializeField] private Collider edgeScrollBounds;
 
-    [Header("Edge Scroll")]
+    [Header("엣지 스크롤")]
     [SerializeField, Min(1f)] private float edgeThickness = 20f;
     [SerializeField, Min(0f)] private float moveSpeed = 12f;
     [SerializeField] private bool blockWhenPointerOverUI = false;
     [SerializeField] private CameraMode initialMode = CameraMode.PlayerFollow;
 
+    [Header("줌 설정")]
+    [SerializeField] private CinemachinePositionComposer positionComposer;
+    [SerializeField] private float minCameraDistance = 8f;
+    [SerializeField] private float maxCameraDistance = 16f;
+    [SerializeField] private float zoomSpeed = 0.01f;
+    [SerializeField] private float zoomSmoothTime = 0.1f; // 부드러운 줌 효과를 위한 lerp 시간
+
+    private float targetCameraDistance;
+    private float zoomVelocity;
+
     private Transform freeCameraTarget;
     private CameraMode currentMode;
     private bool hasLoggedMissingReference;
+
+    // 현재 선택된 영역
+    private Collider activeEdgeScrollBounds;
 
     public CameraMode CurrentMode => currentMode;
 
@@ -45,6 +57,16 @@ public class CameraModeController : MonoBehaviour
             playerFollowTarget = cinemachineCamera.Follow;
         }
 
+        if (positionComposer == null)
+        {
+            positionComposer = GetComponent<CinemachinePositionComposer>();
+        }
+
+        if (positionComposer != null)
+        {
+            targetCameraDistance = positionComposer.CameraDistance;
+        }
+
         currentMode = CameraMode.PlayerFollow;
     }
 
@@ -55,12 +77,15 @@ public class CameraModeController : MonoBehaviour
 
     private void Update()
     {
+        HandleZoom();
+
         if (currentMode != CameraMode.EdgeScroll || !CanEdgeScroll())
         {
             return;
         }
 
         Vector2 direction = GetEdgeScrollDirection(Mouse.current.position.ReadValue());
+
         if (direction == Vector2.zero)
         {
             return;
@@ -83,7 +108,7 @@ public class CameraModeController : MonoBehaviour
 
         if (mode == CameraMode.EdgeScroll)
         {
-            if (edgeScrollBounds == null)
+            if (activeEdgeScrollBounds == null)
             {
                 LogMissingReferenceOnce("Edge Scroll Bounds Collider가 연결되지 않았습니다.");
                 return;
@@ -106,9 +131,32 @@ public class CameraModeController : MonoBehaviour
         SetMode(enabled ? CameraMode.EdgeScroll : CameraMode.PlayerFollow);
     }
 
+    public bool EnterEdgeScroll(Collider bounds)
+    {
+        if (!HasCameraAndPlayerTarget() || bounds == null)
+        {
+            return false;
+        }
+
+        activeEdgeScrollBounds = bounds;
+
+        EnsureFreeCameraTarget();
+
+        freeCameraTarget.position = ClampToBounds(playerFollowTarget.position);
+
+        cinemachineCamera.Follow = freeCameraTarget;
+        currentMode = CameraMode.EdgeScroll;
+
+        return true;
+    }
+
     public void FollowPlayer()
     {
-        SetMode(CameraMode.PlayerFollow);
+        if (!HasCameraAndPlayerTarget()) return;
+
+        cinemachineCamera.Follow = playerFollowTarget;
+        activeEdgeScrollBounds = null;
+        currentMode = CameraMode.PlayerFollow;
     }
 
     private bool CanEdgeScroll()
@@ -119,7 +167,7 @@ public class CameraModeController : MonoBehaviour
                 || EventSystem.current == null
                 || !EventSystem.current.IsPointerOverGameObject())
             && freeCameraTarget != null
-            && edgeScrollBounds != null;
+            && activeEdgeScrollBounds != null;
     }
 
     private Vector2 GetEdgeScrollDirection(Vector2 pointerPosition)
@@ -156,9 +204,11 @@ public class CameraModeController : MonoBehaviour
 
     private Vector3 ClampToBounds(Vector3 position)
     {
-        Bounds bounds = edgeScrollBounds.bounds;
+        Bounds bounds = activeEdgeScrollBounds.bounds;
+
         position.x = Mathf.Clamp(position.x, bounds.min.x, bounds.max.x);
         position.z = Mathf.Clamp(position.z, bounds.min.z, bounds.max.z);
+
         return position;
     }
 
@@ -194,6 +244,41 @@ public class CameraModeController : MonoBehaviour
 
         Debug.LogError($"[{nameof(CameraModeController)}] {message}", this);
         hasLoggedMissingReference = true;
+    }
+
+    private void HandleZoom()
+    {
+        if (positionComposer == null || Mouse.current == null)
+        {
+            return;
+        }
+
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
+        float scrollY = Mouse.current.scroll.ReadValue().y;
+
+        if (Mathf.Abs(scrollY) > 0.01f)
+        {
+            targetCameraDistance -= scrollY * zoomSpeed;
+
+            targetCameraDistance = Mathf.Clamp(
+                targetCameraDistance,
+                minCameraDistance,
+                maxCameraDistance
+            );
+        }
+
+        positionComposer.CameraDistance = Mathf.SmoothDamp(
+            positionComposer.CameraDistance,
+            targetCameraDistance,
+            ref zoomVelocity,
+            zoomSmoothTime,
+            Mathf.Infinity,
+            Time.unscaledDeltaTime
+        );
     }
 
     private void OnDestroy()
