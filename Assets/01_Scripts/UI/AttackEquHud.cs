@@ -15,9 +15,14 @@ public class AttackEquHud : MonoBehaviour
     [SerializeField] private Image plusIcon; // 스킬이 장착된 상태가 아닐 때 활성화
 
     public string equAttackID;
+    private float damage;
+    private float attackSpeed;
+    private float distance;
+    private float projectile;
     public bool isEquip;
     public int slotIndex;
 
+    private SkillDesc popUp;
     private void Awake()
     {
         // button = GetComponent<Button>();
@@ -209,5 +214,26 @@ public class AttackEquHud : MonoBehaviour
         }
 
         layoutWidth.SetActive(false);
+    }
+    public void MouserEnter()
+    {
+        if (equAttackID == null) return;
+        popUp = poolManager.GetPool<SkillDesc>();
+        popUp.transform.SetParent(transform);
+        RectTransform rect = popUp.GetComponent<RectTransform>();
+        rect.anchoredPosition = new Vector2(0f, -170f);
+        float[] value = new float[4];
+        value = playerAttack.ReturnSkillValue(equAttackID);
+        popUp.SetDamage(value[0]);
+        popUp.SetSpeed(value[1]);
+        popUp.SetDistance(value[2]);
+        popUp.SetProjectile((int)value[3]);
+    }
+    public void MouseExit()
+    {
+        if (popUp != null)
+        {
+            poolManager.ReturnPool(popUp);
+        }
     }
 }

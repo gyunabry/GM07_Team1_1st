@@ -5,6 +5,6 @@ public class S19_CarryoutStaffInOutSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.employeeManager.SetCarrierItemTransferTimeReductionPercent(skillData.value[nowLevel]);
     }
 }
