@@ -10,6 +10,8 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
     [SerializeField] private BuildingUIRouter buildingUIRouter;
 
     private IInteractable activeInteractable;
+    private GameObject employeeUIInstance;
+    private bool isEmployeeUIOpen;
 
     private void Awake()
     {
@@ -89,7 +91,30 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             activeInteractable = buildingComponent.GetComponent<IInteractable>();
         }
 
+        if (employeeUIInstance != null)
+        {
+            employeeUIInstance.SetActive(false);
+        }
+
+        isEmployeeUIOpen = false;
         buildingUIRouter.Open(building);
+    }
+
+    public void OpenEmployeeUI(GameObject employeeUIPrefab, IInteractable source)
+    {
+        if (employeeUIPrefab == null || source == null)
+        {
+            return;
+        }
+
+        if (employeeUIInstance == null)
+        {
+            employeeUIInstance = Instantiate(employeeUIPrefab);
+        }
+
+        activeInteractable = source;
+        isEmployeeUIOpen = true;
+        employeeUIInstance.SetActive(true);
     }
 
     private void HandleInteractableExited(IInteractable exitedInteractable)
@@ -99,7 +124,16 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             return;
         }
 
-        buildingUIRouter.Close();
+        if (isEmployeeUIOpen)
+        {
+            employeeUIInstance?.SetActive(false);
+            isEmployeeUIOpen = false;
+        }
+        else
+        {
+            buildingUIRouter.Close();
+        }
+
         activeInteractable = null;
     }
 }
