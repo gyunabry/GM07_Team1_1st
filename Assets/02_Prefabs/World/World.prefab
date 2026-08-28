@@ -2385,6 +2385,7 @@ GameObject:
   - component: {fileID: 1528167648503181123}
   - component: {fileID: 9125913790439665507}
   - component: {fileID: 9030998259059591503}
+  - component: {fileID: 4326429336660817077}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -2464,6 +2465,23 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4326429336660817077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3435385558230169244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06f54168dd6e6f24a869c2ef6341a6d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BuildableAreaGridView
+  buildableArea: {fileID: 6302758004898566639}
+  gridView: {fileID: 1528167648503181123}
+  gridRenderer: {fileID: 9030998259059591503}
+  sourceMeshSize: 10
+  height: 0.05
 --- !u!1 &3483863272922549279
 GameObject:
   m_ObjectHideFlags: 0

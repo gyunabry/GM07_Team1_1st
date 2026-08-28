@@ -28,6 +28,8 @@ public class CharacterPanelController : MonoBehaviour
     [Header("시설 한도")]
     [SerializeField] private TMP_Text maxProductionCount;
     [SerializeField] private TMP_Text maxSalesCounterCount;
+
+    [Header("직원 고용 한도")]
     [SerializeField] private TMP_Text maxHunterCount;
     [SerializeField] private TMP_Text maxCarrierCount;
 
