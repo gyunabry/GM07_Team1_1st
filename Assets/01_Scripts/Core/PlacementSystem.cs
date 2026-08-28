@@ -44,12 +44,14 @@ public partial class PlacementSystem : MonoBehaviour
     private short rotationIndex;
     private bool canPlace;
 
+    public IReadOnlyList<BuildableArea> BuildableAreas => buildableAreas;
+
     public bool IsBuildModeActive { get; private set; }
 
     [field: SerializeField]
     public PlacementMode CurrentMode { get; private set; }
     public PlacedBuilding SelectedPlacedBuilding => selectedPlacedBuilding;
-
+    
     public bool ConsumeWorldInput => IsBuildModeActive || CurrentMode != PlacementMode.None;
 
     // 배치 모드 여부
@@ -117,30 +119,11 @@ public partial class PlacementSystem : MonoBehaviour
     // 버튼에 직접 연결해 사용
     public void StartPlacement(BuildingDataSO data)
     {
-        //if (buildingData == null)
-        //{
-        //    Debug.LogWarning("배치할 건물 데이터가 지정되지 않았습니다.");
-        //    return;
-        //}
-
-        //// 기존 선택된 건물 배치를 취소하기 위해 Cancel 호출
-        //CancelPlacement();
-
-        //selectedBuildingData = buildingData;
-        //rotationIndex = 0;
-
-        //CreatePreview();
-
         StartPurchasePlacement(data);
     }
 
     public bool StartPurchasePlacement(BuildingDataSO data)
     {
-        //if (CurrentMode != PlacementMode.None || data == null)
-        //{
-        //    return false;
-        //}
-
         if (data == null) return false;
 
         BuildingPurchaseStatus status = EvaluatePurchase(data);
@@ -293,7 +276,9 @@ public partial class PlacementSystem : MonoBehaviour
         previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
 
         bool isPositionValid = IsCellsAvailable(currentArea, currentCell, rotatedSize);
-        bool isPurchaseValid = CurrentMode != PlacementMode.PurchasePlacement || EvaluatePurchase(selectedBuildingData).CanPurchase;
+        bool isPurchaseValid = 
+            CurrentMode != PlacementMode.PurchasePlacement || 
+            EvaluatePurchase(selectedBuildingData).CanPurchase;
 
         canPlace = isPositionValid && isPurchaseValid;
 
@@ -369,6 +354,20 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (area == null || selectedBuildingData == null) return false;
 
+        if (selectedBuildingData.PlacementLimitScope == PlacementLimitScope.PerBuildableArea)
+        {
+            int currentCount = 
+                area.GetPlacedCount(selectedBuildingData, selectedPlacedBuilding);
+
+            int areaLimit = 
+                FacilityManager.Instance.GetAreaPlacementLimit(selectedBuildingData, area);
+
+            if (currentCount >= areaLimit)
+            {
+                return false;
+            }
+        }
+
         if (!area.CanPlaceBuilding(selectedBuildingData, originCell, size))
         {
             return false;
@@ -388,28 +387,6 @@ public partial class PlacementSystem : MonoBehaviour
         // 구매 배치 모드에서는 null
         // 재배치 모드에서는 자신의 기존 점유만 무시
         return area.AreCellsAvailable(cells, selectedPlacedBuilding);
-
-        //for (int x = 0; x < size.x; x++)
-        //{
-        //    for (int z = 0; z < size.y; z++)
-        //    {
-        //        Vector3Int cell = originCell + new Vector3Int(x, z, 0);
-
-        //        // 공방 밖이면 배치 불가
-        //        if (!buildableArea.IsBuildable(cell))
-        //        {
-        //            return false;
-        //        }
-
-        //        // 해당 셀이 이미 등록되어 있다면 false 반환
-        //        if (occupiedCells.ContainsKey(cell))
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //}
-
-
     }
 
     // 건물이 차지할 셀 목록을 생성
@@ -471,13 +448,6 @@ public partial class PlacementSystem : MonoBehaviour
         buildingPreview.SetPreview(isValid);
     }
 
-    // 해당 셀이 이미 점유된 상태인지 반환
-    //public bool IsCellOccupied(Vector3Int cell)
-    //{
-    //    cell.z = 0;
-    //    return occupiedCells.ContainsKey(cell);
-    //}
-
     private BuildableArea FindBuildableArea(Collider hitColldier)
     {
         foreach (BuildableArea area in buildableAreas)
@@ -530,7 +500,7 @@ public partial class PlacementSystem : MonoBehaviour
 
         List<Vector3Int> cells = GetOccupiedCells(currentCell, rotatedSize);
 
-        if (!currentArea.AreCellsAvailable(cells))
+        if (!IsCellsAvailable(currentArea, currentCell, rotatedSize))
         {
             UpdatePreview();
             return;

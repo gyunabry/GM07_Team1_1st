@@ -115,115 +115,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c6f7e66f41b8174e9f60497ea667af4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FacilityLevelBonus
-  hunterBuilding: {fileID: 11400000, guid: 22f673a48698365429b066d06c5db883, type: 2}
-  carrierBuilding: {fileID: 11400000, guid: 7a90988ae00dbbe4e9e0b3daf5818b73, type: 2}
   buildingDatabase: {fileID: 11400000, guid: da22c39c322d7514e87e1ed04caa5251, type: 2}
   limits:
   - level: 1
     productionLimit: 1
     salesLimit: 1
-    hunterLimit: 0
-    carrierLimit: 0
   - level: 2
     productionLimit: 1
     salesLimit: 1
-    hunterLimit: 1
-    carrierLimit: 0
   - level: 3
     productionLimit: 2
     salesLimit: 1
-    hunterLimit: 1
-    carrierLimit: 2
   - level: 4
     productionLimit: 2
     salesLimit: 1
-    hunterLimit: 2
-    carrierLimit: 3
   - level: 5
     productionLimit: 3
     salesLimit: 1
-    hunterLimit: 2
-    carrierLimit: 4
   - level: 6
     productionLimit: 3
     salesLimit: 2
-    hunterLimit: 2
-    carrierLimit: 5
   - level: 7
     productionLimit: 4
     salesLimit: 2
-    hunterLimit: 2
-    carrierLimit: 6
   - level: 8
     productionLimit: 4
     salesLimit: 2
-    hunterLimit: 3
-    carrierLimit: 7
   - level: 9
     productionLimit: 5
     salesLimit: 2
-    hunterLimit: 3
-    carrierLimit: 8
   - level: 10
     productionLimit: 5
     salesLimit: 2
-    hunterLimit: 3
-    carrierLimit: 9
   - level: 11
     productionLimit: 6
     salesLimit: 2
-    hunterLimit: 3
-    carrierLimit: 10
   - level: 12
     productionLimit: 6
     salesLimit: 2
-    hunterLimit: 3
-    carrierLimit: 11
   - level: 13
     productionLimit: 7
     salesLimit: 3
-    hunterLimit: 4
-    carrierLimit: 12
   - level: 14
     productionLimit: 7
     salesLimit: 3
-    hunterLimit: 4
-    carrierLimit: 13
   - level: 15
     productionLimit: 8
     salesLimit: 3
-    hunterLimit: 4
-    carrierLimit: 14
   - level: 16
     productionLimit: 8
     salesLimit: 3
-    hunterLimit: 4
-    carrierLimit: 15
   - level: 17
     productionLimit: 9
     salesLimit: 3
-    hunterLimit: 4
-    carrierLimit: 16
   - level: 18
     productionLimit: 9
     salesLimit: 3
-    hunterLimit: 4
-    carrierLimit: 17
   - level: 19
     productionLimit: 10
     salesLimit: 3
-    hunterLimit: 5
-    carrierLimit: 18
   - level: 20
     productionLimit: 10
     salesLimit: 3
-    hunterLimit: 5
-    carrierLimit: 19
   - level: 21
     productionLimit: 10
     salesLimit: 3
-    hunterLimit: 5
-    carrierLimit: 20
 --- !u!1 &1674618562125681912
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,9 +952,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7639431466538978612}
     - target: {fileID: 8942205613681907849, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
+      propertyPath: effectContext.employeeManager
+      value: 
+      objectReference: {fileID: 7672719721574952701}
+    - target: {fileID: 8942205613681907849, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
       propertyPath: skillRuntimeStates.Array.size
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8942205613681907849, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
+      propertyPath: effectContext.customerSpawnManager
+      value: 
+      objectReference: {fileID: 3275443514498966181}
+    - target: {fileID: 8942205613681907849, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
+      propertyPath: effectContext.economyModifierService
+      value: 
+      objectReference: {fileID: 8261667966200680934}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

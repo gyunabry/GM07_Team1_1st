@@ -153,6 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
   constructionObject: {fileID: 6702485401793285261}
   completedObject: {fileID: 7518981794468057794}
+  data: {fileID: 0}
   state: 0
 --- !u!114 &6437487196589022880
 MonoBehaviour:
@@ -178,13 +179,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1d8daedb4a9b42b3a8f28cd50f53a181, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EmployeeBuildingInteractable
   interactionName: "\uC9C1\uC6D0 \uC815\uBCF4"
-  interactionPoint: {fileID: 0}
+  interactionPoint: {fileID: 2775022559764109531}
   isEnabled: 1
   outlineObject: {fileID: 6702485401793285261}
-  employeeUIPrefab: {fileID: 7025921007154224555, guid: 037ed22b413a91e42851bdcac67a305a, type: 3}
 --- !u!1 &6702485401793285261
 GameObject:
   m_ObjectHideFlags: 0
