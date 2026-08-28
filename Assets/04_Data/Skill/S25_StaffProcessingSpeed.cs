@@ -5,6 +5,6 @@ public class S25_StaffProcessingSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        context.employeeManager.SetAllEmployeeProcessingSpeedIncreasePercent(skillData.value[nowLevel]);
     }
 }

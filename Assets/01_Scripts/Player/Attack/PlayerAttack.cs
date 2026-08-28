@@ -117,11 +117,14 @@ public class PlayerAttack : MonoBehaviour
     public void StartAndStopAttackCo(int slot, string id,AttackEquHud hud)
     {
         string idd = id.Replace("S", "");
+        string nowIdd = "1";
         if(int.TryParse(idd, out var i)) { }
         string nowId = slots[slot].equipAttackID;
-        
-        if (int.TryParse(nowId, out var j)){ }
-        
+        if(nowId != null)
+        {
+            nowIdd = nowId.Replace("S", "");
+        }
+        if (int.TryParse(nowIdd, out var j)){ }
         bool change = false;
         foreach (var nowSlot in slots)
         {
@@ -231,7 +234,7 @@ public class PlayerAttack : MonoBehaviour
             };
             ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FireCircleSO.attackDamage + upgrade[2].damage);
             ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackDamage) + player.attackSpeed;
-            ad.distance = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance;
+            ad.distance = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance + player.attackDistance;
 
             AudioManager.Instance.PlaySFX(ESFXType.Active_FireCircle);
             attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
@@ -272,33 +275,37 @@ public class PlayerAttack : MonoBehaviour
             ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (LightningRaySO.attackDamage + upgrade[3].damage);
             ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[3].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
             ad.distance = LightningRaySO.distance + upgrade[3].distance + player.baseAttackDistance;
+            ad.projectileCount = LightningRaySO.projectileCount + upgrade[3].projectileCount;
             ad.spreadAngle = LightningRaySO.spreadAngle;
 
             Collider[] enemy = Physics.OverlapSphere(transform.position, ad.distance, layer);
 
             Collider nearEnemy = null;
             float minDis = Mathf.Infinity;
-            if (enemy.Length > 0)
+            for(int i = 0; i < ad.projectileCount; i++)
             {
-                foreach (var that in enemy)
+                if (enemy.Length > 0)
                 {
-                    Vector3 enemyPosi = that.transform.position;
-                    float distance = (transform.position - enemyPosi).sqrMagnitude;
-                    if (distance < minDis)
+                    foreach (var that in enemy)
                     {
-                        minDis = distance;
-                        nearEnemy = that;
+                        Vector3 enemyPosi = that.transform.position;
+                        float distance = (transform.position - enemyPosi).sqrMagnitude;
+                        if (distance < minDis)
+                        {
+                            minDis = distance;
+                            nearEnemy = that;
+                        }
                     }
-                }   
-            Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
-            Quaternion targetRota = Quaternion.LookRotation(dir);
-                AudioManager.Instance.PlaySFX(ESFXType.Active_LightningRay);
-                particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage, ad.distance, ad.attackSpeed);
-            }
-            else
-            {
-                yield return null;
-                continue;
+                    Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
+                    Quaternion targetRota = Quaternion.LookRotation(dir);
+                    AudioManager.Instance.PlaySFX(ESFXType.Active_LightningRay);
+                    particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage, ad.distance, ad.attackSpeed);
+                }
+                else
+                {
+                    yield return null;
+                    continue;
+                }
             }
             yield return new WaitForSeconds(ad.attackSpeed);
         }
@@ -316,15 +323,67 @@ public class PlayerAttack : MonoBehaviour
             ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FlowerThornsSO.attackDamage + upgrade[4].damage);
             ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[4].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
             ad.distance = FlowerThornsSO.distance + upgrade[4].distance + player.baseAttackDistance;
-            
-            giz = randomPosi;
-            dis = ad.distance;
-            AudioManager.Instance.PlaySFX(ESFXType.Active_FlowerThorns);
-            attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(4, randomPosi, transform.rotation, 0, ad.distance, ad.attackSpeed);
-
+            ad.projectileCount = FlowerThornsSO.projectileCount + upgrade[4].projectileCount;
+            for(int i = 0; i < ad.projectileCount; i++)
+            {
+                giz = randomPosi;
+                dis = ad.distance;
+                AudioManager.Instance.PlaySFX(ESFXType.Active_FlowerThorns);
+                attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
+                particleManager.GetParticle(4, randomPosi, transform.rotation, 0, ad.distance, ad.attackSpeed);
+            }
             yield return new WaitForSeconds(ad.attackSpeed);
         }
+    }
+    public float[] ReturnSkillValue(string skillCode)
+    {
+        string code = skillCode.Replace("S", "");
+        float[] value = new float[4];
+        if(int.TryParse(code, out int result))
+        {
+            switch (result)
+            {
+                case 39:
+                    value[0] = (player.attackDamage + player.baseAttackDamage) * (ChasingSickleSO.attackDamage + upgrade[0].damage); 
+                    value[1] = (ChasingSickleSO.attackSpeed + upgrade[0].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
+                    value[2] = ChasingSickleSO.distance + upgrade[0].distance;
+                    value[3] = 1;
+                    break;
+                case 43:
+                    value[0] = (player.attackDamage + player.baseAttackDamage) * (MagicArrowSO.attackDamage + upgrade[1].damage);
+                    value[1] = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed + player.baseAttackSpeed) + player.attackSpeed;
+                    value[2] = MagicArrowSO.distance;
+                    value[3] = MagicArrowSO.projectileCount + upgrade[1].projectileCount;
+                    break;
+                case 47:
+                    value[0] = (player.attackDamage + player.baseAttackDamage) * (FireCircleSO.attackDamage + upgrade[2].damage);
+                    value[1] = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackDamage) + player.attackSpeed;
+                    value[2] = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance;
+                    value[3] = 1;
+                    break;
+                case 51:
+                    value[0] = (player.attackDamage + player.baseAttackDamage) * (LightningRaySO.attackDamage + upgrade[3].damage);
+                    value[1] = (LightningRaySO.attackSpeed + upgrade[3].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
+                    value[2] = LightningRaySO.distance + upgrade[3].distance + player.baseAttackDistance;
+                    value[3] = LightningRaySO.projectileCount + upgrade[3].projectileCount;
+                    break;
+                case 55:
+                    value[0] = (player.attackDamage + player.baseAttackDamage) * (FlowerThornsSO.attackDamage + upgrade[4].damage);
+                    value[1] = (FlowerThornsSO.attackSpeed + upgrade[4].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
+                    value[2] = FlowerThornsSO.distance + upgrade[4].distance + player.baseAttackDistance;
+                    value[3] = FlowerThornsSO.projectileCount + upgrade[4].projectileCount;
+                    break;
+                default: break;
+            }
+        }
+        else
+        {
+            value[0] = 0; 
+            value[1] = 0;
+            value[2] = 0;
+            value[3] = 0;
+        }
+        return value;
     }
 }
 [System.Serializable]

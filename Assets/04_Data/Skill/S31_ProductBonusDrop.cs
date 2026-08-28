@@ -5,6 +5,6 @@ public class S31_ProductBonusDrop : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        ProductionSkillRegistry.AddBonusProductionChance(skillData.value[nowLevel]);
     }
 }

@@ -3460,7 +3460,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3718925388149275287
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6650,6 +6650,7 @@ GameObject:
   - component: {fileID: 2693009666853384571}
   - component: {fileID: 6970020864245388861}
   - component: {fileID: 4907151422482527017}
+  - component: {fileID: 4449718842745069012}
   m_Layer: 5
   m_Name: UI_Skilltree
   m_TagString: Untagged
@@ -6731,7 +6732,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &4907151422482527017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6749,6 +6750,21 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &4449718842745069012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 944507519415504259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 087585a8d9ac9e34e8aaf35d98a86a6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeScale
+  zoomSpeed: 0.1
+  minZoom: 0.5
+  maxZoom: 3
 --- !u!1 &962768859544269981
 GameObject:
   m_ObjectHideFlags: 0
@@ -37430,34 +37446,34 @@ RectTransform:
   - {fileID: 6882383922074431655}
   - {fileID: 5663664783726978659}
   - {fileID: 5166491248242097517}
-  - {fileID: 7209103518609405303}
-  - {fileID: 442490552467652767}
   - {fileID: 8535568359684665329}
-  - {fileID: 7295945375794023874}
   - {fileID: 3996801631091731515}
   - {fileID: 2459807146965703485}
-  - {fileID: 1202288828765482714}
-  - {fileID: 2966614117805186429}
-  - {fileID: 5985309991605259108}
-  - {fileID: 860929157996313252}
   - {fileID: 8061496677358287511}
-  - {fileID: 7447224316846936948}
   - {fileID: 5141418769056187138}
   - {fileID: 2788079541721896489}
-  - {fileID: 5485242871595324010}
-  - {fileID: 1779410539195530069}
   - {fileID: 7569032065380356411}
-  - {fileID: 1232879666843157176}
-  - {fileID: 4683373928129319618}
-  - {fileID: 1509688111169143626}
+  - {fileID: 2966614117805186429}
   - {fileID: 1301701357825443189}
-  - {fileID: 5565614943794608492}
   - {fileID: 753866758065164875}
-  - {fileID: 1660874799210849373}
-  - {fileID: 622202103337971037}
-  - {fileID: 3653256262786633107}
   - {fileID: 403421090206744000}
   - {fileID: 7946738612034447720}
+  - {fileID: 5985309991605259108}
+  - {fileID: 7447224316846936948}
+  - {fileID: 1509688111169143626}
+  - {fileID: 860929157996313252}
+  - {fileID: 622202103337971037}
+  - {fileID: 7209103518609405303}
+  - {fileID: 7295945375794023874}
+  - {fileID: 4683373928129319618}
+  - {fileID: 1779410539195530069}
+  - {fileID: 1232879666843157176}
+  - {fileID: 1202288828765482714}
+  - {fileID: 3653256262786633107}
+  - {fileID: 5485242871595324010}
+  - {fileID: 5565614943794608492}
+  - {fileID: 442490552467652767}
+  - {fileID: 1660874799210849373}
   m_Father: {fileID: 6961489801590144425}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -52291,7 +52307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7352634008747823994
 RectTransform:
   m_ObjectHideFlags: 0
