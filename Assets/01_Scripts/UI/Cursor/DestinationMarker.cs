@@ -9,7 +9,7 @@ public class Marker : MonoBehaviour
     {
         destinationMarker.DOKill();
         destinationMarker.transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
-        destinationMarker.DOMoveY(0.3f, 0.7f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+        destinationMarker.DOMoveY(0.9f, 0.6f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
     }
 
     private void OnDisable()
