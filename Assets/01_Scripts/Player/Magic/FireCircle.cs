@@ -4,7 +4,7 @@ using System.Collections;
 public class FireCircle : MonoBehaviour
 {
     private ParticleSystem ps;
-    [SerializeField] private PoolManager monsterPoolManager;
+    // [SerializeField] private PoolManager poolManager;
     [SerializeField] private AttackSO attackSo;
 
     private void Awake()
@@ -18,6 +18,6 @@ public class FireCircle : MonoBehaviour
     IEnumerator PlayCo()
     {
         yield return new WaitForSeconds(attackSo.attackSpeed);
-        monsterPoolManager.ReturnPool(this);
+        PoolManager.Instance.ReturnPool(this);
     }
 }

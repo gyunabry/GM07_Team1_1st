@@ -1,5 +1,7 @@
 using UnityEngine;
+using UnityEngine.AI;
 
+[DisallowMultipleComponent]
 public class CustomerAnimationController : MonoBehaviour
 {
     public enum CustomerAnimState
@@ -11,21 +13,39 @@ public class CustomerAnimationController : MonoBehaviour
     [SerializeField] private Animator animator;
 
     private CustomerAnimState currentState = CustomerAnimState.Idle;
+    private NavMeshAgent agent;
 
     private void Awake()
     {
-        if (animator == null)
+        agent = GetComponent<NavMeshAgent>();
+
+        animator = GetComponentInChildren<Animator>(false);
+    }
+
+    private void Update()
+    {
+        if (agent == null)
         {
-            animator = GetComponent<Animator>();
+            return;
         }
+
+        Animator activeAnimator = GetComponentInChildren<Animator>(false);
+        if (activeAnimator != animator)
+        {
+            animator = activeAnimator;
+        }
+
+        bool isWalking = agent.enabled && agent.isOnNavMesh && !agent.isStopped && agent.velocity.sqrMagnitude > 0.01f;
+        SetState(isWalking ? CustomerAnimState.Walk : CustomerAnimState.Idle);
     }
 
     public void SetState(CustomerAnimState newState)
     {
-        if (currentState == newState) return;
         currentState = newState;
 
-        bool isWalking = (currentState == CustomerAnimState.Walk);
-        animator.SetBool(IsWalkHash, isWalking);
+        if (animator != null)
+        {
+            animator.SetBool(IsWalkHash, currentState == CustomerAnimState.Walk);
+        }
     }
 }

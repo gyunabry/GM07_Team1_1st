@@ -15,7 +15,7 @@ public sealed class CustomerOrderGenerator
     {
         order = default;
 
-        if (unlockManager == null || rewardTemplate.Reward < 0 || rewardTemplate.ExperienceReward < 0)
+        if (rewardTemplate.Reward < 0 || rewardTemplate.ExperienceReward < 0)
         {
             return false;
         }
@@ -45,9 +45,43 @@ public sealed class CustomerOrderGenerator
         List<ItemDataSO> candidates = new();
         HashSet<string> addedItemIds = new();
 
-        foreach (RecipeDataSO recipe in unlockManager.UnlockedRecipes)
+        if (unlockManager != null)
         {
-            ItemDataSO output = recipe != null ? recipe.Output : null;
+            AddRecipeOutputs(unlockManager.UnlockedRecipes, candidates, addedItemIds);
+            if (candidates.Count > 0)
+            {
+                return candidates;
+            }
+        }
+
+        // 해금 관리자가 없거나 유효한 해금 레시피를 읽지 못한 경우에는,
+        // 실제 배치된 생산 건물의 레시피를 주문 후보로 사용한다.
+        ProductionBuilding[] productionBuildings = Object.FindObjectsByType<ProductionBuilding>(FindObjectsSortMode.None);
+        for (int i = 0; i < productionBuildings.Length; i++)
+        {
+            ProductionBuilding building = productionBuildings[i];
+            if (building != null)
+            {
+                AddRecipeOutputs(building.AvailableRecipes, candidates, addedItemIds);
+            }
+        }
+
+        return candidates;
+    }
+
+    private static void AddRecipeOutputs(
+        IReadOnlyList<RecipeDataSO> recipes,
+        List<ItemDataSO> candidates,
+        HashSet<string> addedItemIds)
+    {
+        if (recipes == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < recipes.Count; i++)
+        {
+            ItemDataSO output = recipes[i] != null ? recipes[i].Output : null;
             if (output == null || output.ItemType != ItemType.Product || string.IsNullOrEmpty(output.ItemId))
             {
                 continue;
@@ -58,7 +92,5 @@ public sealed class CustomerOrderGenerator
                 candidates.Add(output);
             }
         }
-
-        return candidates;
     }
 }

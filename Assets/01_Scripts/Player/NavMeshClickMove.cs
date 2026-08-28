@@ -12,6 +12,7 @@ public class NavMeshClickMove : MonoBehaviour
     [SerializeField] private float sampleDistance = 2.0f;
 
     [Header("참조")]
+    [SerializeField] private InputManager inputManager;
     [SerializeField] private PlayerInteractionController interactionController;
     [SerializeField] private PlacementSystem placementSystem;
     [SerializeField] private PlayerAnimationController animationController;
@@ -28,37 +29,49 @@ public class NavMeshClickMove : MonoBehaviour
         destinationMarker.gameObject.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        inputManager.OnPrimaryClicked += HandlePrimaryClick;
+        inputManager.OnSecondaryClicked += HandleSecondaryClick;
+    }
+
+    private void OnDisable()
+    {
+        inputManager.OnPrimaryClicked -= HandlePrimaryClick;
+        inputManager.OnSecondaryClicked -= HandleSecondaryClick;
+    }
+
     private void Update() //(최적화 고려 : 코루틴, 이벤트 등)
     {
-        MouseInput();
+        // MouseInput();
         UpdateAnimation();
         UpdateMarker();
     }
 
     private void MouseInput()
     {
-        if (Mouse.current == null) return;
+        //if (Mouse.current == null) return;
 
-        bool leftClicked = Mouse.current.leftButton.wasPressedThisFrame;
-        bool rightClicked = Mouse.current.rightButton.wasPressedThisFrame;
+        //bool leftClicked = Mouse.current.leftButton.wasPressedThisFrame;
+        //bool rightClicked = Mouse.current.rightButton.wasPressedThisFrame;
 
-        if (!leftClicked && !rightClicked) return;
+        //if (!leftClicked && !rightClicked) return;
 
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
+        //if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        //{
+        //    return;
+        //}
 
-        if (leftClicked)
-        {
-            if (placementSystem != null && placementSystem.IsPlacementMode)
-            {
-                return;
-            }
+        //if (leftClicked)
+        //{
+        //    if (placementSystem != null && placementSystem.IsPlacementMode)
+        //    {
+        //        return;
+        //    }
 
-            interactionController?.TryInteractUnderPointer();
-            return;
-        }
+        //    interactionController?.TryInteractUnderPointer();
+        //    return;
+        //}
 
         //if (!Mouse.current.rightButton.wasPressedThisFrame) return;
 
@@ -172,5 +185,25 @@ public class NavMeshClickMove : MonoBehaviour
             hasDestination = false;
             destinationMarker.gameObject.SetActive(false);
         }
+    }
+
+    private void HandlePrimaryClick()
+    {
+        if (placementSystem != null && placementSystem.ConsumeWorldInput)
+        {
+            return;
+        }
+
+        interactionController?.TryInteractUnderPointer();
+    }
+
+    private void HandleSecondaryClick()
+    {
+        if (placementSystem != null && placementSystem.ConsumeWorldInput)
+        {
+            return;
+        }
+
+        SetDestination();
     }
 }
