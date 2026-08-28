@@ -12,12 +12,7 @@ public class FacilityLevelBonus : MonoBehaviour
 
         public int productionLimit;
         public int salesLimit;
-        public int hunterLimit;
-        public int carrierLimit;
     }
-
-    [SerializeField] private BuildingDataSO hunterBuilding;
-    [SerializeField] private BuildingDataSO carrierBuilding;
 
     [SerializeField] private BuildingDatabaseSO buildingDatabase;
     [SerializeField] private List<LevelFacilityLimit> limits = new();
@@ -89,18 +84,6 @@ public class FacilityLevelBonus : MonoBehaviour
 
     private bool TryGetLimit(BuildingDataSO buildingData, LevelFacilityLimit limits, out int limit)
     {
-        if (buildingData == hunterBuilding)
-        {
-            limit = limits.hunterLimit;
-            return true;
-        }
-
-        if (buildingData == carrierBuilding)
-        {
-            limit = limits.carrierLimit;
-            return true;
-        }
-
         switch (buildingData.BuildingTag)
         {
             case BuildingTag.Production:

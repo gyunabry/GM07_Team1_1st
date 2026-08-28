@@ -81,9 +81,9 @@ public class ProductionMachine
     // 생산할 레시피를 변경
     public bool TrySetRecipe(RecipeDataSO recipe)
     {
-        if (IsBusy) return false;
-
         if (recipe == null) return false;
+
+        if (selectedRecipe == recipe) return false;
 
         selectedRecipe = recipe;
 
@@ -160,6 +160,7 @@ public class ProductionMachine
                 // 생산 시간이 끝났다면 결과 인벤토리에 추가 시도
                 // 인벤토리가 꽉차있다면 0 반환
                 int added = outputInventory.Add(activeRecipe.Output, pendingOutputAmount);
+                pendingOutputAmount -= added;
 
                 // 생산물이 아직 남아있다면 대기 모드
                 if (pendingOutputAmount > 0)

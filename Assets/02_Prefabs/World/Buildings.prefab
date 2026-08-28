@@ -88,6 +88,10 @@ PrefabInstance:
       value: FieldPortal_Building_02
       objectReference: {fileID: 0}
     - target: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+      propertyPath: workshopPortal
+      value: 
+      objectReference: {fileID: 4433831848609217022}
+    - target: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
       propertyPath: interactionMode
       value: 1
       objectReference: {fileID: 0}
@@ -105,6 +109,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4330710715193243721, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
   m_PrefabInstance: {fileID: 1029386691334594989}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8241464058637713626 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+  m_PrefabInstance: {fileID: 1029386691334594989}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!1001 &1261654972121344722
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -158,6 +173,10 @@ PrefabInstance:
       value: FieldPortal_Building_01
       objectReference: {fileID: 0}
     - target: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+      propertyPath: workshopPortal
+      value: 
+      objectReference: {fileID: 4433831848609217022}
+    - target: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
       propertyPath: interactionMode
       value: 1
       objectReference: {fileID: 0}
@@ -175,6 +194,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4330710715193243721, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
   m_PrefabInstance: {fileID: 1261654972121344722}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7896181082081889189 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+  m_PrefabInstance: {fileID: 1261654972121344722}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!1001 &4728411047661738121
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -229,7 +259,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6164503219934279805, guid: 51d834994046ac34293082ce18052d2f, type: 3}
       propertyPath: m_Name
-      value: Portal_Building_00
+      value: WorkshopPortal_Building
       objectReference: {fileID: 0}
     - target: {fileID: 6811097913360764847, guid: 51d834994046ac34293082ce18052d2f, type: 3}
       propertyPath: completedObject
@@ -249,17 +279,40 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8941495019089650039, guid: 51d834994046ac34293082ce18052d2f, type: 3}
       propertyPath: huntingFieldPortals.Array.size
-      value: 0
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8941495019089650039, guid: 51d834994046ac34293082ce18052d2f, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7896181082081889189}
+    - target: {fileID: 8941495019089650039, guid: 51d834994046ac34293082ce18052d2f, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8241464058637713626}
+    - target: {fileID: 8941495019089650039, guid: 51d834994046ac34293082ce18052d2f, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1652922299818699721}
+    - target: {fileID: 8941495019089650039, guid: 51d834994046ac34293082ce18052d2f, type: 3}
       propertyPath: onArrived.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: AttackRefresh
+      value: AttackPause
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51d834994046ac34293082ce18052d2f, type: 3}
+--- !u!114 &4433831848609217022 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8941495019089650039, guid: 51d834994046ac34293082ce18052d2f, type: 3}
+  m_PrefabInstance: {fileID: 4728411047661738121}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!1 &6170659199076979495 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1458081141705919406, guid: 51d834994046ac34293082ce18052d2f, type: 3}
@@ -323,6 +376,10 @@ PrefabInstance:
       value: FieldPortal_Building_03
       objectReference: {fileID: 0}
     - target: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+      propertyPath: workshopPortal
+      value: 
+      objectReference: {fileID: 4433831848609217022}
+    - target: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
       propertyPath: interactionMode
       value: 1
       objectReference: {fileID: 0}
@@ -335,6 +392,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+--- !u!114 &1652922299818699721 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8941495019089650039, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
+  m_PrefabInstance: {fileID: 7703071032030038718}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!4 &6268738248098624247 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4330710715193243721, guid: 51ed19418ee162e4285cc478bf707c1d, type: 3}
