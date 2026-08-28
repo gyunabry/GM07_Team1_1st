@@ -56,6 +56,7 @@ public sealed class CustomerController : MonoBehaviour
     public float PatienceNormalized => Mathf.Clamp01(patienceElapsed / PatienceDuration);
     public bool DidPatienceExpire => didPatienceExpire;
     public bool HasInventoryService => inventory != null;
+    public ICustomerInventory InventoryService => inventory;
     public float PaymentDuration
     {
         get
@@ -264,6 +265,14 @@ public sealed class CustomerController : MonoBehaviour
 
         agent.isStopped = true;
         agent.avoidancePriority = NormalAvoidancePriority;
+    }
+
+    public bool CanFulfillOrder()
+    {
+        return !runtimeData.PaymentCompleted
+            && inventory != null
+            && Order.IsValid
+            && inventory.CanConsumeAll(Order.Items);
     }
 
     public bool TryCompletePayment()

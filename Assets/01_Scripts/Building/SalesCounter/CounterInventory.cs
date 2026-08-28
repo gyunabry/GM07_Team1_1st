@@ -8,7 +8,7 @@ public class CounterInventory : MonoBehaviour, ICustomerInventory
 
     public ItemInventory Inventory => inventory;
 
-    // ¸ğµç ÆÇ¸Å´ë°¡ ÇÏ³ªÀÇ ÀÎº¥Åä¸®¸¦ °øÀ¯ÇÏµµ·Ï ½Ì±ÛÅæ ÆĞÅÏ Àû¿ë
+    // ëª¨ë“  íŒë§¤ëŒ€ê°€ í•˜ë‚˜ì˜ ì¸ë²¤í† ë¦¬ë¥¼ ê³µìœ í•˜ë„ë¡ ì‹±ê¸€í†¤ íŒ¨í„´ ì ìš©
     public static CounterInventory Instance { get; private set; }
 
     public event Action InventoryChanged
@@ -39,14 +39,41 @@ public class CounterInventory : MonoBehaviour, ICustomerInventory
 
     public bool TryConsumeAll(IReadOnlyList<CustomerOrderItem> items)
     {
-        if (items == null || items.Count <= 0) return false;
+        return TryCreateRequirements(items, out List<ItemAmount> requirements)
+            && inventory.TryRemoveAll(requirements);
+    }
 
-        List<ItemAmount> requirements = new List<ItemAmount>(items.Count);
+    public bool CanConsumeAll(IReadOnlyList<CustomerOrderItem> items)
+    {
+        if (!TryCreateRequirements(items, out List<ItemAmount> requirements))
+        {
+            return false;
+        }
 
+        for (int i = 0; i < requirements.Count; i++)
+        {
+            ItemAmount requirement = requirements[i];
+            if (!inventory.Contains(requirement.Item, requirement.Amount))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool TryCreateRequirements(IReadOnlyList<CustomerOrderItem> items, out List<ItemAmount> requirements)
+    {
+        requirements = null;
+        if (items == null || items.Count <= 0)
+        {
+            return false;
+        }
+
+        requirements = new List<ItemAmount>(items.Count);
         for (int i = 0; i < items.Count; i++)
         {
             CustomerOrderItem orderItem = items[i];
-
             if (!orderItem.IsValid)
             {
                 return false;
@@ -55,6 +82,6 @@ public class CounterInventory : MonoBehaviour, ICustomerInventory
             requirements.Add(new ItemAmount(orderItem.ItemId, orderItem.Amount));
         }
 
-        return inventory.TryRemoveAll(requirements);
+        return true;
     }
 }

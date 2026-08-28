@@ -6,6 +6,9 @@ public interface ICustomerInventory
 {
     event Action InventoryChanged;
 
+    // 재고를 변경하지 않고 주문 전체를 처리할 수 있는지 확인한다.
+    bool CanConsumeAll(IReadOnlyList<CustomerOrderItem> items);
+
     // 모든 재료를 보유한 경우에만 한 번에 차감한다. 부분 차감은 허용하지 않는다.
     bool TryConsumeAll(IReadOnlyList<CustomerOrderItem> items);
 }
