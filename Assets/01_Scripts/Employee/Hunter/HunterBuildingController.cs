@@ -13,6 +13,23 @@ public sealed class HunterBuildingController : MonoBehaviour
     private PlacedBuilding building;
     private HuntingFieldContext areaContext;
 
+    public bool TryGetEmployeeStats(out float attackDamage, out float movementSpeed, out int carryingCapacity)
+    {
+        attackDamage = 0f;
+        movementSpeed = 0f;
+        carryingCapacity = 0;
+
+        if (hunterPrefab == null)
+        {
+            return false;
+        }
+
+        attackDamage = hunterPrefab.AttackDamage;
+        movementSpeed = hunterPrefab.MovementSpeed;
+        carryingCapacity = hunterPrefab.CarryingCapacity;
+        return true;
+    }
+
     private void Awake() 
     {
         building = GetComponent<PlacedBuilding>(); 
