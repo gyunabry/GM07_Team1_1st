@@ -117,11 +117,14 @@ public class PlayerAttack : MonoBehaviour
     public void StartAndStopAttackCo(int slot, string id,AttackEquHud hud)
     {
         string idd = id.Replace("S", "");
+        string nowIdd = "1";
         if(int.TryParse(idd, out var i)) { }
         string nowId = slots[slot].equipAttackID;
-        
-        if (int.TryParse(nowId, out var j)){ }
-        
+        if(nowId != null)
+        {
+            nowIdd = nowId.Replace("S", "");
+        }
+        if (int.TryParse(nowIdd, out var j)){ }
         bool change = false;
         foreach (var nowSlot in slots)
         {
