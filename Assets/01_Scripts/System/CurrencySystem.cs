@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public event Action<int, int> CurrencyChanged;
     public event Action LevelUp;
 
-    // DOTween 이벤트
+    // DOTween �̺�Ʈ
     public event Action OnGoldChanged;
     public event Action OnGoldEarned;
     public event Action OnGoldSpent;
@@ -48,7 +48,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     {
         if (moneyAmount < 0 || experienceAmount < 0)
         {
-            Debug.LogWarning("?ы솕 蹂댁긽?먮뒗 ?뚯닔瑜?吏湲됲븷 ???놁뒿?덈떎.", this);
+            Debug.LogWarning("?�화 보상?�는 ?�수�?지급할 ???�습?�다.", this);
             return;
         }
 
@@ -76,7 +76,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     {
         if (amount < 0)
         {
-            Debug.LogWarning("?뚮え???덉? ?뚯닔?????놁뒿?덈떎.", this);
+            Debug.LogWarning("?�모???��? ?�수?????�습?�다.", this);
             return false;
         }
 
@@ -96,7 +96,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     {
         if (amount < 0)
         {
-            Debug.LogWarning("?뚮え??寃쏀뿕移섎뒗 ?뚯닔?????놁뒿?덈떎.", this);
+            Debug.LogWarning("?�모??경험치는 ?�수?????�습?�다.", this);
             return false;
         }
 
