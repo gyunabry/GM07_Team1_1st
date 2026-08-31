@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class WorkshopExpansionManager : MonoBehaviour
 {
@@ -185,19 +186,30 @@ public class WorkshopExpansionManager : MonoBehaviour
         StateChanged?.Invoke();
     }
 
-    private void RestoreStage(int stage)
+    public bool RestoreStage(int stage)
     {
+        if (workshopArea == null) return false;
+
         stage = Mathf.Clamp(stage, 0, expansions.Count);
 
         RectInt targetBounds = GetBountForStage(stage);
 
+        if (!workshopArea.RestoreUnlockedAreas(new[] { targetBounds }))
+        {
+            return false;
+        }
+
         currentStage = stage;
         visualController?.ApplyStage(currentStage);
+
+        StateChanged?.Invoke();
 
         if (stage > 0 && navMeshSurface != null)
         {
             StartCoroutine(RebuildNavMesh());
         }
+
+        return true;
     }
 
 

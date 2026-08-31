@@ -38,6 +38,7 @@ public class ProductionMachine
     public RecipeDataSO SelectedRecipe => selectedRecipe;
     public RecipeDataSO ActiveRecipe => activeRecipe;
 
+    public int PendingOutputAmount => pendingOutputAmount;
     public float EffectiveDuration => effectiveDuration;
 
     public bool IsBusy => activeRecipe != null;
@@ -229,6 +230,7 @@ public class ProductionMachine
         StateChanged?.Invoke(State);
     }
 
+    #region 스킬트리 효과
     public void SetProductionSpeedMultiplier(float reductionRatio)
     {
         // 최대 95%까지만 감소 가능
@@ -250,4 +252,35 @@ public class ProductionMachine
     {
         bonusProductionChance = Mathf.Clamp01(chanceRatio);
     }
+    #endregion
+
+    #region 생산시설 복구
+    public void RestoreState(
+        RecipeDataSO restoredSelectedRecipe,
+        RecipeDataSO restoredActivedRecipe,
+        float restoredProgress01,
+        int restoredPendingOutputAmount)
+    {
+        selectedRecipe = restoredSelectedRecipe;
+        activeRecipe = restoredActivedRecipe;
+        pendingOutputAmount = Mathf.Max(0, restoredPendingOutputAmount);
+
+        if (activeRecipe != null)
+        {
+            effectiveDuration = GetEffectiveDuration(activeRecipe);
+
+            elapsedTime = Mathf.Clamp01(restoredProgress01) * effectiveDuration;
+        }
+        else
+        {
+            effectiveDuration = 0f;
+            elapsedTime = 0f;
+            pendingOutputAmount = 0;
+        }
+
+        RecipeChanged?.Invoke(selectedRecipe);
+        ProgressChanged?.Invoke(Progress);
+        Refresh();
+    }
+    #endregion
 }

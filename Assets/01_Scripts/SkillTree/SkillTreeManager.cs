@@ -8,10 +8,15 @@ public class SkillTreeManager : MonoBehaviour
     [SerializeField] private List<SkillRuntimeState> skillRuntimeStates = new List<SkillRuntimeState>();
     [SerializeField] private SkillEffectContext effectContext;
 
+    public IReadOnlyList<SkillRuntimeState> RuntimeState => skillRuntimeStates;
+
     public event Action OnSkillChange;
 
     private void Awake()
     {
+        // 중복 생성 방지
+        skillRuntimeStates.Clear();
+
         foreach(var skill in skillList)
         {
             SkillRuntimeState state = new SkillRuntimeState();
@@ -118,6 +123,8 @@ public class SkillTreeManager : MonoBehaviour
                 }
             }
         }
+
+        CommitEffects();
     }
     public void SkillTreeReset()//스킬트리 초기화
     {
@@ -158,5 +165,96 @@ public class SkillTreeManager : MonoBehaviour
             }
         }
         effectContext.player.navMeshAgent.speed = 5f;
+
+        BeginEffectsRebuild();
+    }
+
+    private void BeginEffectsRebuild()
+    {
+        ProductionSkillRegistry.BeginRebuild();
+        StorageSkillRegistry.BeginRebuild();
+        RewardSkillRegistry.BeginRebuild();
+    }
+
+    private void CommitEffects()
+    {
+        ProductionSkillRegistry.Commit();
+        StorageSkillRegistry.Commit();
+        RewardSkillRegistry.Commit();
+    }
+
+    public void RestoreLevels(IReadOnlyList<SkillLevelSaveData> savedSkills)
+    {
+        // 현재 스킬 상태를 초기화
+        foreach (SkillRuntimeState runtimeState in skillRuntimeStates)
+        {
+            if (runtimeState == null) continue;
+
+            runtimeState.skillLevel = 0;
+            runtimeState.Locked = true;
+        }
+
+        if (savedSkills != null)
+        {
+            foreach (SkillLevelSaveData savedSkill in savedSkills)
+            {
+                if (savedSkill == null || string.IsNullOrWhiteSpace(savedSkill.skillId))
+                {
+                    continue;
+                }
+
+                SkillDataSO matchedSkillData = null;
+                SkillRuntimeState matchedRuntimeState = null;
+
+                // 저장된 ID와 일치하는 원본 SkillDataSO를 검색
+                foreach (SkillDataSO skillData in skillList)
+                {
+                    if (skillData == null)
+                    {
+                        continue;
+                    }
+
+                    if (string.Equals(skillData.skillID, savedSkill.skillId, StringComparison.Ordinal))
+                    {
+                        matchedSkillData = skillData;
+                        break;
+                    }
+                }
+
+                if (matchedSkillData == null)
+                {
+                    Debug.LogWarning($"저장된 스킬 ID를 찾을 수 없습니다: {savedSkill.skillId}");
+                    continue;
+                } 
+
+                foreach (SkillRuntimeState runtimeState in skillRuntimeStates)
+                {
+                    if (runtimeState == null) continue;
+
+                    if (string.Equals(runtimeState.skillID, savedSkill.skillId, StringComparison.Ordinal))
+                    {
+                        matchedRuntimeState = runtimeState;
+                        break;
+                    }
+                }
+
+                if (matchedRuntimeState == null)
+                {
+                    Debug.LogWarning($"스킬 런타임 상태를 찾을 수 없습니다: {savedSkill.skillId}");
+                    continue;
+                }
+
+                // 실제 스킬의 최대 레벨을 넘지 못 하도록 제한
+                int maxLevel = Mathf.Max(0, matchedSkillData.skillMaxLevel);
+
+                matchedRuntimeState.skillLevel = Mathf.Clamp(savedSkill.level, 0, maxLevel);
+            }
+        }
+
+        // 저장된 레벨을 기준으로 스킬 조건을 다시 계산
+        SkillUnlockCheck();
+
+        // 복구된 레벨을 기준으로 스킬트리 효과를 재적용
+        SkillRefresh();
     }
 }

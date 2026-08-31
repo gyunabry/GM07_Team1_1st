@@ -282,8 +282,10 @@ public sealed class CustomerController : MonoBehaviour
             return false;
         }
 
+        int finalExp = RewardSkillRegistry.ApplySellExperience(Order.ExperienceReward);
+
         // 주문 재료를 모두 차감한 뒤에만 돈과 경험치를 함께 지급한다.
-        currency.GrantReward(Order.Reward, Order.ExperienceReward);
+        currency.GrantReward(Order.Reward, finalExp);
         runtimeData.CompletePayment();
         return true;
     }

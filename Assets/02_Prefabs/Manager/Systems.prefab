@@ -300,10 +300,13 @@ MonoBehaviour:
   stages:
   - floorRoot: {fileID: 0}
     wallRoot: {fileID: 0}
+    obstacleRoot: {fileID: 0}
   - floorRoot: {fileID: 0}
     wallRoot: {fileID: 0}
+    obstacleRoot: {fileID: 0}
   - floorRoot: {fileID: 0}
     wallRoot: {fileID: 0}
+    obstacleRoot: {fileID: 0}
 --- !u!114 &1169212744294248023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,8 +477,66 @@ Transform:
   - {fileID: 1043495697383009352}
   - {fileID: 2562983513259400015}
   - {fileID: 3573402552528928363}
+  - {fileID: 6925406222427910695}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7044040682239475874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6925406222427910695}
+  - component: {fileID: 4584111589676647349}
+  m_Layer: 0
+  m_Name: SaveGameService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6925406222427910695
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044040682239475874}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 684614707514807010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4584111589676647349
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7044040682239475874}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c8db00b54791034ca97a934554602dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SaveGameService
+  buildingDatabase: {fileID: 11400000, guid: da22c39c322d7514e87e1ed04caa5251, type: 2}
+  itemDatabase: {fileID: 11400000, guid: 9102c7a3682a88949a969d68ab315941, type: 2}
+  recipeDatabase: {fileID: 11400000, guid: 4c6dbcaf998854c47a1d451ce4ab85a4, type: 2}
+  currencySystem: {fileID: 7639431466538978612}
+  player: {fileID: 0}
+  playerInventory: {fileID: 0}
+  playerAttack: {fileID: 0}
+  skillTreeManager: {fileID: 3782147865432659251}
+  recipeUnlockManager: {fileID: 3163766365585529418}
+  expansionManager: {fileID: 4594496697931293496}
+  placementSystem: {fileID: 8645873690436672994}
+  counterInventory: {fileID: 8565966294825179077}
+  teleportUI: {fileID: 0}
 --- !u!1 &7293180575848846353
 GameObject:
   m_ObjectHideFlags: 0
@@ -977,3 +1038,14 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6547256252549017586, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
   m_PrefabInstance: {fileID: 5216852620041129402}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3782147865432659251 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8942205613681907849, guid: 2237dc885b8911d4ea479c1d724a0fe5, type: 3}
+  m_PrefabInstance: {fileID: 5216852620041129402}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97fcc5d040435dd46a9ea23393a868bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTreeManager

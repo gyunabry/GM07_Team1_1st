@@ -188,7 +188,99 @@ public class PlayerAttack : MonoBehaviour
         }
         return value;
     }
+
+    // 1. 공격 코루틴 정리
+    // 2. 모든 슬롯을 null
+    // 3. slotIndex가 유효 배열 범위인지 검사
+    // 4. 실제로 해금된 상태인지 검사
+    // 5. 검사를 통과한 스킬만 해당 슬롯에 장착
+    public void RestoreEquippedAttacks(IReadOnlyList<EquippedAttackSaveData> savedAttacks)
+    {
+        AttackPause();
+
+        if (slots == null || slots.Length == 0)
+        {
+            Debug.LogWarning("복구할 공격 슬롯이 없습니다.");
+            return;
+        }
+
+        // 모든 슬롯을 null로 초기화
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] == null)
+            {
+                slots[i] = new AttackSlotData();
+            }
+
+            slots[i].slotIndex = i;
+            slots[i].equipAttackID = null;
+        }
+
+        if (attackUnlockDatas != null)
+        {
+            foreach (AttackUnlockData attackData in attackUnlockDatas)
+            {
+                if (attackData != null)
+                {
+                    attackData.equip = false;
+                }
+            }
+        }
+
+        if (savedAttacks == null) return;
+
+        foreach (EquippedAttackSaveData savedAttack in savedAttacks)
+        {
+            if (savedAttack == null || string.IsNullOrWhiteSpace(savedAttack.attackId))
+            {
+                continue;
+            }
+
+            int slotIndex = savedAttack.slotIndex;
+
+            // 저장된 슬롯 인덱스가 정상 범위인지 검사
+            if (slotIndex < 0 || slotIndex >= slots.Length)
+            {
+                Debug.LogWarning($"유효하지 않은 공격 슬롯입니다. 슬롯: {slotIndex}, 공격 ID: {savedAttack.attackId}");
+                continue;
+            }
+
+            AttackUnlockData matchedAttack = null;
+
+            if (attackUnlockDatas != null)
+            {
+                foreach (AttackUnlockData attackData in attackUnlockDatas)
+                {
+                    if (attackData == null) continue;
+
+                    if (string.Equals(attackData.attackID, savedAttack.attackId, System.StringComparison.Ordinal))
+                    {
+                        matchedAttack = attackData;
+                        break;
+                    }
+                }
+            }
+
+            if (matchedAttack == null)
+            {
+                Debug.LogWarning($"존재하지 않는 공격 ID를 건너뜁니다: {savedAttack.attackId}");
+                continue;
+            }
+
+            if (!matchedAttack.unlock)
+            {
+                Debug.LogWarning($"해금되지 않은 공격 스킬은 장착할 수 없습니다: {savedAttack.attackId}");
+                continue;
+            }
+
+            // 모든 검사를 통과한 공격을 해당 슬롯에 장착
+            slots[slotIndex].equipAttackID = savedAttack.attackId;
+            matchedAttack.equip = true;
+        }
+    }
+
 }
+
 [System.Serializable]
 public class AttackSlotData
 {

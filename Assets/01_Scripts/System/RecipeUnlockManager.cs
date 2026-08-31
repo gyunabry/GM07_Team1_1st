@@ -89,4 +89,23 @@ public sealed class RecipeUnlockManager : MonoBehaviour
             }
         }
     }
+
+    public void RestoreUnlockedRecipes(IReadOnlyList<RecipeDataSO> restoredRecipes)
+    {
+        unlockedRecipes.Clear();
+        unlockedRecipeSet.Clear();
+
+        if (restoredRecipes != null)
+        {
+            foreach (RecipeDataSO recipe in restoredRecipes)
+            {
+                if (recipe != null && unlockedRecipeSet.Add(recipe))
+                {
+                    unlockedRecipes.Add(recipe);
+                }
+            }
+        }
+
+        UnlockedRecipesChanged?.Invoke();
+    }
 }

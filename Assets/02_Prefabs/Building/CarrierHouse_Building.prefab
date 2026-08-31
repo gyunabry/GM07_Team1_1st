@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 4608639707572081600}
   - component: {fileID: 6437487196589022880}
   - component: {fileID: 3218988720250446819}
+  - component: {fileID: -3481726138872756971}
   m_Layer: 0
   m_Name: CarrierHouse_Building
   m_TagString: Untagged
@@ -155,6 +156,7 @@ MonoBehaviour:
   completedObject: {fileID: 7518981794468057794}
   data: {fileID: 0}
   state: 0
+  placementSource: 0
 --- !u!114 &6437487196589022880
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,6 +187,19 @@ MonoBehaviour:
   interactionPoint: {fileID: 2775022559764109531}
   isEnabled: 1
   outlineObject: {fileID: 6702485401793285261}
+--- !u!114 &-3481726138872756971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6016816390121928499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6ce30c7258a3447ac700084c34700d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentGuid
+  value: 
 --- !u!1 &6702485401793285261
 GameObject:
   m_ObjectHideFlags: 0
