@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
+
 public class ChasingSickle : MonoBehaviour
 {
     private ParticleSystem ps;

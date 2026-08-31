@@ -5,6 +5,6 @@ public class S11_StorageBigUpgrade : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        StorageSkillRegistry.AddCapacityBonus((int)skillData.value[nowLevel]);
     }
 }

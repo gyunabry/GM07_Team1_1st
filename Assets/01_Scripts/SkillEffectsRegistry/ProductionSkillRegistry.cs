@@ -46,14 +46,14 @@ public class ProductionSkillRegistry : MonoBehaviour
         pending.StorageCapacityBonus += Mathf.Max(0, amount);
     }
 
-    public static void AddProductionTimeReduction(float ratio)
+    public static void AddProductionTimeReduction(float percent)
     {
-        pending.ProductionTimeReductionRatio += Mathf.Max(0, ratio);
+        pending.ProductionTimeReductionRatio += Mathf.Abs(percent) / 100f;
     }
 
-    public static void AddBonusProductionChance(float ratio)
+    public static void AddBonusProductionChance(float percent)
     {
-        pending.ProductionBonusChance += Mathf.Max(0, ratio);
+        pending.ProductionBonusChance += Mathf.Abs(percent) / 100f;
     }
 
     public static void Commit()

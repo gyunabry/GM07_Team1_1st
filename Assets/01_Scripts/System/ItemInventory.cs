@@ -225,4 +225,79 @@ public sealed class ItemInventory
             !entry.IsEmpty &&
             IsSameItem(entry.Item, item));
     }
+
+    // 저장 데이터로 인벤토리를 교체
+    // 스킬 효과가 적용되기 전일 수 있으므로 현재 용량보다 많아도 삭제 X
+    public void RestoreInventory(IReadOnlyList<ItemAmount> restoredItems)
+    {
+        entries.Clear();
+
+        if (restoredItems != null)
+        {
+            foreach (ItemAmount itemAmount in restoredItems)
+            {
+                if (!itemAmount.IsValid)
+                {
+                    continue;
+                }
+
+                InventoryEntry existing = FindEntry(itemAmount.Item);
+
+                if (existing == null)
+                {
+                    entries.Add(new InventoryEntry(itemAmount.Item, itemAmount.Amount));
+                }
+                else
+                {
+                    existing.Add(itemAmount.Amount);
+                }
+            }
+        }
+
+        InventoryChanged?.Invoke();
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void SetBaseCapacity(int value)
+    {
+        capacity = Mathf.Max(0, value);
+
+        InventoryChanged?.Invoke();
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void Clear()
+    {
+        if (entries.Count == 0) return;
+
+        entries.Clear();
+
+        InventoryChanged?.Invoke();
+        OnInventoryChanged?.Invoke();
+    }
+
+    // 실제 전송된 수를 반환
+    public int TransferAllTo(ItemInventory target)
+    {
+        if (target == null || target == this)
+        {
+            return 0;
+        }
+
+        int totalMoved = 0;
+
+        for (int i = entries.Count - 1; i >= 0; i--)
+        {
+            InventoryEntry entry = entries[i];
+
+            if (entry == null || entry.IsEmpty)
+            {
+                continue;
+            }
+
+            totalMoved += TransferTo(target, entry.Item, entry.Amount);
+        }
+
+        return totalMoved;
+    }
 }

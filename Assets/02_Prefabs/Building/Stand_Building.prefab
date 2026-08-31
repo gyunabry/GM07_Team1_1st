@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 1849921812129018527}
   - component: {fileID: 8943603778101854687}
   - component: {fileID: 6300147198081467721}
+  - component: {fileID: -9073596834094127367}
   m_Layer: 12
   m_Name: Stand_Building
   m_TagString: Untagged
@@ -106,7 +107,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
   constructionObject: {fileID: 8530068308858864854}
   completedObject: {fileID: 6886523733070167900}
+  data: {fileID: 0}
   state: 0
+  placementSource: 0
 --- !u!114 &5585456302262283555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,6 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SalesCounter
   checkoutStation: {fileID: 8943603778101854687}
+  placementSystem: {fileID: 0}
 --- !u!114 &1849921812129018527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,6 +192,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SalesEmployeeCheckoutOperator
   salesEmployeePrefab: {fileID: 2134755055572279993, guid: 9e75a318d6a1cd74f9e8fb5982fede37, type: 3}
   spawnPoint: {fileID: 4746293009440484270}
+--- !u!114 &-9073596834094127367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1893231529864045393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6ce30c7258a3447ac700084c34700d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentGuid
+  value: 
 --- !u!1 &3785671378407413183
 GameObject:
   m_ObjectHideFlags: 0
