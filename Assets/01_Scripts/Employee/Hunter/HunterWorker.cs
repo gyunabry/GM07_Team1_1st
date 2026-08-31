@@ -88,7 +88,7 @@ public sealed class HunterWorker : MonoBehaviour
     private void Update()
     {
         if (employee == null) return;
-        cargo.SetCapacity(carryingCapacity); // ?�킬 ?�비???�결 ??기본 ?�도 ?��?
+        cargo.SetCapacity(carryingCapacity); // ?ㅽ궗 ?쒕퉬???곌껐 ??湲곕낯 ?쒕룄 ?좎?
         if (awaitingKillerDrop)
         {
             if (TryClaimKillerDrop())
@@ -153,6 +153,8 @@ public sealed class HunterWorker : MonoBehaviour
         Transform homePoint
     )
     {
+        transmitter?.ReleaseDepositSlot(this);
+        transmitter?.ReleaseWaitingSlot(this);
         manager = m;
         employee = e;
         huntingField = assignedHuntingField;
@@ -214,12 +216,16 @@ public sealed class HunterWorker : MonoBehaviour
     {
         cargo.TransferTo(transmitter?.Inventory);
         cargo.Clear();
+        transmitter?.ReleaseDepositSlot(this);
+        transmitter?.ReleaseWaitingSlot(this);
     }
 
     public void ResetForPool() 
     { 
         ReleaseTargets(); 
         cargo.Clear(); 
+        transmitter?.ReleaseDepositSlot(this);
+        transmitter?.ReleaseWaitingSlot(this);
 
         manager = null;
         employee = null;
@@ -343,10 +349,43 @@ public sealed class HunterWorker : MonoBehaviour
             return; 
         }
 
-        if (Distance(transmitter.DepositPoint.position) > .3f)
+        if (!transmitter.TryReserveDepositSlot(this, out Transform depositSlot))
         {
             itemDeliveryElapsed = 0f;
-            Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving);
+
+            if (transmitter.TryReserveWaitingSlot(this, out Vector3 waitingPosition))
+            {
+                if (Distance(waitingPosition) > .3f)
+                {
+                    if (!Move(waitingPosition, EmployeeWorkState.Moving))
+                    {
+                        transmitter.ReleaseWaitingSlot(this);
+                        Stop(EmployeeWorkState.Idle);
+                    }
+                }
+                else
+                {
+                    Stop(EmployeeWorkState.Idle);
+                }
+            }
+            else
+            {
+                Stop(EmployeeWorkState.Idle);
+            }
+
+            return;
+        }
+
+        transmitter.ReleaseWaitingSlot(this);
+
+        if (Distance(depositSlot.position) > .3f)
+        {
+            itemDeliveryElapsed = 0f;
+            if (!Move(depositSlot.position, EmployeeWorkState.Moving))
+            {
+                transmitter.ReleaseDepositSlot(this);
+                Stop(EmployeeWorkState.Idle);
+            }
             return;
         }
 
@@ -356,6 +395,7 @@ public sealed class HunterWorker : MonoBehaviour
         int cargoBeforeDeposit = cargo.TotalAmount;
         cargo.TransferTo(transmitter.Inventory);
         itemDeliveryElapsed = 0f;
+        transmitter.ReleaseDepositSlot(this);
 
         Stop(cargo.TotalAmount == cargoBeforeDeposit ? EmployeeWorkState.Idle : EmployeeWorkState.Working);
 
@@ -437,8 +477,8 @@ public sealed class HunterWorker : MonoBehaviour
         second.y = 0f;
         return (first - second).sqrMagnitude <= 0.25f;
     }
-    // NavMesh ?�동�??�호?�용 범위??지�?XZ) 기�??�다. ?�롭 ?�리?�과
-    // 직원???�벗 ?�이가 ?�라?? ?�평?�로 ?�착?�면 ?�득?????�어???�다.
+    // NavMesh ?대룞怨??곹샇?묒슜 踰붿쐞??吏硫?XZ) 湲곗??대떎. ?쒕∼ ?꾨━?밴낵
+    // 吏곸썝???쇰쿁 ?믪씠媛 ?щ씪?? ?섑룊?쇰줈 ?꾩갑?섎㈃ ?띾뱷?????덉뼱???쒕떎.
     private float Distance(Vector3 p)
     {
         Vector3 offset = p - transform.position;
@@ -535,14 +575,14 @@ public sealed class HunterWorker : MonoBehaviour
             return false;
         }
 
-        // ?�전 경로�??�거
+        // ?댁쟾 寃쎈줈瑜??쒓굅
         if (agent.isOnNavMesh)
         {
             agent.ResetPath();
             agent.isStopped = true;
         }
 
-        // agent ?��? ?�치�??�당 ?�치�??�동
+        // agent ?대? ?꾩튂瑜??대떦 ?꾩튂濡??대룞
         if (!agent.Warp(hit.position)) return false;
         transform.rotation = targetPoint.rotation;
 
