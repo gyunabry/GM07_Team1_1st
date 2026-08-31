@@ -67,8 +67,6 @@ public class AttackBase : IAttack
     }
     public void FlowerThorns(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer)
     {
-        
-
         Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
 
         if (enemy.Length > 0)

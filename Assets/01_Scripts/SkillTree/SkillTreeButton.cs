@@ -35,15 +35,22 @@ public class SkillTreeButton : MonoBehaviour
     public void MouserEnter()
     {
         popUp = poolManager.GetPool<SkillTreePopUp>();
-        popUp.transform.SetParent(transform);
-        RectTransform rect = popUp.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(0f, 170f);
-        if(rect.transform.position.y > 1000f)
+        Canvas rootCanvas = canvas != null ? canvas : GetComponentInParent<Canvas>();
+        if(rootCanvas != null)
         {
-            rect.anchoredPosition = new Vector2(-240f, 0f);
+            popUp.transform.SetParent(rootCanvas.transform, false);
+        }
+        popUp.transform.SetAsLastSibling();
+        popUp.transform.localScale = Vector3.one;
+        Vector3 buttonPos = transform.position;
+        popUp.transform.position = buttonPos + new Vector3(0f, 170f, 0f);
+
+        if(popUp.transform.position.y > Screen.height - 150f)
+        {
+            popUp.transform.position = buttonPos + new Vector3(0f, -170f, 0f);
         }
         popUp.SetSprite(skillData.skillSprite);
-        popUp.SetName(skillData.name, skillData.skillNeedLevel, skillData.skillMaxLevel);
+        popUp.SetName(skillData.skillName, skillData.skillNeedLevel, skillData.skillMaxLevel);
         popUp.SetNeed(skillData.skillNeedSkillPoint, skillData.skillNeedMoney);
         popUp.SetDesc(skillData.skillDesc);
     }
