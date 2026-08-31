@@ -5,6 +5,6 @@ public class S35_SellExp : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        RewardSkillRegistry.AddSellExperienceBonusChance(skillData.value[nowLevel]);
     }
 }

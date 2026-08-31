@@ -19,17 +19,11 @@ public class Portal : InteractableBase
     private const int HuntingFieldCount = 3;
 
     [Header("포탈 연결")]
-    //[SerializeField] private Portal linkedPortal1;
-    //[SerializeField] private Portal linkedPortal2;
-    //[SerializeField] private Portal linkedPortal3;
-    //[SerializeField] private Portal linkedPortal4;
     [SerializeField] private PortalInteractionMode interactionMode;
 
     [Header("도착 설정")]
     [Tooltip("플레이어가 포탈을 탔을 때 도착할 위치")]
     [SerializeField] private Transform arrivalPoint;
-    //[Tooltip("도착지점 주변에서 NavMesh를 검색할 거리")]
-    //[SerializeField] private float navMeshSampleDistance = 1.5f;
 
     [Header("공방 포탈 설정")]
     [SerializeField] private TeleportUI teleportUI;
@@ -45,8 +39,8 @@ public class Portal : InteractableBase
     [Header("도착 이벤트")]
     [Tooltip("플레이어가 포탈에 도착한 뒤 실행할 이벤트")]
     [SerializeField] private UnityEvent onArrived = new UnityEvent();
-    //[SerializeField] private UnityEvent AttackOn;
-    //[SerializeField] private UnityEvent AttackOff;
+
+    private UnityAction runtimeArrivalAction;
 
     Transform target;
 
@@ -71,13 +65,6 @@ public class Portal : InteractableBase
                 TryTeleportTo(interactor, workshopPortal);
                 break;
         }
-
-        //portalUI.gameObject.SetActive(true);
-        //Button[] teleportButton = portalUI.GetComponentsInChildren<Button>();
-        //teleportButton[0].onClick.AddListener(() => SelectPortal(interactor, 1));
-        //teleportButton[1].onClick.AddListener(() => SelectPortal(interactor, 2));
-        //teleportButton[2].onClick.AddListener(() => SelectPortal(interactor, 3));
-        //teleportButton[3].onClick.AddListener(() => SelectPortal(interactor, 4));
     }
 
     private void OpenSelectionUI(GameObject interactor)
@@ -145,47 +132,73 @@ public class Portal : InteractableBase
         return true;
     }
 
-    //public void SelectPortal(GameObject interactor, int portalList)
-    //{
-    //    if (interactor == null || linkedPortal1 == null || linkedPortal2 == null || linkedPortal3 == null || linkedPortal4 == null)
-    //    {
-    //        return;
-    //    }
+    // 해당 포탈을 공방 포탈로 설정하고 이동 가능한 사냥터 목록을 연결하는 메서드
+    public void SetWorkshopPortal(TeleportUI runtimeTeleportUI, Portal[] fieldPortals, PlayerAttack runtimePlayerAttack)
+    {
+        interactionMode = PortalInteractionMode.WorkshopSelector;
 
-    //    NavMeshAgent agent = interactor.GetComponent<NavMeshAgent>();
+        teleportUI = runtimeTeleportUI;
 
-    //    if (agent == null || !agent.enabled)
-    //    {
-    //        Debug.LogWarning("이동 가능한 NavMeshAgent가 없습니다.");
-    //        return;
-    //    }
-        
-    //    switch (portalList)
-    //    {
-    //        case 1: target = linkedPortal1.ArrivalPoint;break;
-    //        case 2: target = linkedPortal2.ArrivalPoint;break;
-    //        case 3: target = linkedPortal3.ArrivalPoint;break;
-    //        case 4: target = linkedPortal4.ArrivalPoint;break;
-    //    }
-        
+        huntingFieldPortals = new Portal[HuntingFieldCount];
 
-    //    agent.ResetPath();
+        if (fieldPortals != null)
+        {
+            for (int i = 0; i < huntingFieldPortals.Length; i++)
+            {
+                huntingFieldPortals[i] = fieldPortals[i];
+            }
+        }
 
-    //    agent.Warp(target.position);
+        workshopPortal = null;
 
-    //    // 에이전트의 회전 방향을 포탈이 바라보는 방향과 일치
-    //    agent.transform.rotation = target.rotation;
+        if (runtimePlayerAttack != null)
+        {
+            SetRuntimeArrivalAction(runtimePlayerAttack.AttackPause);
+        }
+        else
+        {
+            SetRuntimeArrivalAction(null);
+        }
+    }
 
-    //    if(portalList != 1)
-    //    {
-    //        AttackOn?.Invoke();
-    //    }
-    //    else
-    //    {
-    //        AttackOff?.Invoke();
-    //    }
+    public void SetHuntingFieldPortal(Portal runtimeWorkshopPortal, PlayerAttack runtimePlayerAttack)
+    {
+        interactionMode = PortalInteractionMode.HuntingFieldReturn;
 
-    //        portalUI.gameObject.SetActive(false);
-    //}
+        workshopPortal = runtimeWorkshopPortal;
+
+        teleportUI = null;
+        huntingFieldPortals = new Portal[HuntingFieldCount];
+
+        if (runtimePlayerAttack != null)
+        {
+            SetRuntimeArrivalAction(runtimePlayerAttack.AttackRefresh);
+        }
+        else
+        {
+            SetRuntimeArrivalAction(null);
+        }
+    }
+
+    private void SetRuntimeArrivalAction(UnityAction nextAction)
+    {
+        if (onArrived == null)
+        {
+            onArrived = new UnityEvent();
+        }
+
+        // 같은 이벤트가 여러 번 호출되지 않도록 기존 런타임 리스너를 제거
+        if (runtimeArrivalAction != null)
+        {
+            onArrived.RemoveListener(runtimeArrivalAction);
+        }
+
+        runtimeArrivalAction = nextAction;
+
+        if (runtimeArrivalAction != null)
+        {
+            onArrived.AddListener(runtimeArrivalAction);
+        }
+    }
 }
  

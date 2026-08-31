@@ -300,6 +300,25 @@ public class BuildableArea : MonoBehaviour
         return count;
     }
 
+    public bool RestoreUnlockedAreas(IReadOnlyList<RectInt> areas)
+    {
+        if (!CanUnlockAreas(areas)) return false;
+
+        unlockedAreas.Clear();
+
+        foreach (RectInt area in areas)
+        {
+            if (!unlockedAreas.Contains(area))
+            {
+                unlockedAreas.Add(area);
+            }
+        }
+
+        UnlockedAreaChanged?.Invoke();
+
+        return true;
+    }
+
     private void OnDrawGizmosSelected()
     {
         if (grid == null) return;

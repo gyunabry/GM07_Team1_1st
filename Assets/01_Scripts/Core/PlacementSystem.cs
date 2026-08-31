@@ -2,13 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
- 상태 패턴 활용 리팩토링 예정
-- Placement
-- Remove
-- Interior
- */
-
 public enum PlacementMode
 {
     None,
@@ -30,9 +23,6 @@ public partial class PlacementSystem : MonoBehaviour
     [SerializeField] private EconomyModifierService economyModifier;
 
     private BuildableArea currentArea;
-
-    // 셀별로 어떤 건물이 점유 중인지 저장
-    //private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
 
     // 현재 배치 대상으로 선택된 건물 데이터
     private BuildingDataSO selectedBuildingData;
@@ -80,7 +70,6 @@ public partial class PlacementSystem : MonoBehaviour
 
         inputManager.OnPrimaryClicked += HandlePrimaryClick;
         inputManager.OnSecondaryClicked += HandleSecondaryClick;
-        //inputManager.OnCancelPressed += CancelCurrentAction;
         inputManager.OnBuildingLongPressed += HandleBuildingLongPressed;
     }
 
@@ -90,7 +79,6 @@ public partial class PlacementSystem : MonoBehaviour
 
         inputManager.OnPrimaryClicked -= HandlePrimaryClick;
         inputManager.OnSecondaryClicked -= HandleSecondaryClick;
-        //inputManager.OnCancelPressed -= CancelCurrentAction;
         inputManager.OnBuildingLongPressed -= HandleBuildingLongPressed;
     }
 
@@ -627,6 +615,8 @@ public partial class PlacementSystem : MonoBehaviour
                 building.transform.rotation
             );
 
+            building.CompletePreplacedBuilding();
+
             return true;
         }
 
@@ -654,6 +644,150 @@ public partial class PlacementSystem : MonoBehaviour
             ExitCurrentMode();
         }
     }
+    #endregion
+
+    #region 저장 및 복구
+
+    // 현재 BuildingContainer 아래에 배치된 모든 시설을 반환
+    public PlacedBuilding[] GetPlacedBuildings()
+    {
+        if (buildingContainer == null)
+        {
+            Debug.LogError("PlacementSystem에 Building Container가 연결되지 않았습니다.");
+            return Array.Empty<PlacedBuilding>();
+        }
+
+        return buildingContainer.GetComponentsInChildren<PlacedBuilding>();
+    }
+
+    // 저장 데이터를 불러오기 전 현재 월드의 모든 시설을 제거
+    public void ClearBuildingsOnLoad()
+    {
+        if (buildingContainer == null)
+        {
+            Debug.LogError("PlacementSystem에 Building Container가 연결되지 않았습니다.");
+            return;
+        }
+
+        // 건설, 재배치, 판매 모드 중이라면 종료
+        // 프리뷰 참조가 남을 수 있는 문제 방지
+        if (CurrentMode != PlacementMode.None)
+        {
+            ExitCurrentMode();
+        }
+
+        PlacedBuilding[] buildings = GetPlacedBuildings();
+
+        foreach (PlacedBuilding building in buildings)
+        {
+            if (building == null) continue;
+
+            BuildableArea assignedArea = building.AssignedArea;
+
+            if (assignedArea != null)
+            {
+                assignedArea.Release(building, building.OccupiedCells);
+            }
+
+            // 처리된 시설은 컨테이너에서 분리해 재검사 대상이 되지 않도록 정리 
+            building.transform.SetParent(null, false);
+            building.gameObject.SetActive(false);
+
+            Destroy(building.gameObject);
+        }
+
+        selectedPlacedBuilding = null;
+        currentArea = null;
+
+        SelectionChanged?.Invoke(null);
+    }
+
+    public bool TryGetBuildableArea(string areaId, out BuildableArea result)
+    {
+        result = null;
+
+        if (string.IsNullOrWhiteSpace(areaId))
+        {
+            return false;
+        }
+
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area == null) continue;
+
+            if (string.Equals(area.AreaId, areaId, StringComparison.Ordinal))
+            {
+                result = area;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool TryRestoreBuilding(
+        FacilitySaveData saved,
+        BuildingDataSO data,
+        BuildableArea area,
+        out PlacedBuilding result)
+    {
+        result = null;
+
+        if (saved == null ||
+            data == null ||
+            area == null ||
+            saved.rotationIndex > 3)
+        {
+            return false;
+        }
+
+        Vector3Int originCell = new(saved.originCellX, saved.originCellY, 0);
+        Vector2Int rotatedSize = GetRotatedSize(data.Size, saved.rotationIndex);
+        List<Vector3Int> cells = GetOccupiedCells(originCell, rotatedSize);
+
+        if (!area.CanPlaceBuilding(data, originCell, rotatedSize) || !area.AreCellsAvailable(cells))
+        {
+            return false;
+        }
+
+        Vector3 worldPosition = GetBuildingCenter(area.Grid, originCell, rotatedSize);
+
+        Quaternion worldRotation = GetRotation((short)saved.rotationIndex);
+
+        GameObject instance = Instantiate(data.BuildingPrefab, worldPosition, worldRotation, buildingContainer);
+
+        if (!instance.TryGetComponent(out PlacedBuilding building))
+        {
+            Destroy(instance);
+            return false;
+        }
+
+        bool initialized =
+            building.InitializeOnLoad(
+            data,
+            area,
+            originCell,
+            saved.rotationIndex,
+            cells,
+            saved.guid,
+            saved.placementSource,
+            saved.buildingState,
+            saved.constructionProgress01);
+
+        if (!initialized || !area.TryOccupy(building, cells))
+        {
+            Destroy(instance);
+            return false;
+        }
+
+        instance.name = data.BuildingName;
+        result = building;
+
+        OnBuildingPlaced?.Invoke(building, data);
+
+        return true;
+    }
+    
     #endregion
 
     #region 이벤트 핸들러

@@ -364,6 +364,53 @@ public sealed class EmployeeManager : MonoBehaviour
         EmployeeHiringLimitChanged?.Invoke();
     }
 
+    public bool TryRegisterBuildingOnLoad(PlacedBuilding building)
+    {
+        if (building == null || building.Data == null)
+        {
+            return false;
+        }
+
+        if (!TryGetProfile(building.Data.BuildingId, out EmployeeBuildingProfile profile))
+        {
+            return false;
+        }
+
+        return TryRegisterBuilding(building, profile.EmployeeData, profile.MaxEmployees, 0);
+    }
+
+    public bool TryRestoreEmployee(PlacedBuilding assignedBuilding, out EmployeeRuntimeData employee)
+    {
+        employee = null;
+
+        if (!TryGetRegisteredBuilding(assignedBuilding, out RegisteredBuilding registered))
+        {
+            return false;
+        }
+
+        if (registered.Employees.Count >= registered.MaxEmployees)
+        {
+            return false;
+        }
+
+        employee = new EmployeeRuntimeData(nextEmployeeId++, registered.EmployeeData, registered.Building);
+
+        registered.Employees.Add(employee);
+
+        EmployeeHired?.Invoke(employee);
+
+        return true;
+    }
+
+    // 복구 전 기본 직원과 등록을 초기화
+    public void ResetBuildingOnLoad(PlacedBuilding building)
+    {
+        if (building == null) return;
+
+        TryUnregisterBuilding(building);
+        TryRegisterBuildingOnLoad(building);
+    }
+
     private sealed class RegisteredBuilding
     {
         public PlacedBuilding Building { get; }
