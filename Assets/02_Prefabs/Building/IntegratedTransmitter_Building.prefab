@@ -227,6 +227,7 @@ GameObject:
   - component: {fileID: 4755671542319241803}
   - component: {fileID: 1124032565520224655}
   - component: {fileID: 7759603716492940117}
+  - component: {fileID: -5395598699576813280}
   m_Layer: 12
   m_Name: IntegratedTransmitter_Building
   m_TagString: Untagged
@@ -267,7 +268,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
   constructionObject: {fileID: 8950724445563811342}
   completedObject: {fileID: 5312220441689371578}
+  data: {fileID: 0}
   state: 0
+  placementSource: 0
 --- !u!208 &4755671542319241803
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -313,8 +316,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntegratedTransmitter
   inventory:
-    capacity: 20
+    capacity: 500
     entries: []
+--- !u!114 &-5395598699576813280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7041070573498958974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6ce30c7258a3447ac700084c34700d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentGuid
+  value: 
 --- !u!1 &8950724445563811342
 GameObject:
   m_ObjectHideFlags: 0

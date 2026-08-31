@@ -8,8 +8,8 @@ public class BuildableArea : MonoBehaviour
     [SerializeField] private AreaType areaType;
     [SerializeField] private Grid grid;
     [SerializeField] private Collider placementSurface;
-    [SerializeField] private Transform buildingContainer;
     [SerializeField] private GameObject gridView;
+    [SerializeField] private Collider cameraBounds;
 
     // 현재 해금되어 시설 배치가 가능한 영역
     [SerializeField] private List<RectInt> unlockedAreas = new();
@@ -17,12 +17,15 @@ public class BuildableArea : MonoBehaviour
 
     private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
 
+    // 해당 셀에 배치된 시설을 담는 해시셋;
+    private readonly HashSet<PlacedBuilding> placedBuildings = new();
+
     public string AreaId => areaId;
     public AreaType AreaType => areaType;
     public Grid Grid => grid;
     public Collider PlacementSurface => placementSurface;
-    public Transform BuildingContainer => buildingContainer;
     public IReadOnlyList<RectInt> UnlockedAreas => unlockedAreas;
+    public Collider CameraBounds => cameraBounds;
 
     public event Action UnlockedAreaChanged;
 
@@ -174,6 +177,7 @@ public class BuildableArea : MonoBehaviour
             occupiedCells[NormalizeCell(cells[i])] = building;
         }
 
+        placedBuildings.Add(building);
         return true;
     }
 
@@ -195,6 +199,8 @@ public class BuildableArea : MonoBehaviour
                 occupiedCells.Remove(cell);
             }
         }
+
+        placedBuildings.Remove(building);
     }
 
     public bool IsOccupied(Vector3Int cell)
@@ -255,6 +261,60 @@ public class BuildableArea : MonoBehaviour
         {
             UnlockedAreaChanged?.Invoke();
         }
+
+        return true;
+    }
+
+    public bool ContainsWorldXZ(Vector3 position)
+    {
+        Collider areaCollider = placementSurface;
+
+        if (areaCollider == null) return false;
+
+        Bounds bounds = areaCollider.bounds;
+
+        return position.x >= bounds.min.x &&
+            position.x <= bounds.max.x &&
+            position.z >= bounds.min.z &&
+            position.z <= bounds.max.z;
+    }
+
+    // 재배치할 때 자기 자신때문에 한도에 막히는 것을 방지하기 위해 ignoredBuilding을 매개변수로 지정
+    public int GetPlacedCount(BuildingDataSO data, PlacedBuilding ignoredBuilding = null)
+    {
+        if (data == null) return 0;
+
+        int count = 0;
+
+        foreach (PlacedBuilding building in placedBuildings)
+        {
+            // 해당 시설이 자기 자신과 같은 대상인지 검사
+            if (building == null || building == ignoredBuilding || building.Data != data)
+            {
+                continue;
+            }
+
+            count++;
+        }
+
+        return count;
+    }
+
+    public bool RestoreUnlockedAreas(IReadOnlyList<RectInt> areas)
+    {
+        if (!CanUnlockAreas(areas)) return false;
+
+        unlockedAreas.Clear();
+
+        foreach (RectInt area in areas)
+        {
+            if (!unlockedAreas.Contains(area))
+            {
+                unlockedAreas.Add(area);
+            }
+        }
+
+        UnlockedAreaChanged?.Invoke();
 
         return true;
     }

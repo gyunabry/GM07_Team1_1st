@@ -14,16 +14,11 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private ParticleManager particleManager;
 
     [SerializeField] private List<AttackSO> attackSOData;
-    [SerializeField] private AttackSO MagicArrowSO;
-    [SerializeField] private AttackSO FireCircleSO;
-    [SerializeField] private AttackSO ChasingSickleSO;
-    [SerializeField] private AttackSO LightningRaySO;
-    [SerializeField] private AttackSO FlowerThornsSO;
 
     [SerializeField] public List<AttackUnlockData> attackUnlockDatas = new List<AttackUnlockData>();
 
-
-    Coroutine[] co;
+    Dictionary<string, AttackSO> attackDictionary = new Dictionary<string, AttackSO>();
+    Dictionary<string, Coroutine> attackCoDictionary = new Dictionary<string, Coroutine>();
     public AttackSlotData[] slots = new AttackSlotData[60];
     public PlayerAttackUpgrade[] upgrade = new PlayerAttackUpgrade[60];
 
@@ -46,13 +41,12 @@ public class PlayerAttack : MonoBehaviour
             upgrade[i].distance = 0f;
             upgrade[i].projectileCount = 0;
         }
-        co = new Coroutine[60];
         attackUnlockDatas.Clear();
         foreach(var attackData in attackSOData)
         {
             AttackUnlockData aud = new AttackUnlockData();
             aud.attackID = attackData.attackID;
-            aud.unlock = true;
+            aud.unlock = false;
             aud.equip = false;
             if(attackData.sprite != null)
             {
@@ -60,7 +54,14 @@ public class PlayerAttack : MonoBehaviour
             }
             attackUnlockDatas.Add(aud);
         }
-        
+        attackDictionary.Clear();
+        foreach(var attackData in attackSOData)
+        {
+            if(attackData != null && !attackDictionary.ContainsKey(attackData.attackID))
+            {
+                attackDictionary.Add(attackData.attackID, attackData);
+            }
+        }
     }
     private void Start()
     {
@@ -69,46 +70,44 @@ public class PlayerAttack : MonoBehaviour
     public void AttackPause()
     {
         int i = 0;
-        foreach(var cor in co)
+        foreach(var cor in attackCoDictionary.Values)
         {
             if(cor != null)
             {
                 StopCoroutine(cor);
             }
-            co[i] = null;
-            i++;
         }
+        attackCoDictionary.Clear();
         inVillage = true;
+    }
+    private int GetUpgradeIndex(string skillID)
+    {
+        return skillID switch
+        {
+            "S39" => 0,
+            "S43" => 1,
+            "S47" => 2,
+            "S51" => 3,
+            "S55" => 4,
+            _ => 0
+        };
     }
     public void AttackRefresh()
     {
         foreach (var slot in slots)
         {
-            if (slot.equipAttackID != null)
+            if (!string.IsNullOrEmpty(slot.equipAttackID))
             {
-                string idd = slot.equipAttackID.Replace("S", "");
-                if (int.TryParse(idd, out var i)) { }
-                if (co[i] != null)
+                string skillID = slot.equipAttackID;
+                if (attackDictionary.TryGetValue(skillID, out AttackSO attackSO))
                 {
-                    StopCoroutine(co[i]);
-                }
-                co[i] = null;
-                if (co[i] == null)
-                {
-                    switch (i)
+                    if(attackCoDictionary.TryGetValue(skillID, out Coroutine runningCo))
                     {
-                        case 1:
-                            co[i] = StartCoroutine(MagicArrow()); break;
-                        case 2:
-                            co[i] = StartCoroutine(FireCircle()); break;
-                        case 3:
-                            co[i] = StartCoroutine(ChasingSickle()); break;
-                        case 4:
-                            co[i] = StartCoroutine(LightningRay()); break;
-                        case 5:
-                            co[i] = StartCoroutine(FlowerThorns()); break;
-                        default: break;
+                        if(runningCo != null) StopCoroutine(runningCo);
+                        attackCoDictionary.Remove(skillID);
                     }
+                    int upgradeIndex = GetUpgradeIndex(skillID);
+                    attackCoDictionary[skillID] = StartCoroutine(SkillCoroutine(attackSO, upgradeIndex));
                 }
             }
         }
@@ -116,13 +115,9 @@ public class PlayerAttack : MonoBehaviour
     }
     public void StartAndStopAttackCo(int slot, string id,AttackEquHud hud)
     {
-        string idd = id.Replace("S", "");
-        if(int.TryParse(idd, out var i)) { }
         string nowId = slots[slot].equipAttackID;
-        
-        if (int.TryParse(nowId, out var j)){ }
-        
         bool change = false;
+        
         foreach (var nowSlot in slots)
         {
             if (nowSlot.equipAttackID == id)
@@ -130,11 +125,11 @@ public class PlayerAttack : MonoBehaviour
                 if (nowId == id)
                 {
                     slots[slot].equipAttackID = null;
-                    if (co[i] != null)
+                    if(attackCoDictionary.TryGetValue(id, out Coroutine runningCo))
                     {
-                        StopCoroutine(co[i]);
+                        if (runningCo != null) StopCoroutine(runningCo);
+                        attackCoDictionary.Remove(id);
                     }
-                    co[i] = null;
                     hud.EquipRefresh(id);
                 }
                 else
@@ -146,187 +141,146 @@ public class PlayerAttack : MonoBehaviour
         }
         if(!change)
         {
-            if(nowId != null)
+            if(nowId != null && attackCoDictionary.TryGetValue(nowId, out Coroutine oldCo))
             {
-                if (co[j] != null)
-                {
-                    StopCoroutine(co[j]);
-                    co[j] = null;
-                }
+                if (oldCo != null) StopCoroutine(oldCo);
+                attackCoDictionary.Remove(nowId);
             }
             slots[slot].equipAttackID = id;
             if (inVillage == false)
             {
-                switch (i)
+                if (attackDictionary.TryGetValue(id, out AttackSO attackSO))
                 {
-                    case 1:
-                        co[i] = StartCoroutine(MagicArrow()); break;
-                    case 2:
-                        co[i] = StartCoroutine(FireCircle()); break;
-                    case 3:
-                        co[i] = StartCoroutine(ChasingSickle()); break;
-                    case 4:
-                        co[i] = StartCoroutine(LightningRay()); break;
-                    case 5:
-                        co[i] = StartCoroutine(FlowerThorns()); break;
-                    default: break;
+                    int upgradeIndex = GetUpgradeIndex(id);
+                    attackCoDictionary[id] = StartCoroutine(SkillCoroutine(attackSO, upgradeIndex));
                 }
             }
             hud.EquipRefresh(id);
         }
     }
-    IEnumerator MagicArrow() // 코드 1
+    IEnumerator SkillCoroutine(AttackSO attackSO, int upgradeIndex)
     {
-        Collider[] enemyIn;
-        
         while (true)
         {
-            AttackData ad = new AttackData
+            AttackData ad = attackSO.CalculateAttackData(player, upgrade[upgradeIndex]);
+            
+            if(attackSO.skillBase != null)
             {
-                position = transform.position,
-            };
-            ad.distance = MagicArrowSO.distance;
-            enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
-            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (MagicArrowSO.attackDamage  + upgrade[1].damage);
-            ad.attackSpeed = (MagicArrowSO.attackSpeed + upgrade[1].attackSpeed + player.baseAttackSpeed) + player.attackSpeed;
-            ad.projectileCount = MagicArrowSO.projectileCount + upgrade[1].projectileCount;
-            if(enemyIn == null)
-            {
-                yield return null;
-                continue;
+                yield return StartCoroutine(attackSO.skillBase.RunSkill(player, ad, poolManager, particleManager,layer, attack));
             }
-            if (enemyIn.Length == 0)
+            yield return new WaitForSeconds(ad.attackSpeed);
+        }
+    }
+    public float[] ReturnSkillValue(string skillCode)
+    {
+        float[] value = new float[4];
+        if(attackDictionary.TryGetValue(skillCode, out AttackSO attackSO))
+        {
+            string code = skillCode.Replace("S", "");
+            int.TryParse(code, out int upgradeIndex);
+
+            AttackData ad = attackSO.CalculateAttackData(player, upgrade[upgradeIndex]);
+
+            value[0] = ad.attackDamage;
+            value[1] = ad.attackSpeed;
+            value[2] = ad.distance;
+            value[3] = ad.projectileCount;
+        }
+        return value;
+    }
+
+    // 1. 공격 코루틴 정리
+    // 2. 모든 슬롯을 null
+    // 3. slotIndex가 유효 배열 범위인지 검사
+    // 4. 실제로 해금된 상태인지 검사
+    // 5. 검사를 통과한 스킬만 해당 슬롯에 장착
+    public void RestoreEquippedAttacks(IReadOnlyList<EquippedAttackSaveData> savedAttacks)
+    {
+        AttackPause();
+
+        if (slots == null || slots.Length == 0)
+        {
+            Debug.LogWarning("복구할 공격 슬롯이 없습니다.");
+            return;
+        }
+
+        // 모든 슬롯을 null로 초기화
+        for (int i = 0; i < slots.Length; i++)
+        {
+            if (slots[i] == null)
             {
-                yield return null;
-                continue;
+                slots[i] = new AttackSlotData();
             }
-            ad.direction = (enemyIn[0].transform.position - transform.position).normalized;
-            for (int i = 0; i < ad.projectileCount; i++)
+
+            slots[i].slotIndex = i;
+            slots[i].equipAttackID = null;
+        }
+
+        if (attackUnlockDatas != null)
+        {
+            foreach (AttackUnlockData attackData in attackUnlockDatas)
             {
-                if (enemyIn.Length == 0)
+                if (attackData != null)
                 {
-                    enemyIn = Physics.OverlapSphere(transform.position, ad.distance, layer);
+                    attackData.equip = false;
                 }
-                if (enemyIn.Length > 0)
+            }
+        }
+
+        if (savedAttacks == null) return;
+
+        foreach (EquippedAttackSaveData savedAttack in savedAttacks)
+        {
+            if (savedAttack == null || string.IsNullOrWhiteSpace(savedAttack.attackId))
+            {
+                continue;
+            }
+
+            int slotIndex = savedAttack.slotIndex;
+
+            // 저장된 슬롯 인덱스가 정상 범위인지 검사
+            if (slotIndex < 0 || slotIndex >= slots.Length)
+            {
+                Debug.LogWarning($"유효하지 않은 공격 슬롯입니다. 슬롯: {slotIndex}, 공격 ID: {savedAttack.attackId}");
+                continue;
+            }
+
+            AttackUnlockData matchedAttack = null;
+
+            if (attackUnlockDatas != null)
+            {
+                foreach (AttackUnlockData attackData in attackUnlockDatas)
                 {
-                    AudioManager.Instance.PlaySFX(ESFXType.Active_MagicArrow);
-                    attack.MagicArrow(ad.attackDamage, ad, poolManager, layer);
-                    if(i == ad.projectileCount - 1)
+                    if (attackData == null) continue;
+
+                    if (string.Equals(attackData.attackID, savedAttack.attackId, System.StringComparison.Ordinal))
                     {
+                        matchedAttack = attackData;
                         break;
                     }
-                    yield return new WaitForSeconds(0.1f);
                 }
             }
-            yield return new WaitForSeconds(ad.attackSpeed);
-        }
-    }
-    IEnumerator FireCircle()// 코드 2
-    {
-        while (true)
-        {
-            AttackData ad = new AttackData
+
+            if (matchedAttack == null)
             {
-                position = transform.position,
-            };
-            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FireCircleSO.attackDamage + upgrade[2].damage);
-            ad.attackSpeed = (FireCircleSO.attackSpeed + upgrade[2].attackSpeed + player.baseAttackDamage) + player.attackSpeed;
-            ad.distance = FireCircleSO.distance + upgrade[2].distance + player.baseAttackDistance;
-
-            AudioManager.Instance.PlaySFX(ESFXType.Active_FireCircle);
-            attack.FireCircle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(1, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
-
-            yield return new WaitForSeconds(ad.attackSpeed);
-        }
-    }
-    IEnumerator ChasingSickle()// 코드 3
-    {
-        while (true)
-        {
-            AttackData ad = new AttackData
-            {
-                position = transform.position,
-                forward = transform.forward
-            };
-            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (ChasingSickleSO.attackDamage + upgrade[0].damage);
-            ad.attackSpeed = (ChasingSickleSO.attackSpeed + upgrade[0].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
-            ad.distance = ChasingSickleSO.distance + upgrade[0].distance;
-            ad.spreadAngle = ChasingSickleSO.spreadAngle;
-
-            AudioManager.Instance.PlaySFX(ESFXType.Active_ChasingSickle);
-            attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(2, transform.position, transform.rotation, 0, ad.distance, ad.attackSpeed);
-
-            yield return new WaitForSeconds(ad.attackSpeed);
-        }
-    }
-    IEnumerator LightningRay()// 코드 4
-    {
-        while (true)
-        {
-            AttackData ad = new AttackData
-            {
-                position = transform.position,
-            };
-            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (LightningRaySO.attackDamage + upgrade[3].damage);
-            ad.attackSpeed = (LightningRaySO.attackSpeed + upgrade[3].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
-            ad.distance = LightningRaySO.distance + upgrade[3].distance + player.baseAttackDistance;
-            ad.spreadAngle = LightningRaySO.spreadAngle;
-
-            Collider[] enemy = Physics.OverlapSphere(transform.position, ad.distance, layer);
-
-            Collider nearEnemy = null;
-            float minDis = Mathf.Infinity;
-            if (enemy.Length > 0)
-            {
-                foreach (var that in enemy)
-                {
-                    Vector3 enemyPosi = that.transform.position;
-                    float distance = (transform.position - enemyPosi).sqrMagnitude;
-                    if (distance < minDis)
-                    {
-                        minDis = distance;
-                        nearEnemy = that;
-                    }
-                }   
-            Vector3 dir = (nearEnemy.transform.position - transform.position).normalized;
-            Quaternion targetRota = Quaternion.LookRotation(dir);
-                AudioManager.Instance.PlaySFX(ESFXType.Active_LightningRay);
-                particleManager.GetParticle(3, transform.position, targetRota, ad.attackDamage, ad.distance, ad.attackSpeed);
-            }
-            else
-            {
-                yield return null;
+                Debug.LogWarning($"존재하지 않는 공격 ID를 건너뜁니다: {savedAttack.attackId}");
                 continue;
             }
-            yield return new WaitForSeconds(ad.attackSpeed);
-        }
-    }
-    IEnumerator FlowerThorns()// 코드 5
-    {
-        while (true)
-        {
-            Vector2 randomCircle = Random.insideUnitCircle * FlowerThornsSO.distance;
-            Vector3 randomPosi = new Vector3(transform.position.x + randomCircle.x, transform.position.y, transform.position.z + randomCircle.y);
-            AttackData ad = new AttackData
-            {
-                position = randomPosi,
-            };
-            ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (FlowerThornsSO.attackDamage + upgrade[4].damage);
-            ad.attackSpeed = (FlowerThornsSO.attackSpeed + upgrade[4].attackSpeed) + player.attackSpeed + player.baseAttackSpeed;
-            ad.distance = FlowerThornsSO.distance + upgrade[4].distance + player.baseAttackDistance;
-            
-            giz = randomPosi;
-            dis = ad.distance;
-            AudioManager.Instance.PlaySFX(ESFXType.Active_FlowerThorns);
-            attack.FlowerThorns(ad.attackDamage, ad, poolManager, layer);
-            particleManager.GetParticle(4, randomPosi, transform.rotation, 0, ad.distance, ad.attackSpeed);
 
-            yield return new WaitForSeconds(ad.attackSpeed);
+            if (!matchedAttack.unlock)
+            {
+                Debug.LogWarning($"해금되지 않은 공격 스킬은 장착할 수 없습니다: {savedAttack.attackId}");
+                continue;
+            }
+
+            // 모든 검사를 통과한 공격을 해당 슬롯에 장착
+            slots[slotIndex].equipAttackID = savedAttack.attackId;
+            matchedAttack.equip = true;
         }
     }
+
 }
+
 [System.Serializable]
 public class AttackSlotData
 {

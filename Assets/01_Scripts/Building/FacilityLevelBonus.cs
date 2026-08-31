@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class FacilityLevelBonus : MonoBehaviour
 {
@@ -10,37 +9,30 @@ public class FacilityLevelBonus : MonoBehaviour
     {
         public int level;
 
+        
         public int productionLimit;
         public int salesLimit;
-        public int hunterLimit;
-        public int carrierLimit;
     }
-
-    [SerializeField] private BuildingDataSO hunterBuilding;
-    [SerializeField] private BuildingDataSO carrierBuilding;
 
     [SerializeField] private BuildingDatabaseSO buildingDatabase;
     [SerializeField] private List<LevelFacilityLimit> limits = new();
 
-    private void OnEnable()
+    private void Start()
     {
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp += HandleLevelUp;
         }
+
+        ApplyCurrentLevelLimits();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp -= HandleLevelUp;
         }
-    }
-
-    private void Start()
-    {
-        ApplyCurrentLevelLimits();
     }
 
     private void HandleLevelUp()
@@ -89,18 +81,6 @@ public class FacilityLevelBonus : MonoBehaviour
 
     private bool TryGetLimit(BuildingDataSO buildingData, LevelFacilityLimit limits, out int limit)
     {
-        if (buildingData == hunterBuilding)
-        {
-            limit = limits.hunterLimit;
-            return true;
-        }
-
-        if (buildingData == carrierBuilding)
-        {
-            limit = limits.carrierLimit;
-            return true;
-        }
-
         switch (buildingData.BuildingTag)
         {
             case BuildingTag.Production:

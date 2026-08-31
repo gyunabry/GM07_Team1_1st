@@ -5,6 +5,6 @@ public class S10_StorageMiniUpgrade : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        StorageSkillRegistry.AddCapacityBonus((int)skillData.value[nowLevel]);
     }
 }

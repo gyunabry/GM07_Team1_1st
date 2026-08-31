@@ -11,6 +11,7 @@ public class CharacterPanelController : MonoBehaviour
     [Header("참조")]
     [SerializeField] private Player player;
     [SerializeField] private SkillTreeManager skillTreeManager;
+    [SerializeField] private EmployeeManager employeeManager;
 
     [SerializeField] private BuildingDataSO productionBuilding;
     [SerializeField] private BuildingDataSO salesBuilding;
@@ -28,6 +29,8 @@ public class CharacterPanelController : MonoBehaviour
     [Header("시설 한도")]
     [SerializeField] private TMP_Text maxProductionCount;
     [SerializeField] private TMP_Text maxSalesCounterCount;
+
+    [Header("직원 고용 한도")]
     [SerializeField] private TMP_Text maxHunterCount;
     [SerializeField] private TMP_Text maxCarrierCount;
 
@@ -109,6 +112,11 @@ public class CharacterPanelController : MonoBehaviour
         }
     }
 
+    public void Hide()
+    {
+        SetVisible(false);
+    }
+
     private void SetVisible(bool visible)
     {
         isOpen = visible;
@@ -164,16 +172,16 @@ public class CharacterPanelController : MonoBehaviour
 
         if (maxHunterCount != null)
         {
-            int current = FacilityManager.Instance.GetPlacedCount(hunterBuilding);
-            int limit = FacilityManager.Instance.GetPlacementLimit(hunterBuilding);
+            int current = employeeManager.HunterEmployeeCount;
+            int limit = employeeManager.GetHiringLimit(EmployeeRole.Hunter);
 
             maxHunterCount.text = $"{current} / {limit}";
         }
 
         if (maxCarrierCount != null)
         {
-            int current = FacilityManager.Instance.GetPlacedCount(carrierBuilding);
-            int limit = FacilityManager.Instance.GetPlacementLimit(carrierBuilding);
+            int current = employeeManager.CarrierEmployeeCount;
+            int limit = employeeManager.GetHiringLimit(EmployeeRole.Carrier);
 
             maxCarrierCount.text = $"{current} / {limit}";
         }

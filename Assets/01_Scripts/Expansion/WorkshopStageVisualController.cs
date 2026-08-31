@@ -8,14 +8,17 @@ public class WorkshopStageVisualController : MonoBehaviour
     {
         [SerializeField] private GameObject floorRoot;
         [SerializeField] private GameObject wallRoot;
+        [SerializeField] private GameObject obstacleRoot;
 
         public GameObject FloorRoot => floorRoot;
         public GameObject WallRoot => wallRoot;
+        public GameObject ObstacleRoot => obstacleRoot;
 
         public void SetActive(bool active)
         {
             if (floorRoot != null) floorRoot.SetActive(active);
             if (wallRoot != null) wallRoot.SetActive(active);
+            if (obstacleRoot != null) obstacleRoot.SetActive(!active);
         }
     }
 
@@ -35,10 +38,11 @@ public class WorkshopStageVisualController : MonoBehaviour
         }
     }
 
-    public bool TryGetStageRoots(int stage, out GameObject floorRoot, out GameObject wallRoot)
+    public bool TryGetStageRoots(int stage, out GameObject floorRoot, out GameObject wallRoot, out GameObject obstacleRoot)
     {
         floorRoot = null;
         wallRoot = null;
+        obstacleRoot = null;
 
         int index = stage - 1;
 
@@ -49,7 +53,8 @@ public class WorkshopStageVisualController : MonoBehaviour
 
         floorRoot = stages[index].FloorRoot;
         wallRoot = stages[index].WallRoot;
+        obstacleRoot = stages[index].ObstacleRoot;
 
-        return floorRoot != null || wallRoot != null;
+        return floorRoot != null || wallRoot != null || obstacleRoot != null;
     }
 }

@@ -125,4 +125,21 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
             LevelUp?.Invoke();
         }
     }
+
+    public void RestoreState(
+        int savedMoney, 
+        int savedTotalExperience, 
+        int savedCurrentExperience, 
+        int savedLevel)
+    {
+        money = Mathf.Max(0, savedMoney);
+        experience = Mathf.Max(0, savedTotalExperience);
+        nowExperience = Mathf.Max(0, savedCurrentExperience);
+
+        // 최대 레벨은 경험치 테이블 개수 + 1 (인덱스)
+        level = Mathf.Clamp(savedLevel, 1, needExp.Count + 1);
+
+        CurrencyChanged?.Invoke(money, experience);
+        OnGoldChanged?.Invoke();
+    }
 }

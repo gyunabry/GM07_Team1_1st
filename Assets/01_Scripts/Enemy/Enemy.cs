@@ -69,27 +69,41 @@ public class Enemy : MonoBehaviour
     public void MonsterDropItem()
     {
         ItemAmount drop = enemyData.Reward.Drop;
-        Dropitem dropItem = poolManager.GetPool(dropItemPrefab);
-        dropItem.Initialize(drop.Item, drop.Amount); // 해당 몬스터의 드랍 보상 정보를 주입
-        dropItem.transform.position = transform.position;
 
-        //foreach (var item in enemySO.dropItem)
-        //{
-        //    float chance = Random.Range(0f, 100f);
-        //    if(item.dropChance >= chance)
-        //    {
-        //        Dropitem di = poolManager.GetPool<Dropitem>();
-        //        di.GetDropItemData(item);
-        //        di.transform.position = this.transform.position;
-        //    }
-        //}
+        // 기본 드랍
+        SpawnDropItem(drop);
+    
+        // 현재 아이템 추가 드랍 확률에 따라 확률적으로 추가 드랍
+        if (RewardSkillRegistry.RollAdditionalItemDrop())
+        {
+            SpawnDropItem(drop);
+        }
+    }
+
+    // 드랍 아이템을 스폰하는 메서드
+    private void SpawnDropItem(ItemAmount drop)
+    {
+        if (!drop.IsValid || poolManager == null || dropItemPrefab == null)
+        {
+            return;
+        }
+
+        // 프리팹 생성
+        Dropitem spawnedDrop = poolManager.GetPool(dropItemPrefab);
+        if (spawnedDrop == null) return;
+
+        // 해당 몬스터의 드랍 보상 정보를 주입
+        spawnedDrop.Initialize(drop.Item, drop.Amount); 
+        spawnedDrop.transform.position = transform.position;
     }
 
     // 몬스터 처치 시 해당 몬스터의 경험치만큼 플레이어에게 추가
     public void GrantExp()
     {
-        int exp = enemyData.Reward.KillExp;
-        CurrencySystem.Instance.GrantExperience(exp);
+        int baseExp = enemyData.Reward.KillExp;
+        int finalExp = RewardSkillRegistry.ApplyHuntExperience(baseExp);
+
+        CurrencySystem.Instance.GrantExperience(finalExp);
     }
 
     public void TakeDamage(float damage)

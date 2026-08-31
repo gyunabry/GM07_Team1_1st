@@ -5,6 +5,6 @@ public class S07_ProductionSpeed : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        ProductionSkillRegistry.AddProductionTimeReduction(skillData.value[nowLevel]);
     }
 }

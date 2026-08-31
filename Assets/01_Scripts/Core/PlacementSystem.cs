@@ -2,17 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/*
- 상태 패턴 활용 리팩토링 예정
-- Placement
-- Remove
-- Interior
- */
-
 public enum PlacementMode
 {
     None,
-    PurchasePlacement,  // 시설 빌드 UI 아이콘 클릭
+    PurchasePlacement,  // 구매할 시설 선택 상태
     RelocateSelect,     // 재배치 선택
     RelocatePlacement,  // 재배치 모드 중 시설 선택 상태
     SellSelect,         // 판매 선택
@@ -31,9 +24,6 @@ public partial class PlacementSystem : MonoBehaviour
 
     private BuildableArea currentArea;
 
-    // 셀별로 어떤 건물이 점유 중인지 저장
-    //private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
-
     // 현재 배치 대상으로 선택된 건물 데이터
     private BuildingDataSO selectedBuildingData;
     private PlacedBuilding selectedPlacedBuilding;
@@ -44,11 +34,15 @@ public partial class PlacementSystem : MonoBehaviour
     private short rotationIndex;
     private bool canPlace;
 
+    public IReadOnlyList<BuildableArea> BuildableAreas => buildableAreas;
+
+    public bool IsBuildModeActive { get; private set; }
+
     [field: SerializeField]
     public PlacementMode CurrentMode { get; private set; }
     public PlacedBuilding SelectedPlacedBuilding => selectedPlacedBuilding;
-
-    public bool ConsumeWorldInput => CurrentMode != PlacementMode.None;
+    
+    public bool ConsumeWorldInput => IsBuildModeActive || CurrentMode != PlacementMode.None;
 
     // 배치 모드 여부
     public bool IsPlacementMode =>
@@ -74,14 +68,8 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (inputManager == null) return;
 
-        // 이벤트로 입력 처리
-        //inputManager.OnClicked += PlaceBuilding;
-        //inputManager.OnExit += CancelPlacement;
-        //inputManager.OnRotation += RotatePreview;
-
         inputManager.OnPrimaryClicked += HandlePrimaryClick;
         inputManager.OnSecondaryClicked += HandleSecondaryClick;
-        inputManager.OnCancelPressed += CancelCurrentAction;
         inputManager.OnBuildingLongPressed += HandleBuildingLongPressed;
     }
 
@@ -89,13 +77,8 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (inputManager == null) return;
 
-        //inputManager.OnClicked -= PlaceBuilding;
-        //inputManager.OnExit -= CancelPlacement;
-        //inputManager.OnRotation -= RotatePreview;
-
         inputManager.OnPrimaryClicked -= HandlePrimaryClick;
         inputManager.OnSecondaryClicked -= HandleSecondaryClick;
-        inputManager.OnCancelPressed -= CancelCurrentAction;
         inputManager.OnBuildingLongPressed -= HandleBuildingLongPressed;
     }
 
@@ -124,30 +107,11 @@ public partial class PlacementSystem : MonoBehaviour
     // 버튼에 직접 연결해 사용
     public void StartPlacement(BuildingDataSO data)
     {
-        //if (buildingData == null)
-        //{
-        //    Debug.LogWarning("배치할 건물 데이터가 지정되지 않았습니다.");
-        //    return;
-        //}
-
-        //// 기존 선택된 건물 배치를 취소하기 위해 Cancel 호출
-        //CancelPlacement();
-
-        //selectedBuildingData = buildingData;
-        //rotationIndex = 0;
-
-        //CreatePreview();
-
         StartPurchasePlacement(data);
     }
 
     public bool StartPurchasePlacement(BuildingDataSO data)
     {
-        //if (CurrentMode != PlacementMode.None || data == null)
-        //{
-        //    return false;
-        //}
-
         if (data == null) return false;
 
         BuildingPurchaseStatus status = EvaluatePurchase(data);
@@ -156,9 +120,11 @@ public partial class PlacementSystem : MonoBehaviour
             return false;
         }
 
+        // 현재 선택된 시설과 같은 시설 버튼을 클릭했을 때 반환
         if (CurrentMode == PlacementMode.PurchasePlacement &&
             selectedBuildingData == data)
         {
+            CancelCurrentAction();
             return true;
         }
 
@@ -206,9 +172,17 @@ public partial class PlacementSystem : MonoBehaviour
                 ChangeMode(PlacementMode.None);
                 break;
 
+            case PlacementMode.RelocateSelect:
+                ChangeMode(PlacementMode.None);
+                break;
+
             case PlacementMode.RelocatePlacement:
                 ClearRelocationRuntime();
                 ChangeMode(PlacementMode.RelocateSelect);
+                break;
+
+            case PlacementMode.SellSelect:
+                ChangeMode(PlacementMode.None);
                 break;
 
             case PlacementMode.SellConfirm:
@@ -289,7 +263,12 @@ public partial class PlacementSystem : MonoBehaviour
 
         previewObject.transform.SetPositionAndRotation(previewPos, GetRotation(rotationIndex));
 
-        canPlace = IsCellsAvailable(currentArea, currentCell, rotatedSize);
+        bool isPositionValid = IsCellsAvailable(currentArea, currentCell, rotatedSize);
+        bool isPurchaseValid = 
+            CurrentMode != PlacementMode.PurchasePlacement || 
+            EvaluatePurchase(selectedBuildingData).CanPurchase;
+
+        canPlace = isPositionValid && isPurchaseValid;
 
         UpdatePreviewVisual(canPlace);
     }
@@ -363,6 +342,20 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (area == null || selectedBuildingData == null) return false;
 
+        if (selectedBuildingData.PlacementLimitScope == PlacementLimitScope.PerBuildableArea)
+        {
+            int currentCount = 
+                area.GetPlacedCount(selectedBuildingData, selectedPlacedBuilding);
+
+            int areaLimit = 
+                FacilityManager.Instance.GetAreaPlacementLimit(selectedBuildingData, area);
+
+            if (currentCount >= areaLimit)
+            {
+                return false;
+            }
+        }
+
         if (!area.CanPlaceBuilding(selectedBuildingData, originCell, size))
         {
             return false;
@@ -382,28 +375,6 @@ public partial class PlacementSystem : MonoBehaviour
         // 구매 배치 모드에서는 null
         // 재배치 모드에서는 자신의 기존 점유만 무시
         return area.AreCellsAvailable(cells, selectedPlacedBuilding);
-
-        //for (int x = 0; x < size.x; x++)
-        //{
-        //    for (int z = 0; z < size.y; z++)
-        //    {
-        //        Vector3Int cell = originCell + new Vector3Int(x, z, 0);
-
-        //        // 공방 밖이면 배치 불가
-        //        if (!buildableArea.IsBuildable(cell))
-        //        {
-        //            return false;
-        //        }
-
-        //        // 해당 셀이 이미 등록되어 있다면 false 반환
-        //        if (occupiedCells.ContainsKey(cell))
-        //        {
-        //            return false;
-        //        }
-        //    }
-        //}
-
-
     }
 
     // 건물이 차지할 셀 목록을 생성
@@ -465,13 +436,6 @@ public partial class PlacementSystem : MonoBehaviour
         buildingPreview.SetPreview(isValid);
     }
 
-    // 해당 셀이 이미 점유된 상태인지 반환
-    //public bool IsCellOccupied(Vector3Int cell)
-    //{
-    //    cell.z = 0;
-    //    return occupiedCells.ContainsKey(cell);
-    //}
-
     private BuildableArea FindBuildableArea(Collider hitColldier)
     {
         foreach (BuildableArea area in buildableAreas)
@@ -524,7 +488,7 @@ public partial class PlacementSystem : MonoBehaviour
 
         List<Vector3Int> cells = GetOccupiedCells(currentCell, rotatedSize);
 
-        if (!currentArea.AreCellsAvailable(cells))
+        if (!IsCellsAvailable(currentArea, currentCell, rotatedSize))
         {
             UpdatePreview();
             return;
@@ -651,6 +615,8 @@ public partial class PlacementSystem : MonoBehaviour
                 building.transform.rotation
             );
 
+            building.CompletePreplacedBuilding();
+
             return true;
         }
 
@@ -668,6 +634,160 @@ public partial class PlacementSystem : MonoBehaviour
 
         return buildingData.BuildingPrefab.TryGetComponent<HunterBuildingController>(out _);
     }
+
+    public void SetBuildModeActive(bool active)
+    {
+        IsBuildModeActive = active;
+
+        if (!active && CurrentMode != PlacementMode.None)
+        {
+            ExitCurrentMode();
+        }
+    }
+    #endregion
+
+    #region 저장 및 복구
+
+    // 현재 BuildingContainer 아래에 배치된 모든 시설을 반환
+    public PlacedBuilding[] GetPlacedBuildings()
+    {
+        if (buildingContainer == null)
+        {
+            Debug.LogError("PlacementSystem에 Building Container가 연결되지 않았습니다.");
+            return Array.Empty<PlacedBuilding>();
+        }
+
+        return buildingContainer.GetComponentsInChildren<PlacedBuilding>();
+    }
+
+    // 저장 데이터를 불러오기 전 현재 월드의 모든 시설을 제거
+    public void ClearBuildingsOnLoad()
+    {
+        if (buildingContainer == null)
+        {
+            Debug.LogError("PlacementSystem에 Building Container가 연결되지 않았습니다.");
+            return;
+        }
+
+        // 건설, 재배치, 판매 모드 중이라면 종료
+        // 프리뷰 참조가 남을 수 있는 문제 방지
+        if (CurrentMode != PlacementMode.None)
+        {
+            ExitCurrentMode();
+        }
+
+        PlacedBuilding[] buildings = GetPlacedBuildings();
+
+        foreach (PlacedBuilding building in buildings)
+        {
+            if (building == null) continue;
+
+            BuildableArea assignedArea = building.AssignedArea;
+
+            if (assignedArea != null)
+            {
+                assignedArea.Release(building, building.OccupiedCells);
+            }
+
+            // 처리된 시설은 컨테이너에서 분리해 재검사 대상이 되지 않도록 정리 
+            building.transform.SetParent(null, false);
+            building.gameObject.SetActive(false);
+
+            Destroy(building.gameObject);
+        }
+
+        selectedPlacedBuilding = null;
+        currentArea = null;
+
+        SelectionChanged?.Invoke(null);
+    }
+
+    public bool TryGetBuildableArea(string areaId, out BuildableArea result)
+    {
+        result = null;
+
+        if (string.IsNullOrWhiteSpace(areaId))
+        {
+            return false;
+        }
+
+        foreach (BuildableArea area in buildableAreas)
+        {
+            if (area == null) continue;
+
+            if (string.Equals(area.AreaId, areaId, StringComparison.Ordinal))
+            {
+                result = area;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public bool TryRestoreBuilding(
+        FacilitySaveData saved,
+        BuildingDataSO data,
+        BuildableArea area,
+        out PlacedBuilding result)
+    {
+        result = null;
+
+        if (saved == null ||
+            data == null ||
+            area == null ||
+            saved.rotationIndex > 3)
+        {
+            return false;
+        }
+
+        Vector3Int originCell = new(saved.originCellX, saved.originCellY, 0);
+        Vector2Int rotatedSize = GetRotatedSize(data.Size, saved.rotationIndex);
+        List<Vector3Int> cells = GetOccupiedCells(originCell, rotatedSize);
+
+        if (!area.CanPlaceBuilding(data, originCell, rotatedSize) || !area.AreCellsAvailable(cells))
+        {
+            return false;
+        }
+
+        Vector3 worldPosition = GetBuildingCenter(area.Grid, originCell, rotatedSize);
+
+        Quaternion worldRotation = GetRotation((short)saved.rotationIndex);
+
+        GameObject instance = Instantiate(data.BuildingPrefab, worldPosition, worldRotation, buildingContainer);
+
+        if (!instance.TryGetComponent(out PlacedBuilding building))
+        {
+            Destroy(instance);
+            return false;
+        }
+
+        bool initialized =
+            building.InitializeOnLoad(
+            data,
+            area,
+            originCell,
+            saved.rotationIndex,
+            cells,
+            saved.guid,
+            saved.placementSource,
+            saved.buildingState,
+            saved.constructionProgress01);
+
+        if (!initialized || !area.TryOccupy(building, cells))
+        {
+            Destroy(instance);
+            return false;
+        }
+
+        instance.name = data.BuildingName;
+        result = building;
+
+        OnBuildingPlaced?.Invoke(building, data);
+
+        return true;
+    }
+    
     #endregion
 
     #region 이벤트 핸들러
@@ -709,8 +829,17 @@ public partial class PlacementSystem : MonoBehaviour
 
     private void HandleBuildingLongPressed(PlacedBuilding building)
     {
-        if (CurrentMode != PlacementMode.None && 
-            CurrentMode != PlacementMode.RelocateSelect)
+        if (!IsBuildModeActive)
+        {
+            return;
+        }
+
+        if (CurrentMode == PlacementMode.None)
+        {
+            BeginRelocateMode();
+        }
+
+        if (CurrentMode != PlacementMode.RelocateSelect)
         {
             return;
         }

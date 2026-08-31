@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class Dropitem : MonoBehaviour, ICollectable
@@ -11,6 +12,9 @@ public class Dropitem : MonoBehaviour, ICollectable
     {
         Item = item;
         Amount = amount;
+
+        KillTween();
+        ItemFloating();
 
         if (sr != null)
         {
@@ -60,6 +64,7 @@ public class Dropitem : MonoBehaviour, ICollectable
 
     private void OnDisable()
     {
+        KillTween();
         Item = null;
         Amount = 0;
 
@@ -68,5 +73,16 @@ public class Dropitem : MonoBehaviour, ICollectable
             sr.sprite = null;
             sr.enabled = false;
         }
+    }
+
+    // DOTween Ãß°¡
+    private void ItemFloating()
+    {
+        sr.transform.DOMoveY(0.3f, 0.8f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+    }
+
+    private void KillTween()
+    {
+        sr.transform.DOKill();
     }
 }

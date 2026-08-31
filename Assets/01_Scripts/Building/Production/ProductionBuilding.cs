@@ -41,6 +41,7 @@ public class ProductionBuilding : MonoBehaviour
     public float ReaminingTime => machine.RemainingTime;
     public float EffectiveDuration => machine.EffectiveDuration;
     public float SelectedRecipeEffectiveDuration => machine.GetEffectiveDuration(SelectedRecipe);
+    public int PendingOutputAmount => machine.PendingOutputAmount;
 
     // 설치 완료 판정
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
@@ -187,5 +188,14 @@ public class ProductionBuilding : MonoBehaviour
     private void HandleProgressChanged(float progress)
     {
         ProgressChanged?.Invoke(progress);
+    }
+
+    public void RestoreProduction(
+        RecipeDataSO selectedRecipe,
+        RecipeDataSO activeRecipe,
+        float progress01,
+        int pendingOutputAmount)
+    {
+        machine.RestoreState(selectedRecipe, activeRecipe, progress01, pendingOutputAmount);
     }
 }

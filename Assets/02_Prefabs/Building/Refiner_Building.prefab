@@ -862,6 +862,7 @@ GameObject:
   - component: {fileID: 8813171667216147514}
   - component: {fileID: 2752481641754463068}
   - component: {fileID: 5945800676341958782}
+  - component: {fileID: 5576231481575070866}
   m_Layer: 12
   m_Name: Refiner_Building
   m_TagString: Untagged
@@ -919,7 +920,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlacedBuilding
   constructionObject: {fileID: 5077872487781600508}
   completedObject: {fileID: 2001254261843002515}
+  data: {fileID: 0}
   state: 0
+  placementSource: 0
 --- !u!114 &2752481641754463068
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -961,3 +964,16 @@ MonoBehaviour:
   outputInventory:
     capacity: 20
     entries: []
+--- !u!114 &5576231481575070866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7437105359199679208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6ce30c7258a3447ac700084c34700d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentGuid
+  value: 

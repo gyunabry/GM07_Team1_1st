@@ -21,12 +21,21 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     [Header("테스트용 시설 상태")]
     [SerializeField] private BuildingState state = BuildingState.Constructing;
 
+    [SerializeField]
+    private BuildingPlacementSource placementSource =
+        BuildingPlacementSource.Scene;
+
+    private PersistentGuid persistentGuid;
+
     // 해당 빌딩이 차지하고 있는 셀
     private readonly List<Vector3Int> occupiedCells = new();
 
     public BuildingDataSO Data => data;
     public Vector3Int OriginCell { get; private set; }
     public short RotationIndex { get; private set; }
+
+    public string PersistentId => persistentGuid != null ? persistentGuid.Value : null;
+    public BuildingPlacementSource PlacementSource => placementSource;
 
     public IReadOnlyList<Vector3Int> OccupiedCells => occupiedCells;
     // 해당 시설이 어느 영역에 있는지 담는 프로퍼티
@@ -41,6 +50,11 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
     public event Action<PlacedBuilding> OnConstructionCompleted;
 
     public string BuildingName => Data.BuildingName;
+
+    private void Awake()
+    {
+        persistentGuid = GetComponent<PersistentGuid>();
+    }
 
     /// <summary>
     /// 건물 배치 시 초기화하는 메서드.
@@ -62,6 +76,14 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         AssignedArea = assignedArea;
         OriginCell = originCell;
         RotationIndex = rotationIndex;
+        // 새로 배치되는 시설의 경우엔 무조건 Player로 설정
+        placementSource = BuildingPlacementSource.Player;
+
+        if (persistentGuid != null && !persistentGuid.HasValue)
+        {
+            // 플레이어가 새 시설을 배치하면 새 GUID 발급
+            persistentGuid.AssignNew();
+        }
 
         occupiedCells.Clear();
         occupiedCells.AddRange(cells);
@@ -71,8 +93,7 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         state = BuildingState.Constructing;
         ConstructionProgress = 0f;
 
-        constructionObject?.SetActive(true);
-        completedObject?.SetActive(false);
+        ApplyVisualState();
 
         OnStateChanged?.Invoke();
     }
@@ -134,10 +155,84 @@ public class PlacedBuilding : MonoBehaviour, IBuildingUIModel
         state = BuildingState.Completed;
         ConstructionProgress = 1f;
 
-        constructionObject?.SetActive(false);
-        completedObject.SetActive(true);
+        ApplyVisualState();
 
         OnStateChanged?.Invoke();
         OnConstructionCompleted?.Invoke(this);
+    }
+
+    public bool InitializeOnLoad(
+        BuildingDataSO savedData,
+        BuildableArea savedArea,
+        Vector3Int savedOriginCell,
+        short savedRotationIndex,
+        IEnumerable<Vector3Int> savedCells,
+        string savedGuid,
+        BuildingPlacementSource savedSource,
+        BuildingState savedState,
+        float savedConstructionProgress)
+    {
+        if (savedData == null ||
+            savedArea == null ||
+            persistentGuid == null ||
+            !persistentGuid.TryRestore(savedGuid))
+        {
+            return false;
+        }
+
+        data = savedData;
+        AssignedArea = savedArea;
+        OriginCell = savedOriginCell;
+        RotationIndex = (short)(savedRotationIndex % 4);
+
+        placementSource = savedSource;
+
+        occupiedCells.Clear();
+        occupiedCells.AddRange(savedCells);
+
+        // 씬에 미리 배치된 시설은 기존 저장 데이터가 건설 상태여도 완공 상태로 보정
+        if (savedSource == BuildingPlacementSource.Scene)
+        {
+            state = BuildingState.Completed;
+            ConstructionProgress = 1f;
+        }
+        else
+        {
+            state = savedState;
+            ConstructionProgress = Mathf.Clamp01(savedConstructionProgress);
+        }
+
+        ApplyVisualState();
+        OnStateChanged?.Invoke();
+
+        return true;
+    }
+
+    private void ApplyVisualState()
+    {
+        bool completed = state == BuildingState.Completed;
+
+        if (constructionObject != null)
+        {
+            constructionObject?.SetActive(!completed);
+        }
+
+        if (completedObject != null)
+        {
+            completedObject?.SetActive(completed);
+        }
+    }
+
+    // 게임 시작 전 씬에 배치된 시설을 완공 상태로 초기화하는 메서드
+    public void CompletePreplacedBuilding()
+    {
+        placementSource = BuildingPlacementSource.Scene;
+
+        state = BuildingState.Completed;
+        ConstructionProgress = 1f;
+
+        ApplyVisualState();
+
+        OnStateChanged?.Invoke();
     }
 }

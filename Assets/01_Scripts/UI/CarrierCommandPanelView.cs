@@ -20,9 +20,12 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     [SerializeField] private Transform productContent;
     [SerializeField] private CarrierCommandRowView productRowTemplate;
 
+    [Header("참조")]
+    [SerializeField] private EmployeeManager employeeManager;
+
     private readonly List<CarrierCommandRowView> activeRows = new();
     private readonly List<ProductionBuilding> buildings = new();
-    private EmployeeManager employeeManager;
+    
     private CarrierCommandService commandService;
     private CarrierCommandType currentType = CarrierCommandType.Material;
 
@@ -30,13 +33,19 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
 
     private void Awake()
     {
-        employeeManager = UnityEngine.Object.FindFirstObjectByType<EmployeeManager>();
-        commandService = employeeManager != null ? employeeManager.GetComponent<CarrierCommandService>() : null;
-
         materialButton.onClick.AddListener(() => SelectType(CarrierCommandType.Material));
         productButton.onClick.AddListener(() => SelectType(CarrierCommandType.Product));
         SetVisible(false);
         isOpen = false;
+    }
+
+    private void Start()
+    {
+        commandService = employeeManager != null ? employeeManager.GetComponent<CarrierCommandService>() : null;
+        if (commandService == null)
+        {
+            Debug.LogWarning("CommandSystem이 연결되지 않았습니다.");
+        }
     }
 
     private void OnDestroy()
@@ -48,25 +57,25 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
 
     public void Toggle()
     {
-        if (!isOpen)
+        if (isOpen)
         {
-            Show();
-            isOpen = true;
+            Hide();
         }
         else
         {
-            Hide();
-            isOpen = false;
+            Show();
         }
     }
 
     public void Show()
     {
+        isOpen = true;
         SetVisible(true);
     }
 
     public void Hide()
     {
+        isOpen = false;
         SetVisible(false);
     }
 
