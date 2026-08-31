@@ -5,6 +5,7 @@ public class TitleSceneController : MonoBehaviour
 {
     [SerializeField] private GameObject titleOptionUI;
     [SerializeField] private Button loadGameButton;
+    [SerializeField] private GameObject warningSaveDeleteUI;
 
     private JsonSaveFileStore fileStore;
 
@@ -67,6 +68,29 @@ public class TitleSceneController : MonoBehaviour
         }
 
         GameSceneManager.Instance.LoadScene(EScene.Game);
+    }
+
+    public void OnClickResetGameBtn()
+    {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+
+        if (!fileStore.TryLoad(out SaveGameData saveData))
+        {
+            SaveLoadRequest.Clear();
+
+            if (!fileStore.Delete())
+            {
+                Debug.LogError("기존 저장 파일을 삭제하지 못해 새 게임을 시작할 수 없습니다.");
+                return;
+            }
+
+            GameSceneManager.Instance.LoadScene(EScene.Game);
+        }
+        else
+        {
+            warningSaveDeleteUI.SetActive(true);
+            return;
+        }
     }
 
     // 옵션 UI
