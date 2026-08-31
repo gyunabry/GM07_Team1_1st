@@ -55,6 +55,8 @@ public sealed class CarrierWorker : MonoBehaviour
     private float pickupTimeReductionPercent;
     private float deliveryTimeReductionPercent;
     private float baseMovementSpeed;
+    private int baseCarryingCapacity;
+    private int skillCarryingCapacityBonus;
     private float movementSpeedIncreasePercent;
 
     public EmployeeRuntimeData Employee => employee;
@@ -71,6 +73,7 @@ public sealed class CarrierWorker : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         baseMovementSpeed = movementSpeed;
+        baseCarryingCapacity = carryingCapacity;
     }
 
     private void OnDisable()
@@ -190,6 +193,12 @@ public sealed class CarrierWorker : MonoBehaviour
     {
         movementSpeedIncreasePercent = Mathf.Max(0f, percent);
         ApplyMovementSpeed();
+    }
+
+    public void SetSkillCarryingCapacityBonus(int amount)
+    {
+        skillCarryingCapacityBonus = Mathf.Max(0, amount);
+        carryingCapacity = Mathf.Max(1, baseCarryingCapacity + skillCarryingCapacityBonus);
     }
 
     private void ApplyMovementSpeed()

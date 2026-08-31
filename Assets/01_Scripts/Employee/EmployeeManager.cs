@@ -27,9 +27,11 @@ public sealed class EmployeeManager : MonoBehaviour
     private float hunterAttackDamageIncreasePercent;
     private float hunterAttackIntervalReductionPercent;
     private float hunterAttackRangeIncreasePercent;
+    private int hunterCarryingCapacityBonus;
     private float salesPaymentTimeReductionPercent;
     private float carrierItemTransferTimeReductionPercent;
     private float allEmployeeProcessingSpeedIncreasePercent;
+    private int carrierCarryingCapacityBonus;
     private float allEmployeeMovementSpeedIncreasePercent;
     private CurrencySystem currencySystem;
 
@@ -39,9 +41,11 @@ public sealed class EmployeeManager : MonoBehaviour
     public event Action<float, float, float> HunterSkillModifiersChanged;
     public event Action<float> SalesPaymentTimeReductionChanged;
     public event Action<float> CarrierTransferTimeReductionChanged;
+    public event Action<int> HunterCarryingCapacityBonusChanged;
     public event Action<float> AllEmployeeProcessingSpeedIncreaseChanged;
     public event Action<float> AllEmployeeMovementSpeedIncreaseChanged;
     public event Action EmployeeHiringLimitChanged;
+    public event Action<int> CarrierCarryingCapacityBonusChanged;
 
     public float HunterAttackDamageIncreasePercent => hunterAttackDamageIncreasePercent;
     public float HunterAttackIntervalReductionPercent => hunterAttackIntervalReductionPercent;
@@ -50,9 +54,11 @@ public sealed class EmployeeManager : MonoBehaviour
     public float CarrierItemTransferTimeReductionPercent => carrierItemTransferTimeReductionPercent;
     public float AllEmployeeProcessingSpeedIncreasePercent => allEmployeeProcessingSpeedIncreasePercent;
     public float AllEmployeeMovementSpeedIncreasePercent => allEmployeeMovementSpeedIncreasePercent;
+    public int HunterCarryingCapacityBonus => hunterCarryingCapacityBonus;
     public int HunterEmployeeCount => GetHiredEmployeeCount(EmployeeRole.Hunter);
     public int CarrierEmployeeCount => GetHiredEmployeeCount(EmployeeRole.Carrier);
 
+    public int CarrierCarryingCapacityBonus => carrierCarryingCapacityBonus;
     public void SetHunterAttackDamageIncreasePercent(float percent)
     {
         hunterAttackDamageIncreasePercent = Mathf.Max(0f, percent);
@@ -78,6 +84,12 @@ public sealed class EmployeeManager : MonoBehaviour
         SalesPaymentTimeReductionChanged?.Invoke(salesPaymentTimeReductionPercent);
     }
 
+    public void SetHunterCarryingCapacityBonus(int amount)
+    {
+        hunterCarryingCapacityBonus = Mathf.Max(0, amount);
+        HunterCarryingCapacityBonusChanged?.Invoke(hunterCarryingCapacityBonus);
+    }
+
     public void SetCarrierItemTransferTimeReductionPercent(float percent)
     {
         carrierItemTransferTimeReductionPercent = Mathf.Clamp(percent, 0f, 100f);
@@ -95,6 +107,12 @@ public sealed class EmployeeManager : MonoBehaviour
         allEmployeeMovementSpeedIncreasePercent = Mathf.Max(0f, percent);
         AllEmployeeMovementSpeedIncreaseChanged?.Invoke(allEmployeeMovementSpeedIncreasePercent);
     }
+    public void SetCarrierCarryingCapacityBonus(int amount)
+    {
+        carrierCarryingCapacityBonus = Mathf.Max(0, amount);
+        CarrierCarryingCapacityBonusChanged?.Invoke(carrierCarryingCapacityBonus);
+    }
+
 
     // HUD???¥Î∞ò ÏßÅÏõê Í±¥Î¨º ?§Ïπò ?ÑÏóê???ÑÏó≠ Î™ÖÎ†π ?úÎπÑ?§Î? Ï°∞Ìöå?????àÏñ¥???©Îãà??
     private void Awake()

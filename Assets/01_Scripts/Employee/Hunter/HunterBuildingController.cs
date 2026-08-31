@@ -53,6 +53,7 @@ public sealed class HunterBuildingController : MonoBehaviour
         manager.EmployeeHired += Hire; 
         manager.EmployeeRemoved += Remove;
         manager.HunterSkillModifiersChanged += ApplyHunterSkillModifiers;
+        manager.HunterCarryingCapacityBonusChanged += ApplyHunterCarryingCapacityBonus;
         manager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
         manager.AllEmployeeMovementSpeedIncreaseChanged += ApplyAllEmployeeMovementSpeedIncrease; 
 
@@ -68,6 +69,7 @@ public sealed class HunterBuildingController : MonoBehaviour
             manager.EmployeeHired-=Hire;
             manager.EmployeeRemoved-=Remove;
             manager.HunterSkillModifiersChanged -= ApplyHunterSkillModifiers;
+            manager.HunterCarryingCapacityBonusChanged -= ApplyHunterCarryingCapacityBonus;
             manager.AllEmployeeProcessingSpeedIncreaseChanged -= ApplyAllEmployeeProcessingSpeedIncrease;
             manager.AllEmployeeMovementSpeedIncreaseChanged -= ApplyAllEmployeeMovementSpeedIncrease;
         }
@@ -141,6 +143,7 @@ public sealed class HunterBuildingController : MonoBehaviour
         ApplyHunterSkillModifiers(worker);
         worker.SetAllEmployeeProcessingSpeedIncreasePercent(manager.AllEmployeeProcessingSpeedIncreasePercent);
         worker.SetAllEmployeeMovementSpeedIncreasePercent(manager.AllEmployeeMovementSpeedIncreasePercent);
+        worker.SetSkillCarryingCapacityBonus(manager.HunterCarryingCapacityBonus);
 
         workers[e.EmployeeId] = worker;
     }
@@ -174,6 +177,14 @@ public sealed class HunterBuildingController : MonoBehaviour
         foreach (HunterWorker worker in workers.Values)
         {
             worker?.SetSkillStatPercentModifiers(damageIncreasePercent, intervalReductionPercent, rangeIncreasePercent);
+        }
+    }
+
+    private void ApplyHunterCarryingCapacityBonus(int amount)
+    {
+        foreach (HunterWorker worker in workers.Values)
+        {
+            worker?.SetSkillCarryingCapacityBonus(amount);
         }
     }
 
