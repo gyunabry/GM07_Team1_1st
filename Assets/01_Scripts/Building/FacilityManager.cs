@@ -78,11 +78,43 @@ public class FacilityManager : MonoBehaviour
         return Mathf.Max(0, GetPlacementLimit(data) - GetPlacedCount(data));
     }
 
+    private int GetConfiguredPlacementLimit(BuildingDataSO data)
+    {
+        return placementLimits.TryGetValue(data, out int limit) ? limit : data.PlacementLimit;
+    }
+
     public int GetPlacementLimit(BuildingDataSO data)
     {
         if (data == null) return 0;
 
-        return placementLimits.TryGetValue(data, out int limit) ? limit : data.PlacementLimit;
+        int configuredLimit = GetConfiguredPlacementLimit(data);
+
+        if (data.PlacementLimitScope != PlacementLimitScope.PerBuildableArea)
+        {
+            return configuredLimit;
+        }
+
+        int areaCount = 0;
+
+        foreach (BuildableArea area in placementSystem.BuildableAreas)
+        {
+            if (area != null && area.IsBuildableAllowed(data))
+            {
+                areaCount++;
+            }
+        }
+
+        return configuredLimit * areaCount;
+    }
+
+    public int GetAreaPlacementLimit(BuildingDataSO data, BuildableArea area)
+    {
+        if (data == null || area == null || !area.IsBuildableAllowed(data))
+        {
+            return 0;
+        }
+
+        return GetConfiguredPlacementLimit(data);
     }
 
     public bool CanPlace(BuildingDataSO data)
@@ -97,7 +129,7 @@ public class FacilityManager : MonoBehaviour
 
         limit = Mathf.Max(0, limit);
 
-        int preLimit = GetPlacementLimit(data);
+        int preLimit = GetConfiguredPlacementLimit(data);
 
         if (preLimit == limit) return;
 

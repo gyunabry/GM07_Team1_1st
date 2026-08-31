@@ -17,6 +17,9 @@ public class BuildableArea : MonoBehaviour
 
     private readonly Dictionary<Vector3Int, PlacedBuilding> occupiedCells = new();
 
+    // 해당 셀에 배치된 시설을 담는 해시셋;
+    private readonly HashSet<PlacedBuilding> placedBuildings = new();
+
     public string AreaId => areaId;
     public AreaType AreaType => areaType;
     public Grid Grid => grid;
@@ -174,6 +177,7 @@ public class BuildableArea : MonoBehaviour
             occupiedCells[NormalizeCell(cells[i])] = building;
         }
 
+        placedBuildings.Add(building);
         return true;
     }
 
@@ -195,6 +199,8 @@ public class BuildableArea : MonoBehaviour
                 occupiedCells.Remove(cell);
             }
         }
+
+        placedBuildings.Remove(building);
     }
 
     public bool IsOccupied(Vector3Int cell)
@@ -271,6 +277,27 @@ public class BuildableArea : MonoBehaviour
             position.x <= bounds.max.x &&
             position.z >= bounds.min.z &&
             position.z <= bounds.max.z;
+    }
+
+    // 재배치할 때 자기 자신때문에 한도에 막히는 것을 방지하기 위해 ignoredBuilding을 매개변수로 지정
+    public int GetPlacedCount(BuildingDataSO data, PlacedBuilding ignoredBuilding = null)
+    {
+        if (data == null) return 0;
+
+        int count = 0;
+
+        foreach (PlacedBuilding building in placedBuildings)
+        {
+            // 해당 시설이 자기 자신과 같은 대상인지 검사
+            if (building == null || building == ignoredBuilding || building.Data != data)
+            {
+                continue;
+            }
+
+            count++;
+        }
+
+        return count;
     }
 
     private void OnDrawGizmosSelected()

@@ -12,6 +12,7 @@ public class WorkshopExpansionPreview : MonoBehaviour
     // 프리뷰로 보여지는 벽/바닥 오브젝트
     private GameObject shownFloorRoot;
     private GameObject shownWallRoot;
+    private GameObject shownObstacleRoot;
 
     // 렌더러별 기존 재질 저장
     private readonly Dictionary<Renderer, Material[]> originalMaterials = new();
@@ -24,10 +25,11 @@ public class WorkshopExpansionPreview : MonoBehaviour
 
         if (previewMaterial == null) return false;
 
-        if (!visualController.TryGetStageRoots(stage, out shownFloorRoot, out shownWallRoot))
+        if (!visualController.TryGetStageRoots(stage, out shownFloorRoot, out shownWallRoot, out shownObstacleRoot))
         {
             shownFloorRoot = null;
             shownWallRoot = null;
+            shownObstacleRoot = null;
 
             return false;
         }
@@ -52,6 +54,7 @@ public class WorkshopExpansionPreview : MonoBehaviour
 
         shownFloorRoot = null;
         shownWallRoot = null;
+        shownObstacleRoot = null;
     }
 
     private void ApplyPreviewMaterial(GameObject root)
@@ -111,6 +114,11 @@ public class WorkshopExpansionPreview : MonoBehaviour
         if (shownWallRoot != null)
         {
             shownWallRoot.SetActive(active);
+        }
+
+        if (shownObstacleRoot != null)
+        {
+            shownObstacleRoot.SetActive(!active);
         }
     }
 

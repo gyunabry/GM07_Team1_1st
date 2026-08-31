@@ -36,6 +36,12 @@ public enum BuildingTag
     Production
 }
 
+public enum PlacementLimitScope
+{
+    Global,
+    PerBuildableArea
+}
+
 
 [CreateAssetMenu(fileName = "BuildingDataSO", menuName = "Tycoon/Building Data")]
 public class BuildingDataSO : ScriptableObject
@@ -61,6 +67,8 @@ public class BuildingDataSO : ScriptableObject
     [SerializeField] private GameObject buildingPrefab;
     [SerializeField] private GameObject buildingPreview;
 
+    [SerializeField] private PlacementLimitScope placementLimitScope = PlacementLimitScope.Global;
+
 
     public string BuildingName => buildingName;
     public string BuildingId => buildingId;
@@ -82,4 +90,6 @@ public class BuildingDataSO : ScriptableObject
     public ProcessType SupportedProcessType => supportedProcessType;
     public GameObject BuildingPrefab => buildingPrefab;
     public GameObject PreviewPrefab => buildingPreview;
+
+    public PlacementLimitScope PlacementLimitScope => placementLimitScope;
 }
