@@ -39,6 +39,8 @@ public class CharacterPanelController : MonoBehaviour
 
     private bool isOpen;
 
+    public bool IsOpen => isOpen;
+
     private void Awake()
     {
         if (player != null)

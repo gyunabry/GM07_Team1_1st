@@ -14255,6 +14255,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4f23fb529b8815f47a8a4988334344a3, type: 3}
   m_PrefabInstance: {fileID: 2007786217}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1289508983 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5583391381605392248, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+  m_PrefabInstance: {fileID: 2024550379}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35abc9d96f7c475438d9a2dd0e17c308, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HUDButtonController
 --- !u!1001 &1289941304
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24181,7 +24192,7 @@ PrefabInstance:
       objectReference: {fileID: 1070830143}
     - target: {fileID: 2977804262756691576, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3003130201597685475, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
@@ -24605,11 +24616,11 @@ PrefabInstance:
       objectReference: {fileID: 1411673944}
     - target: {fileID: 4959861432603319890, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 14457600
+      value: 690
       objectReference: {fileID: 0}
     - target: {fileID: 4959861432603319890, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 16264800
+      value: 1320
       objectReference: {fileID: 0}
     - target: {fileID: 4998310494815380576, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
@@ -24735,6 +24746,10 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
+    - target: {fileID: 5583391381605392248, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: OptionPanel
+      value: 
+      objectReference: {fileID: 2121539859}
     - target: {fileID: 5698807324378542990, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: poolManager
       value: 
@@ -24814,6 +24829,22 @@ PrefabInstance:
     - target: {fileID: 6266368655210141034, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280267156288686671, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280267156288686671, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1289508983}
+    - target: {fileID: 6280267156288686671, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OpenOptionPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6280267156288686671, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: HUDButtonController, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 6322732321495941203, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
@@ -25237,7 +25268,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7893105713607512231, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7917914729080190710, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: poolManager
@@ -26904,6 +26935,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2120754982}
   m_Mesh: {fileID: -2280625405170421352, guid: edd3884c14b178747919450ada0998ae, type: 3}
+--- !u!1 &2121539859 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7893105713607512231, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+  m_PrefabInstance: {fileID: 2024550379}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2121779569 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f45014cc82a3cc248a7be39d438e4df5, type: 3}

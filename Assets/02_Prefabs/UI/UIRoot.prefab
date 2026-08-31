@@ -10665,6 +10665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HUDButtonController
   characterPanel: {fileID: 8797949092590679179}
   employeePanel: {fileID: 4021451035819603679}
+  OptionPanel: {fileID: 7893105713607512231}
 --- !u!1 &2139769969434023487
 GameObject:
   m_ObjectHideFlags: 0
@@ -38186,10 +38187,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7893105713607512231}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 5583391381605392248}
+        m_TargetAssemblyTypeName: HUDButtonController, Assembly-CSharp
+        m_MethodName: OpenOptionPanel
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -45905,37 +45906,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3333634015659632918}
     m_Modifications:
-    - target: {fileID: 80278021525280941, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_SortingOrder
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 462592538880865614, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 462592538880865614, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3168978351752086530, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3168978351752086530, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4978419700809237287, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5195257692407637348, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
       propertyPath: m_Name
       value: SystemUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 5195257692407637348, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
       propertyPath: m_Pivot.x
@@ -45968,18 +45941,6 @@ PrefabInstance:
     - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
       propertyPath: m_SizeDelta.y
       value: 1080
-      objectReference: {fileID: 0}
-    - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -46028,10 +45989,6 @@ PrefabInstance:
     - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

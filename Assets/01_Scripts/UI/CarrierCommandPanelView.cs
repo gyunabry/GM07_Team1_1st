@@ -31,6 +31,8 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
 
     private bool isOpen;
 
+    public bool IsOpen => isOpen;
+
     private void Awake()
     {
         materialButton.onClick.AddListener(() => SelectType(CarrierCommandType.Material));
