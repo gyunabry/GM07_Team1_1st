@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: S42_ChasingSickleDistance
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S42
-  skillName: 
-  skillDesc: 
+  skillName: "\uCCB4\uC774\uC2F1 \uC2DC\uD074 \uBC94\uC704 \uC99D\uAC00"
+  skillDesc: "\uCCB4\uC774\uC2F1 \uC2DC\uD074\uC758 \uBC94\uC704\uAC00 \uC99D\uAC00\uD55C\uB2E4."
   skillSprite: {fileID: 21300000, guid: d347cc0d35e95cc4c88f1040ee7e55bc, type: 3}
   skillMaxLevel: 3
   skillNeedSkillPoint: 1
@@ -27,3 +27,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 2e654a3e719a9e941841db5e68811245, type: 2}
   effect: {fileID: 11400000, guid: a11497e0ce3f5c345ba302b25d63ebe9, type: 2}
+  skillChangeStat: "\uBC94\uC704"

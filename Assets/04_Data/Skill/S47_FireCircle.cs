@@ -9,8 +9,6 @@ public class S47_FireCircle : SkillEffectSO
         {
             if (unlock.attackID == skillData.skillID)
             {
-                Debug.Log(unlock.attackID);
-                Debug.Log(skillData.skillID);
                 unlock.unlock = true;
             }
         }

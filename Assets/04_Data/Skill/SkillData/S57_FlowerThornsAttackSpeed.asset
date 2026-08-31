@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: S57_FlowerThornsAttackSpeed
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S57
-  skillName: 
-  skillDesc: 
+  skillName: "\uD50C\uB77C\uC6CC \uC3DC\uC988 \uACF5\uACA9\uC18D\uB3C4 \uAC15\uD654"
+  skillDesc: "\uD50C\uB77C\uC6CC \uC3DC\uC988\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00
+    \uB2E8\uCD95\uB41C\uB2E4."
   skillSprite: {fileID: 21300000, guid: 52045208591f123468716c02d0b106fd, type: 3}
   skillMaxLevel: 3
   skillNeedSkillPoint: 1
@@ -27,3 +28,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 566ab41e09259654892fd49e80d5876f, type: 2}
   effect: {fileID: 11400000, guid: 1bc14d46580edf24da3a1cee832f06fd, type: 2}
+  skillChangeStat: "\uACF5\uACA9\uC18D\uB3C4"

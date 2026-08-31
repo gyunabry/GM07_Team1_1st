@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: S53_LightningRayAttackSpeed
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S53
-  skillName: 
-  skillDesc: 
+  skillName: "\uB77C\uC774\uD2B8\uB2DD \uB808\uC774 \uACF5\uACA9\uC18D\uB3C4 \uAC15\uD654"
+  skillDesc: "\uB77C\uC774\uD2B8\uB2DD \uB808\uC774\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00
+    \uB2E8\uCD95\uB41C\uB2E4."
   skillSprite: {fileID: 21300000, guid: 5cef4d2a72f8c4340b6d6fe1c1a93cb3, type: 3}
   skillMaxLevel: 3
   skillNeedSkillPoint: 1
@@ -27,3 +28,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 60662366f8d24204cbfa98e8325c2f5e, type: 2}
   effect: {fileID: 11400000, guid: 794127af55e9a654f8dc252b3fa554f3, type: 2}
+  skillChangeStat: "\uACF5\uACA9\uC18D\uB3C4"

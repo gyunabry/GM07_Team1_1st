@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: S46_MagicArrowProjectileCount
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S46
-  skillName: 
-  skillDesc: 
+  skillName: "\uB9E4\uC9C1 \uC560\uB85C\uC6B0 \uAC1C\uC218 \uC99D\uAC00"
+  skillDesc: "\uB9E4\uC9C1 \uC560\uB85C\uC6B0\uC758 \uAC1C\uC218\uAC00 \uC99D\uAC00\uD55C\uB2E4."
   skillSprite: {fileID: 21300000, guid: d59be2ff741d9aa4c935e5be92fdefc6, type: 3}
   skillMaxLevel: 3
   skillNeedSkillPoint: 1
@@ -27,3 +27,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 3d6b4e3e46f2c0c4b917b9f7accee2dd, type: 2}
   effect: {fileID: 11400000, guid: 4801f13a83681e341bc891f60a3d3b29, type: 2}
+  skillChangeStat: "\uAC1C\uC218"

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: S02_CustomerPatience
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S02
-  skillName: CustomerPatience
-  skillDesc: 
-  skillSprite: {fileID: 0}
+  skillName: "\uC190\uB2D8 \uC778\uB0B4\uC2EC \uC99D\uAC00 1"
+  skillDesc: "\uC190\uB2D8\uB4E4\uC758 \uC778\uB0B4\uC2EC\uC774 \uC99D\uAC00\uD55C\uB2E4."
+  skillSprite: {fileID: 21300000, guid: 70b3fe22f391243aba0ba95289086519, type: 3}
   skillMaxLevel: 2
   skillNeedSkillPoint: 0
   skillNeedLevel: 0
@@ -26,3 +26,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 1d85fa0fa54a6dc49ab11298a28f19bf, type: 2}
   effect: {fileID: 11400000, guid: 7fd12fce5b9dfdc41a9655cf9cb4f24e, type: 2}
+  skillChangeStat: "\uC190\uB2D8 \uB300\uAE30 \uC2DC\uAC04"

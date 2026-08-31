@@ -3,68 +3,124 @@ using UnityEditor;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
+using System.Text;
+
 public class SkillCSVImporter : EditorWindow
 {
-    // ÀúÀåµÉ SO Æú´õ °æ·Î
     private const string TARGET_FOLDER = "Assets/04_Data/Skill/SkillData";
+
     [MenuItem("Tools/Import Skill Data from CSV")]
     public static void ImportCSV()
     {
-        // 1. CSV ÆÄÀÏ ¼±ÅÃ ´ëÈ­»óÀÚ ¿ÀÇÂ
+        // 1. CSV íŒŒì¼ ì„ íƒ
         string filePath = EditorUtility.OpenFilePanel("Select Skill Data CSV File", "", "csv");
         if (string.IsNullOrEmpty(filePath)) return;
-        string[] lines = File.ReadAllLines(filePath);
+
+        string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
         if (lines.Length <= 1)
         {
-            Debug.LogWarning("CSV ÆÄÀÏÀÌ ºñ¾îÀÖ°Å³ª Çì´õ¸¸ Á¸ÀçÇÕ´Ï´Ù.");
+            Debug.LogWarning("CSV íŒŒì¼ì´ ë¹„ì–´ìˆê±°ë‚˜ í—¤ë”ë§Œ ì¡´ì¬í•©ë‹ˆë‹¤.");
             return;
         }
-        // 2-Pass Ã³¸®¸¦ À§ÇÑ ÀÓ½Ã µñ¼Å³Ê¸®
-        Dictionary<string, SkillDataSO> createdSkills = new Dictionary<string, SkillDataSO>();
-        Dictionary<string, string> rawNeedSkillIDs = new Dictionary<string, string>();
-        // ÀúÀå Æú´õ°¡ ¾øÀ¸¸é »ı¼º
+
+        // í—¤ë” íŒŒì‹± ë° ì»¬ëŸ¼ ì¸ë±ìŠ¤ ë§µ ìƒì„±
+        List<string> headerTokens = ParseCSVLine(lines[0]);
+        Dictionary<string, int> colMap = new Dictionary<string, int>(System.StringComparer.OrdinalIgnoreCase);
+        for (int i = 0; i < headerTokens.Count; i++)
+        {
+            string colName = headerTokens[i].Trim();
+            if (!string.IsNullOrEmpty(colName) && !colMap.ContainsKey(colName))
+            {
+                colMap[colName] = i;
+            }
+        }
+
+        // ì €ì¥ ëŒ€ìƒ í´ë” ìƒì„±
         if (!Directory.Exists(TARGET_FOLDER))
         {
             Directory.CreateDirectory(TARGET_FOLDER);
         }
+
+        // í´ë” ë‚´ ê¸°ì¡´ ì—ì…‹ ë§¤í•‘ (skillID -> SkillDataSO)
+        Dictionary<string, SkillDataSO> existingBySkillID = CacheExistingSkillsBySkillID(TARGET_FOLDER);
+
+        Dictionary<string, SkillDataSO> createdSkills = new Dictionary<string, SkillDataSO>();
+        Dictionary<string, string> rawNeedSkillIDs = new Dictionary<string, string>();
+
         // ===================================================
-        // 1-PASS: SkillDataSO ¿¡¼Â »ı¼º/ºÒ·¯¿À±â ¹× ±âº» µ¥ÀÌÅÍ ¼¼ÆÃ
+        // 1-PASS: SkillDataSO ìƒì„±/ë¡œë“œ ë° ê¸°ë³¸ ë°ì´í„° ì„¤ì •
         // ===================================================
-        for (int i = 1; i < lines.Length; i++) // 0¹øÀº Çì´õ ÇàÀÌ¹Ç·Î 1¹øºÎÅÍ ½ÃÀÛ
+        for (int i = 1; i < lines.Length; i++)
         {
             string line = lines[i];
             if (string.IsNullOrWhiteSpace(line)) continue;
-            string[] tokens = line.Split(',');
-            // CSV Ä®·³ ÀÎµ¦½º ¸ÅÇÎ ¿¹½Ã:
-            // 0: skillID, 1: skillName, 2: skillDesc, 3: maxLevel, 4: needPoint,
-            // 5: needLevel, 6: needMoney, 7: value(| ±¸ºĞ), 8: needSkillIDs(| ±¸ºĞ), 9: spritePath, 10: effectPath
-            string skillID = tokens[0].Trim();
-            string skillIDName = tokens[0].Trim();
-            string skillName = tokens[1].Trim();
-            string skillDesc = tokens[2].Trim();
-            int maxLevel = int.Parse(tokens[3].Trim());
-            int needPoint = int.Parse(tokens[4].Trim());
-            int needLevel = int.Parse(tokens[5].Trim());
-            int needMoney = int.Parse(tokens[6].Trim());
-            // float[] ¹è¿­ ÆÄ½Ì (¿¹: "10|20|30" -> float[]{10f, 20f, 30f})
-            float[] values = tokens[7].Split('|')
-                                     .Where(v => !string.IsNullOrEmpty(v))
-                                     .Select(v => float.Parse(v.Trim()))
-                                     .ToArray();
-            string needSkillsRaw = tokens[8].Trim();
-            string spritePath = tokens[9].Trim();
-            string effectPath = tokens[10].Trim();
-            // »ı¼ºµÉ ¿¡¼Â ÆÄÀÏ ÀÌ¸§ ±Ô°İ (¿¹: Assets/04_Data/Skill/001_MagicArrow.asset)
-            string fileName = $"{skillID}_{skillName}.asset";
-            string assetPath = $"{TARGET_FOLDER}/{fileName}";
-            // ±âÁ¸ SO ¿¡¼ÂÀÌ Á¸ÀçÇÏ´ÂÁö È®ÀÎ (µ¤¾î¾²±â/°»½Å Áö¿ø)
-            SkillDataSO skillSO = AssetDatabase.LoadAssetAtPath<SkillDataSO>(assetPath);
+
+            List<string> tokens = ParseCSVLine(line);
+
+            string soName = GetColumnValue(tokens, colMap, "soName", -1);
+            string skillID = GetColumnValue(tokens, colMap, "skillID", 0);
+            string skillName = GetColumnValue(tokens, colMap, "skillName", 1);
+            string skillDesc = GetColumnValue(tokens, colMap, "skillDesc", 2);
+
+            int maxLevel = ParseIntOrDefault(GetColumnValue(tokens, colMap, "maxLevel", 3), 0);
+            int needPoint = ParseIntOrDefault(GetColumnValue(tokens, colMap, "needPoint", 4), 0);
+            int needLevel = ParseIntOrDefault(GetColumnValue(tokens, colMap, "needLevel", 5), 0);
+            int needMoney = ParseIntOrDefault(GetColumnValue(tokens, colMap, "needMoney", 6), 0);
+
+            string valueRaw = GetColumnValue(tokens, colMap, "value", 7);
+            float[] values = string.IsNullOrEmpty(valueRaw)
+                ? new float[0]
+                : valueRaw.Split('|')
+                          .Where(v => !string.IsNullOrWhiteSpace(v))
+                          .Select(v => ParseFloatOrDefault(v.Trim(), 0f))
+                          .ToArray();
+
+            string needSkillsRaw = GetColumnValue(tokens, colMap, "needSkillIDs", 8);
+            string spritePath = GetColumnValue(tokens, colMap, "spritePath", 9);
+            string effectPath = GetColumnValue(tokens, colMap, "effectPath", 10);
+            string changeStat = GetColumnValue(tokens, colMap, "changeStat", 11);
+
+            // ì—ì…‹ íŒŒì¼ ì´ë¦„ ë° ëŒ€ìƒ ê²½ë¡œ ê²°ì •
+            string targetSOName = !string.IsNullOrEmpty(soName) ? soName : null;
+            SkillDataSO skillSO = null;
+            string assetPath = null;
+
+            if (!string.IsNullOrEmpty(targetSOName))
+            {
+                if (!targetSOName.EndsWith(".asset", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    assetPath = $"{TARGET_FOLDER}/{targetSOName}.asset";
+                }
+                else
+                {
+                    assetPath = $"{TARGET_FOLDER}/{targetSOName}";
+                }
+                skillSO = AssetDatabase.LoadAssetAtPath<SkillDataSO>(assetPath);
+            }
+
+            // soNameìœ¼ë¡œ ë¡œë“œí•˜ì§€ ëª»í•œ ê²½ìš° ê¸°ì¡´ skillIDë¡œ ê²€ìƒ‰
+            if (skillSO == null && !string.IsNullOrEmpty(skillID) && existingBySkillID.TryGetValue(skillID, out SkillDataSO existingSO))
+            {
+                skillSO = existingSO;
+                assetPath = AssetDatabase.GetAssetPath(skillSO);
+            }
+
+            // ê¸°ì¡´ ì—ì…‹ì´ ì—†ìœ¼ë©´ ìƒˆ ì—ì…‹ ìƒì„±
             if (skillSO == null)
             {
+                string fileName = !string.IsNullOrEmpty(targetSOName)
+                    ? (targetSOName.EndsWith(".asset", System.StringComparison.OrdinalIgnoreCase) ? targetSOName : $"{targetSOName}.asset")
+                    : $"{skillID}_{skillName}.asset";
+
+                fileName = SanitizeFileName(fileName);
+                assetPath = $"{TARGET_FOLDER}/{fileName}";
+
                 skillSO = ScriptableObject.CreateInstance<SkillDataSO>();
                 AssetDatabase.CreateAsset(skillSO, assetPath);
             }
-            // ±âº» µ¥ÀÌÅÍ ÇÒ´ç
+
+            // ê¸°ë³¸ ë°ì´í„° ì„¤ì •
             skillSO.skillID = skillID;
             skillSO.skillName = skillName;
             skillSO.skillDesc = skillDesc;
@@ -73,48 +129,163 @@ public class SkillCSVImporter : EditorWindow
             skillSO.skillNeedLevel = needLevel;
             skillSO.skillNeedMoney = needMoney;
             skillSO.value = values;
-            // ¾ÆÀÌÄÜ(Sprite) ·Îµå ¹× ¿¬°á
+
             if (!string.IsNullOrEmpty(spritePath))
             {
                 skillSO.skillSprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
             }
-            // SkillEffectSO ·Îµå ¹× ¿¬°á
+            else
+            {
+                skillSO.skillSprite = null;
+            }
+
             if (!string.IsNullOrEmpty(effectPath))
             {
                 skillSO.effect = AssetDatabase.LoadAssetAtPath<SkillEffectSO>(effectPath);
             }
-            // º¯°æ»çÇ× ¿¡µğÅÍ¿¡ ¾Ë¸²
+            else
+            {
+                skillSO.effect = null;
+            }
+
+            skillSO.skillChangeStat = changeStat;
+
             EditorUtility.SetDirty(skillSO);
-            // 2-Pass Á¶È¸¸¦ À§ÇØ ±â·Ï
-            createdSkills[skillID] = skillSO;
-            rawNeedSkillIDs[skillID] = needSkillsRaw;
+
+            if (!string.IsNullOrEmpty(skillID))
+            {
+                createdSkills[skillID] = skillSO;
+                rawNeedSkillIDs[skillID] = needSkillsRaw;
+            }
         }
+
         // ===================================================
-        // 2-PASS: ¼±Çà ½ºÅ³(needSkill) ·¹ÆÛ·±½º ¿¬°á
+        // 2-PASS: ì„ í–‰ ìŠ¤í‚¬(needSkill) ì°¸ì¡° ì—°ê²°
         // ===================================================
         foreach (var kvp in createdSkills)
         {
             string skillID = kvp.Key;
             SkillDataSO skillSO = kvp.Value;
-            string rawNeedIDs = rawNeedSkillIDs[skillID];
+            string rawNeedIDs = rawNeedSkillIDs.ContainsKey(skillID) ? rawNeedSkillIDs[skillID] : "";
+
             if (!string.IsNullOrEmpty(rawNeedIDs))
             {
                 string[] idStrings = rawNeedIDs.Split('|');
                 List<SkillDataSO> needList = new List<SkillDataSO>();
                 foreach (var idStr in idStrings)
                 {
-                    if (createdSkills.TryGetValue(idStr, out SkillDataSO reqSO))
+                    string trimmedId = idStr.Trim();
+                    if (!string.IsNullOrEmpty(trimmedId) && createdSkills.TryGetValue(trimmedId, out SkillDataSO reqSO))
                     {
                         needList.Add(reqSO);
                     }
                 }
                 skillSO.needSkill = needList.ToArray();
-                EditorUtility.SetDirty(skillSO);
             }
+            else
+            {
+                skillSO.needSkill = new SkillDataSO[0];
+            }
+
+            EditorUtility.SetDirty(skillSO);
         }
-        // 3. ¿¡¼Â ÀúÀå ¹× ¿¡µğÅÍ °»½Å
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"<color=green>SkillDataSO {createdSkills.Count}°³ ÆÄ½Ì ¹× ¿¡¼Â »ı¼º/°»½Å ¿Ï·á!</color>");
+        Debug.Log($"<color=green>SkillDataSO {createdSkills.Count}ê°œ íŒŒì‹± ë° ì—ì…‹ ìƒì„±/ê°±ì‹  ì™„ë£Œ!</color>");
+    }
+
+    private static List<string> ParseCSVLine(string line)
+    {
+        List<string> result = new List<string>();
+        if (line == null) return result;
+
+        StringBuilder sb = new StringBuilder();
+        bool inQuotes = false;
+
+        for (int i = 0; i < line.Length; i++)
+        {
+            char c = line[i];
+            if (c == '"')
+            {
+                if (inQuotes && i + 1 < line.Length && line[i + 1] == '"')
+                {
+                    sb.Append('"');
+                    i++;
+                }
+                else
+                {
+                    inQuotes = !inQuotes;
+                }
+            }
+            else if (c == ',' && !inQuotes)
+            {
+                result.Add(sb.ToString());
+                sb.Clear();
+            }
+            else
+            {
+                sb.Append(c);
+            }
+        }
+        result.Add(sb.ToString());
+        return result;
+    }
+
+    private static string GetColumnValue(List<string> tokens, Dictionary<string, int> colMap, string columnName, int fallbackIndex)
+    {
+        if (colMap.TryGetValue(columnName, out int idx) && idx >= 0 && idx < tokens.Count)
+        {
+            return tokens[idx].Trim();
+        }
+        if (fallbackIndex >= 0 && fallbackIndex < tokens.Count)
+        {
+            return tokens[fallbackIndex].Trim();
+        }
+        return "";
+    }
+
+    private static int ParseIntOrDefault(string text, int defaultValue)
+    {
+        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int result))
+        {
+            return result;
+        }
+        return defaultValue;
+    }
+
+    private static float ParseFloatOrDefault(string text, float defaultValue)
+    {
+        if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
+        {
+            return result;
+        }
+        return defaultValue;
+    }
+
+    private static Dictionary<string, SkillDataSO> CacheExistingSkillsBySkillID(string folderPath)
+    {
+        Dictionary<string, SkillDataSO> map = new Dictionary<string, SkillDataSO>();
+        string[] guids = AssetDatabase.FindAssets("t:SkillDataSO", new[] { folderPath });
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            SkillDataSO so = AssetDatabase.LoadAssetAtPath<SkillDataSO>(path);
+            if (so != null && !string.IsNullOrEmpty(so.skillID) && !map.ContainsKey(so.skillID))
+            {
+                map[so.skillID] = so;
+            }
+        }
+        return map;
+    }
+
+    private static string SanitizeFileName(string fileName)
+    {
+        char[] invalidChars = Path.GetInvalidFileNameChars();
+        foreach (char c in invalidChars)
+        {
+            fileName = fileName.Replace(c, '_');
+        }
+        return fileName;
     }
 }

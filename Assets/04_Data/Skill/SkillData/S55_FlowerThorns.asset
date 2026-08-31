@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: S55_FlowerThorns
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S55
-  skillName: FlowerThorns
-  skillDesc: 
-  skillSprite: {fileID: 0}
+  skillName: "\uD50C\uB77C\uC6CC \uC3DC\uC988"
+  skillDesc: "\uC2DC\uC804\uC790 \uADFC\uBC29\uC5D0 \uBB34\uC791\uC704\uB85C \uAC00\uC2DC\uC2DD\uBB3C\uC744
+    \uC18C\uD658\uD558\uC5EC \uC6D0\uD615 \uBC94\uC704 \uB0B4\uC758 \uC801\uC744
+    \uACF5\uACA9\uD55C\uB2E4."
+  skillSprite: {fileID: 21300000, guid: cf8f6fe79e1c743d8b46bbea580cc0b0, type: 3}
   skillMaxLevel: 1
   skillNeedSkillPoint: 1
   skillNeedLevel: 0
@@ -24,3 +26,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 5736c0492c183544b844d6f881e9601b, type: 2}
   effect: {fileID: 11400000, guid: 3c3e2a7d5cc33a84aa10c463ec43a0d3, type: 2}
+  skillChangeStat: "\uD50C\uB77C\uC6CC \uC3DC\uC988 \uD68D\uB4DD"
