@@ -16,7 +16,7 @@ public class BuildingInfoTooltip : MonoBehaviour
     [SerializeField] private TMP_Text buildingPrice;
     [SerializeField] private TMP_Text buildingCount;
     [SerializeField] private TMP_Text buildingDescription;
-    [SerializeField] private TMP_Text buildingType;
+    [SerializeField] private TMP_Text buildingTag;
 
     private RectTransform tooltipRect;
     private RectTransform tooltipParentRect;
@@ -82,9 +82,9 @@ public class BuildingInfoTooltip : MonoBehaviour
             }
         }
 
-        if (buildingType != null)
+        if (buildingTag != null)
         {
-            // buildingType.text = data.BuildingType.ToString();
+            buildingTag.text = data.BuildingTag.ToString();
         }
     }
 

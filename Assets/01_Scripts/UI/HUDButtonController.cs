@@ -5,7 +5,7 @@ public class HUDButtonController : MonoBehaviour
 {
     [SerializeField] private CharacterPanelController characterPanel;
     [SerializeField] private CarrierCommandPanelView employeePanel;
-    [SerializeField] private GameObject OptionPanel;
+    [SerializeField] private OptionUI optionUI;
 
     public void OpenCharacterPanel()
     {
@@ -38,6 +38,6 @@ public class HUDButtonController : MonoBehaviour
     public void OpenOptionPanel()
     {
         AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
-        OptionPanel.SetActive(true);
+        optionUI.Show();
     }
 }

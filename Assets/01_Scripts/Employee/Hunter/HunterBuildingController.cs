@@ -229,4 +229,11 @@ public sealed class HunterBuildingController : MonoBehaviour
 
         return true;
     }
+
+    public void SetTransmitter(Transmitter newTransmitter)
+    {
+        transmitter = newTransmitter;
+
+        Register();
+    }
 }

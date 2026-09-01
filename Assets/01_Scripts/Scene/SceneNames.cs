@@ -6,8 +6,8 @@ public static class SceneNames
         new Dictionary<EScene, string>()
         {
             { EScene.Title, "LobbyScene" },
-            { EScene.Game, "HB_Scene" }
-            //{ EScene.Game, "GamePlayScene" }
+            //{ EScene.Game, "HB_Scene" }
+            { EScene.Game, "GamePlayScene" }
         };
 
     public static string GetSceneName(EScene sceneType)
