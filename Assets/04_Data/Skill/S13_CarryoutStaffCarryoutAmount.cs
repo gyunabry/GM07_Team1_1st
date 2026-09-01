@@ -5,6 +5,6 @@ public class S13_CarryoutStaffCarryoutAmount : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        
     }
 }

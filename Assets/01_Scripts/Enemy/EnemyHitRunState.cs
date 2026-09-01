@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class EnemyHitRunState : IState
 {
@@ -37,6 +38,18 @@ public class EnemyHitRunState : IState
 
     public void Execute()
     {
+
+        if (player == null)
+        {
+            Collider[] cPlayer = Physics.OverlapSphere(enemy.transform.position, enemy.runEndDistance * 30, enemy.playerLayer);
+            foreach (Collider collider in cPlayer)
+            {
+                player = collider.GetComponentInParent<Player>();
+
+                if (player != null) break;
+            }
+        }
+        if (player == null) return;
         Vector3 dirPlayer = enemy.transform.position - player.transform.position;
 
         if(Vector3.Distance(player.transform.position, enemy.transform.position) <= enemy.runEndDistance)

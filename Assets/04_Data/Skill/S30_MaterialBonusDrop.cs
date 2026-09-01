@@ -5,6 +5,6 @@ public class S30_MaterialBonusDrop : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        RewardSkillRegistry.AddMaterialBonusDropChance(skillData.value[nowLevel]);
     }
 }
