@@ -10668,7 +10668,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HUDButtonController
   characterPanel: {fileID: 8797949092590679179}
   employeePanel: {fileID: 4021451035819603679}
-  OptionPanel: {fileID: 7893105713607512231}
+  optionUI: {fileID: 0}
 --- !u!1 &2139769969434023487
 GameObject:
   m_ObjectHideFlags: 0
@@ -13496,6 +13496,7 @@ MonoBehaviour:
   levelText: {fileID: 2131997073705983915}
   expSlider: {fileID: 3765445919486664205}
   expText: {fileID: 1119400400465370937}
+  expFillImage: {fileID: 1274772988225893516}
 --- !u!1 &2857490270983425749
 GameObject:
   m_ObjectHideFlags: 0
@@ -46075,11 +46076,6 @@ PrefabInstance:
 --- !u!224 &5436379434610894663 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7200958721338160327, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
-  m_PrefabInstance: {fileID: 2927084142470632320}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &7893105713607512231 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4978419700809237287, guid: c41a11ad2a5d7e8468835d6ebca25c90, type: 3}
   m_PrefabInstance: {fileID: 2927084142470632320}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4442275534058206545
