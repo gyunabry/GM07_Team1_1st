@@ -59,6 +59,7 @@ public class Player : MonoBehaviour
             moveSpeed += levelUpStats[nowLevel].moveSpeed;
             navMeshAgent.speed = (3.5f + moveSpeed);
         }
+        skillPoint += 3;
         nowLevel++;
     }
 

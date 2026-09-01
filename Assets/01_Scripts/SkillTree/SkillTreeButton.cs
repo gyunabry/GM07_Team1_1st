@@ -42,17 +42,49 @@ public class SkillTreeButton : MonoBehaviour
         }
         popUp.transform.SetAsLastSibling();
         popUp.transform.localScale = Vector3.one;
-        Vector3 buttonPos = transform.position;
-        popUp.transform.position = buttonPos + new Vector3(0f, 170f, 0f);
-
-        if(popUp.transform.position.y > Screen.height - 150f)
-        {
-            popUp.transform.position = buttonPos + new Vector3(0f, -170f, 0f);
-        }
+        
         popUp.SetSprite(skillData.skillSprite);
-        popUp.SetName(skillData.skillName, skillData.skillNeedLevel, skillData.skillMaxLevel);
+        popUp.SetName(skillData.skillName);
         popUp.SetNeed(skillData.skillNeedSkillPoint, skillData.skillNeedMoney);
         popUp.SetDesc(skillData.skillDesc);
+        if (skillData.value.Length != 0)
+        {
+            popUp.SetValue(skillData.skillChangeStat, skillData.value[0]);
+        }
+        else
+        {
+            popUp.SetValue(skillData.skillChangeStat, 0);
+        }
+
+            RectTransform popUpRect = popUp.GetComponent<RectTransform>();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(popUpRect);
+
+        RectTransform buttonRect = GetComponent<RectTransform>();
+
+
+        float buttonHalfHeight = (buttonRect.rect.height * buttonRect.lossyScale.y) * 0.5f;
+        float halfWidth = (popUpRect.rect.width * popUpRect.lossyScale.x) * 0.5f;
+        float halfHeight = (popUpRect.rect.height * popUpRect.lossyScale.y) * 0.5f;
+
+        float margin = 15f;
+        float dynamicOffsetY = buttonHalfHeight + halfHeight + margin;
+        float padding = 80f;
+        Vector3 targetPos = transform.position + new Vector3(0f, dynamicOffsetY, 0f);
+
+        if (targetPos.y + halfHeight > Screen.height)
+        {
+            targetPos = transform.position - new Vector3(0f, dynamicOffsetY, 0f);
+        }
+
+        float minX = halfWidth + padding;
+        float maxX = Screen.width - halfWidth - padding;
+        float minY = halfHeight + padding;
+        float maxY = Screen.height - halfHeight - padding;
+
+        targetPos.x = Mathf.Clamp(targetPos.x, minX, maxX);
+        targetPos.y = Mathf.Clamp(targetPos.y, minY, maxY);
+
+        popUp.transform.position = targetPos;
     }
     public void MouseExit()
     {

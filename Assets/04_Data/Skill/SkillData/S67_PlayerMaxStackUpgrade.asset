@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: S67_PlayerMaxStackUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S67
-  skillName: 
-  skillDesc: 
+  skillName: "\uCD5C\uB300 \uC18C\uC9C0\uB7C9 \uC99D\uAC00 1"
+  skillDesc: "\uD50C\uB808\uC774\uC5B4\uC758 \uCD5C\uB300 \uC18C\uC9C0\uB7C9\uC774
+    \uC99D\uAC00\uD55C\uB2E4."
   skillSprite: {fileID: 21300000, guid: e50f786ff5444064381f95d3efb905ce, type: 3}
   skillMaxLevel: 1
   skillNeedSkillPoint: 1
@@ -25,3 +26,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: c8dc170f9bf9afc4287c77332875b31c, type: 2}
   effect: {fileID: 11400000, guid: dd77314aa0be15946826b3363818b287, type: 2}
+  skillChangeStat: "\uC18C\uC9C0\uB7C9"

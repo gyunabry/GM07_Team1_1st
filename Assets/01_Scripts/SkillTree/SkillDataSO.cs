@@ -15,6 +15,7 @@ public class SkillDataSO : ScriptableObject
     public float[] value;
     public SkillDataSO[] needSkill;
     public SkillEffectSO effect;
+    public string skillChangeStat;
 }
 [System.Serializable]
 public class MultiValue
