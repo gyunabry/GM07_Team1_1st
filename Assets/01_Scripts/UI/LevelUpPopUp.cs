@@ -32,6 +32,7 @@ public class LevelUpPopUp : MonoBehaviour
     {
         //levelUpPopUp.SetActive(true);
         //co = StartCoroutine(DestroyPopUp());
+        AudioManager.Instance.PlaySFX(ESFXType.PlayerLevelUp);
         PopUpOpen();
 
         for (int i = 1; i < 20; i += 2)

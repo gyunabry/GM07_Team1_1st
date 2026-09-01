@@ -34,6 +34,7 @@ public enum ESFXType
     Inven_Supply,
     Portal,
     PlayerMove,
+    PlayerLevelUp,
 
     // 손님 효과음
     Costomer_Imminent,
