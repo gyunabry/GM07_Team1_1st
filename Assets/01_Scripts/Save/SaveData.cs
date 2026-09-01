@@ -44,6 +44,8 @@ public class ProgressionSaveData
     public List<SkillLevelSaveData> skills = new();
 
     public List<string> unlockedRecipeIds = new();
+
+    public List<string> unlockedHuntingFieldIds = new();
 }
 
 [Serializable]
