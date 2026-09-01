@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class TitleSceneController : MonoBehaviour
 {
-    [SerializeField] private GameObject titleOptionUI;
+    [SerializeField] private OptionUI titleOptionUI;
     [SerializeField] private Button loadGameButton;
     [SerializeField] private GameObject warningSaveDeleteUI;
 
@@ -97,7 +97,7 @@ public class TitleSceneController : MonoBehaviour
     public void OnClickOptionBtn()
     {
         AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
-        titleOptionUI.SetActive(true);
+        titleOptionUI.Show();
     }
 
     // 게임 끝내기
