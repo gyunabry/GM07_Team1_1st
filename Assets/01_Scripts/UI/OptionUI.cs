@@ -34,8 +34,7 @@ public class OptionUI : MonoBehaviour
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         }
         this.gameObject.SetActive(false);
-
-        OnClickChangeWindow();
+        
     }
 
     private void OnEnable()
@@ -63,7 +62,7 @@ public class OptionUI : MonoBehaviour
             sfxSlider.value = currentSFX;
         }
 
-        
+        OnClickChangeWindow();
     }
 
     public void Show()
@@ -140,7 +139,7 @@ public class OptionUI : MonoBehaviour
             case 1:
                 Screen.SetResolution(1920, 1080, FullScreenMode.MaximizedWindow); break;
             case 2:
-                Screen.SetResolution(1280, 720, FullScreenMode.Windowed); break;
+                Screen.SetResolution(1920, 1080, FullScreenMode.Windowed); break;
         }
     }
 

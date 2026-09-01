@@ -11,8 +11,6 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     [SerializeField, Min(0)] private int nowExperience;
 
     public event Action<int, int> CurrencyChanged;
-    public event Action<int> CurrencyChanged_Gold;
-    public event Action<int> CurrencyChanged_EXP;
     public event Action LevelUp;
 
     // DOTween 이벤트
@@ -58,14 +56,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         experience += experienceAmount;
         nowExperience += experienceAmount;
 
-        if (moneyAmount > 0)
-        {
-            CurrencyChanged_Gold?.Invoke(money);
-        }
-        if (experienceAmount > 0)
-        {
-            CurrencyChanged_EXP?.Invoke(experience);
-        }
+        CurrencyChanged?.Invoke(money, experience);
         OnGoldChanged?.Invoke();
         OnGoldEarned?.Invoke();
 
@@ -97,7 +88,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
         money -= amount;
 
-        CurrencyChanged_Gold?.Invoke(money);
+        CurrencyChanged?.Invoke(money, experience);
         OnGoldChanged?.Invoke();
         OnGoldSpent?.Invoke();
         return true;
@@ -117,14 +108,13 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
         nowExperience -= amount;
 
-        CurrencyChanged_EXP?.Invoke(experience);
+        CurrencyChanged?.Invoke(money, experience);
         return true;
     }
 
     public void TestButton()
     {
-        CurrencyChanged_Gold?.Invoke(money);
-        CurrencyChanged_EXP?.Invoke(experience);
+        CurrencyChanged?.Invoke(money, experience);
         OnGoldChanged?.Invoke();
     }
 
@@ -150,8 +140,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         // 최대 레벨은 경험치 테이블 개수 + 1 (인덱스)
         level = Mathf.Clamp(savedLevel, 1, needExp.Count + 1);
 
-        CurrencyChanged_Gold?.Invoke(money);
-        CurrencyChanged_EXP?.Invoke(experience);
+        CurrencyChanged?.Invoke(money, experience);
         OnGoldChanged?.Invoke();
     }
 }

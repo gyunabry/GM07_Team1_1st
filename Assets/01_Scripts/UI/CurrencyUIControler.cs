@@ -26,7 +26,7 @@ public class CurrencyUIControler : MonoBehaviour
     {
         if (CurrencySystem.Instance != null)
         {
-            CurrencySystem.Instance.CurrencyChanged_Gold += HandleCurrencyChanged;
+            CurrencySystem.Instance.CurrencyChanged += HandleCurrencyChanged;
             CurrencySystem.Instance.OnGoldChanged += GoldEffect;
             CurrencySystem.Instance.OnGoldEarned += GoldEarnEffect;
             CurrencySystem.Instance.OnGoldSpent += GoldSpendEffect;
@@ -38,14 +38,14 @@ public class CurrencyUIControler : MonoBehaviour
     {
         if (CurrencySystem.Instance != null)
         {
-            CurrencySystem.Instance.CurrencyChanged_Gold -= HandleCurrencyChanged;
+            CurrencySystem.Instance.CurrencyChanged -= HandleCurrencyChanged;
             CurrencySystem.Instance.OnGoldChanged -= GoldEffect;
             CurrencySystem.Instance.OnGoldEarned -= GoldEarnEffect;
             CurrencySystem.Instance.OnGoldSpent -= GoldSpendEffect;
         }
     }
 
-    private void HandleCurrencyChanged(int money)
+    private void HandleCurrencyChanged(int money, int exp)
     {
         RefreshCoin(money);
     }

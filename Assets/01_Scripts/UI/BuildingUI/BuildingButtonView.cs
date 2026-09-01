@@ -40,7 +40,7 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
 
         if (CurrencySystem.Instance != null)
         {
-            CurrencySystem.Instance.CurrencyChanged_Gold += HandleCurrencyChanged;
+            CurrencySystem.Instance.CurrencyChanged += HandleCurrencyChanged;
             CurrencySystem.Instance.LevelUp += HandleLevelUp;
         }
 
@@ -54,7 +54,7 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         if (CurrencySystem.Instance != null)
         {
-            CurrencySystem.Instance.CurrencyChanged_Gold -= HandleCurrencyChanged;
+            CurrencySystem.Instance.CurrencyChanged -= HandleCurrencyChanged;
             CurrencySystem.Instance.LevelUp -= HandleLevelUp;
         }
 
@@ -79,7 +79,7 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
         RefreshView();
     }
 
-    private void HandleCurrencyChanged(int money)
+    private void HandleCurrencyChanged(int money, int exp)
     {
         RefreshView();
     }
