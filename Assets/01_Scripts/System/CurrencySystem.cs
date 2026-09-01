@@ -122,6 +122,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     {
         if (needExp[level - 1] <= nowExperience)
         {
+            nowExperience -= needExp[level - 1];
             level++;
             LevelUp?.Invoke();
         }
