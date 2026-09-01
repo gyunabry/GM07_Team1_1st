@@ -39,7 +39,10 @@ public class OptionUI : MonoBehaviour
 
     private void OnEnable()
     {
-        saveAndExitPopup.SetActive(false);
+        if (saveAndExitPopup != null)
+        {
+            saveAndExitPopup.SetActive(false);
+        }
 
         float currentBGM = 1f;
         float currentSFX = 1f;

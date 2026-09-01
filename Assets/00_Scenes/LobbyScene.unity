@@ -936,7 +936,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80362881cf554ed41865713d050185a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TitleSceneController
-  titleOptionUI: {fileID: 7615385527455507778}
+  titleOptionUI: {fileID: 8216504722815420012}
   loadGameButton: {fileID: 1994576741}
   warningSaveDeleteUI: {fileID: 572203665}
 --- !u!1 &472852376
@@ -4599,7 +4599,7 @@ RectTransform:
   m_Father: {fileID: 8623942898714559599}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -5599,7 +5599,7 @@ RectTransform:
   m_Father: {fileID: 7853497565918434771}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7778,7 +7778,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &7623570345966816210
 GameObject:
   m_ObjectHideFlags: 0
@@ -8149,6 +8149,8 @@ MonoBehaviour:
   bgmSlider: {fileID: 8843298868381487067}
   sfxSlider: {fileID: 5090171202284373768}
   dropdown: {fileID: 74538961275620509}
+  saveAndExitPopup: {fileID: 0}
+  saveGameService: {fileID: 0}
 --- !u!224 &8254918779420422833
 RectTransform:
   m_ObjectHideFlags: 0

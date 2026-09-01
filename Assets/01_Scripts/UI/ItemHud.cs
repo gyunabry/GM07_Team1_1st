@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class ItemHud : MonoBehaviour
     [SerializeField] private List<ItemDataSO> itemUiList;
     [SerializeField] private List<GameObject> uiList;
 
-    
+
     private void OnEnable()
     {
         playerInventory.Inventory.InventoryChanged += Inventory_InventoryChanged;
@@ -35,7 +36,21 @@ public class ItemHud : MonoBehaviour
             else
             {
                 uiList[i].SetActive(true);
+                ItemEffect(uiList[i]);
             }
         }
+    }
+
+    //DOTween Ãß°¡
+    private void ItemEffect(GameObject ui)
+    {
+        ui.transform.DOKill();
+
+        ui.transform.DOScale(1.2f, 0.15f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() =>
+            {
+                ui.transform.DOScale(Vector3.one, 0.12f).SetEase(Ease.OutQuad);
+            });
     }
 }
