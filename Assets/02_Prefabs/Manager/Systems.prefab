@@ -180,6 +180,54 @@ MonoBehaviour:
   - level: 21
     productionLimit: 10
     salesLimit: 3
+--- !u!1 &1226560388596166306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2744392290980029438}
+  - component: {fileID: 3595694023088747465}
+  m_Layer: 0
+  m_Name: HuntingFieldManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2744392290980029438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226560388596166306}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 684614707514807010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3595694023088747465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226560388596166306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d932c24db8adcc46909336bb3f4b554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HuntingFieldManager
+  fields:
+  - {fileID: 11400000, guid: 71522eaa431b9de418cd4e6d40f9fbab, type: 2}
+  - {fileID: 11400000, guid: 484250e9a4521214a9e1067e4e72fe0e, type: 2}
+  - {fileID: 11400000, guid: 3a8a26d4d16719943b3d5aa124e9d46a, type: 2}
 --- !u!1 &1674618562125681912
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,6 +526,7 @@ Transform:
   - {fileID: 2562983513259400015}
   - {fileID: 3573402552528928363}
   - {fileID: 6925406222427910695}
+  - {fileID: 2744392290980029438}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7044040682239475874
@@ -536,6 +585,7 @@ MonoBehaviour:
   expansionManager: {fileID: 4594496697931293496}
   placementSystem: {fileID: 8645873690436672994}
   counterInventory: {fileID: 8565966294825179077}
+  huntingFieldManager: {fileID: 3595694023088747465}
   teleportUI: {fileID: 0}
 --- !u!1 &7293180575848846353
 GameObject:
@@ -669,7 +719,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 11c1ba2cb5efdef4880a386689de45cf, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 6564ac556b3795e4caf6a4cc6c78d917, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &8336680834424567778
 GameObject:
@@ -869,7 +919,8 @@ PrefabInstance:
       value: PoolManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 965431662256586543, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
@@ -930,6 +981,18 @@ PrefabInstance:
       propertyPath: skillDesc
       value: 
       objectReference: {fileID: -2091524813546945963, guid: 950846757cf8ed0428a4677b9488ddba, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: hunterCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: carrierCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: customerCount
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: skillDescCount
       value: 20

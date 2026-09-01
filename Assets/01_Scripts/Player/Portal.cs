@@ -33,19 +33,27 @@ public class Portal : InteractableBase
     [Header("사냥터 포탈 설정")]
     [SerializeField] private Portal workshopPortal;
 
-    //[Tooltip("포탈 UI")]
-    //[SerializeField] private Canvas portalUI;
-
     [Header("도착 이벤트")]
     [Tooltip("플레이어가 포탈에 도착한 뒤 실행할 이벤트")]
     [SerializeField] private UnityEvent onArrived = new UnityEvent();
 
     private UnityAction runtimeArrivalAction;
 
-    Transform target;
+    // 도착지점의 AREA ID를 가져오는 프로퍼티
+    public string DestinationId
+    {
+        get
+        {
+            if (!TryGetComponent(out PlacedBuilding building))
+            {
+                return string.Empty;
+            }
 
-    // 반대 포탈에서 해당 포탈에 접근하기 위한 프로퍼티
-    private Transform ArrivalPoint => arrivalPoint != null ? arrivalPoint : null;
+            return building.AssignedArea != null
+                ? building.AssignedArea.AreaId
+                : string.Empty;
+        }
+    }
 
     public override void Interact(GameObject interactor)
     {

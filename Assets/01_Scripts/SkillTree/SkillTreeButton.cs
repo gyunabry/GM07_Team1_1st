@@ -66,12 +66,12 @@ public class SkillTreeButton : MonoBehaviour
         float halfWidth = (popUpRect.rect.width * popUpRect.lossyScale.x) * 0.5f;
         float halfHeight = (popUpRect.rect.height * popUpRect.lossyScale.y) * 0.5f;
 
-        float margin = 15f;
+        float margin = 40f;
         float dynamicOffsetY = buttonHalfHeight + halfHeight + margin;
         float padding = 80f;
         Vector3 targetPos = transform.position + new Vector3(0f, dynamicOffsetY, 0f);
 
-        if (targetPos.y + halfHeight > Screen.height)
+        if (targetPos.y + halfHeight + 50f > Screen.height)
         {
             targetPos = transform.position - new Vector3(0f, dynamicOffsetY, 0f);
         }
@@ -96,10 +96,15 @@ public class SkillTreeButton : MonoBehaviour
     private void OnEnable()
     {
         co = StartCoroutine(StartButton());
+        if (popUp != null)
+        {
+            poolManager.ReturnPool(popUp);
+        }
     }
     private void OnDisable()
     {
         skillTreeManager.OnSkillChange -= SkillTreeManager_OnSkillChange;
+        
         button.onClick.RemoveListener(clickAction);
     }
     private void SkillTreeManager_OnSkillChange()
