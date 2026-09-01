@@ -13,6 +13,7 @@ public class ProductionDetailView : BuildingDetailView
     [SerializeField] private Button itemButton; // 완성품 아이콘 버튼
     [SerializeField] private Image inputIcon;
     [SerializeField] private TMP_Text inputCountText;
+    [SerializeField] private Image addIcon; // 레시피 선택 전에 보여줄 + 이미지
     [SerializeField] private Image outputIcon;
     [SerializeField] private TMP_Text outputCountText;
     [SerializeField] private TMP_Text productionTimeText;
@@ -118,12 +119,18 @@ public class ProductionDetailView : BuildingDetailView
         recipeSelectPanel.Show(currentBuilding);
     }
 
+    // 레시피가 선택됐을 때 호출되는 메서드
     private void RefreshRecipeInfo(RecipeDataSO recipe)
     {
         if (recipe == null)
         {
             ResetView();
             return;
+        }
+
+        if (addIcon != null)
+        {
+            addIcon.enabled = false;
         }
 
         if (inputIcon != null)
@@ -148,10 +155,12 @@ public class ProductionDetailView : BuildingDetailView
 
         RecipeDataSO recipe = currentBuilding.SelectedRecipe;
 
+        // 레시피가 선택되지 않은 상태일때
         if (recipe == null)
         {
             inputCountText.text = string.Empty;
             outputCountText.text = string.Empty;
+            addIcon.enabled = true;
             return;
         }
 

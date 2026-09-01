@@ -1,12 +1,23 @@
+using System.Collections;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Dropitem : MonoBehaviour, ICollectable
 {
     [SerializeField] private SpriteRenderer sr;
+    [SerializeField] private float lifetimeSec = 45f;
+
+    private Coroutine lifetimeCoroutine;
+    private WaitForSeconds lifetimeWait;
 
     public ItemDataSO Item { get; private set; }
     public int Amount { get; private set; } = 1;
+
+    private void Awake()
+    {
+        lifetimeWait = new WaitForSeconds(lifetimeSec);
+    }
 
     public void Initialize(ItemDataSO item, int amount = 1)
     {
@@ -20,6 +31,30 @@ public class Dropitem : MonoBehaviour, ICollectable
         {
             sr.sprite = item != null ? item.Icon : null;
             sr.enabled = item != null && item.Icon != null;
+        }
+
+        RestartLifetime();
+    }
+
+    private void RestartLifetime()
+    {
+        if (lifetimeCoroutine != null)
+        {
+            StopCoroutine(lifetimeCoroutine);
+        }
+
+        lifetimeCoroutine = StartCoroutine(LifetimeCo());
+    }
+
+    private IEnumerator LifetimeCo()
+    {
+        yield return lifetimeWait;
+
+        lifetimeCoroutine = null;
+        
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.ReturnPool(this);
         }
     }
 
@@ -65,6 +100,13 @@ public class Dropitem : MonoBehaviour, ICollectable
     private void OnDisable()
     {
         KillTween();
+
+        if (lifetimeCoroutine != null)
+        {
+            StopCoroutine(lifetimeCoroutine);
+            lifetimeCoroutine = null;
+        }
+
         Item = null;
         Amount = 0;
 

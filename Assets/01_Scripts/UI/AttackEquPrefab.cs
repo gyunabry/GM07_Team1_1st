@@ -81,7 +81,7 @@ public class AttackEquPrefab : MonoBehaviour
     public void MouserEnter()
     {
         if (attackID == null) return;
-        if (unlock == false) return;
+
         popUp = poolManager.GetPool<SkillDesc>();
         popUp.transform.SetParent(transform);
         RectTransform rect = popUp.GetComponent<RectTransform>();

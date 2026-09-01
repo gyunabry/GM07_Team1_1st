@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 /*
 현재 배치된 시설들을 관리하고 최대 배치 수량을 제한하는 클래스
-추후 직원 관리 UI에서 배치된 시설 정보를 확인할 수 있도록 할 예정
  */
 
 public class FacilityManager : MonoBehaviour
@@ -151,6 +151,8 @@ public class FacilityManager : MonoBehaviour
             placedCounts[data] = newCount;
         }
 
+        ReconnectFacility(building);
+
         FacilityInfoChanged?.Invoke(data);
     }
 
@@ -173,5 +175,77 @@ public class FacilityManager : MonoBehaviour
         }
 
         FacilityInfoChanged?.Invoke(data);
+    }
+
+    private void ReconnectFacility(PlacedBuilding changedBuilding)
+    {
+        PlacedBuilding[] buildings = placementSystem.GetPlacedBuildings();
+
+        // 통합 전송기 설치 시
+        // 기존에 있던 전송기의 목적지로 자기 자신을 설정
+        if (changedBuilding.TryGetComponent(out IntegratedTransmitter newIntegratedTransmitter))
+        {
+            foreach (PlacedBuilding building in buildings)
+            {
+                if (building == null || building == changedBuilding)
+                {
+                    continue;
+                }
+
+                if (building.TryGetComponent(out Transmitter transmitter))
+                {
+                    transmitter.SetDestination(newIntegratedTransmitter);
+                }
+            }
+
+            return;
+        }
+
+        // 일반 전송기 설치 시
+        // 기존에 있던 사냥 직원 시설을 연결
+        if (changedBuilding.TryGetComponent(out Transmitter newTransmitter))
+        {
+            foreach (PlacedBuilding building in buildings)
+            {
+                if (building == null || building == changedBuilding)
+                {
+                    continue;
+                }
+
+                if (building.TryGetComponent(out IntegratedTransmitter integratedTransmitter))
+                {
+                    newTransmitter.SetDestination(integratedTransmitter);
+                }
+
+                if (building.AssignedArea == changedBuilding.AssignedArea &&
+                    building.TryGetComponent(out HunterBuildingController hunterBuilding))
+                {
+                    hunterBuilding.SetTransmitter(newTransmitter);
+                }
+            }
+
+            return;
+        }
+
+        // 사냥 직원 시설 설치 시
+        // 같은 사냥 구역에 배치된 전송기를 연결
+        if (changedBuilding.TryGetComponent(out HunterBuildingController newHunterBuilding))
+        {
+            foreach (PlacedBuilding building in buildings)
+            {
+                if (building == null || 
+                    building == changedBuilding || 
+                    building.AssignedArea != changedBuilding.AssignedArea)
+                {
+                    continue;
+                }
+
+                if (building.TryGetComponent(out Transmitter transmitter))
+                {
+                    newHunterBuilding.SetTransmitter(transmitter);
+                    break;
+                }
+            }
+        }
     }
 }
