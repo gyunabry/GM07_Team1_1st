@@ -46,6 +46,24 @@ public class GameSceneManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
+    public bool SaveAndLoadScene(SaveGameService saveGameService, EScene sceneType)
+    {
+        if (saveGameService == null)
+        {
+            Debug.LogError("SaveGameService가 연결되지 않았습니다.");
+            return false;
+        }
+
+        if (!saveGameService.SaveGame())
+        {
+            Debug.LogError("저장에 실패하여 씬 전환을 중지합니다.");
+            return false;
+        }
+
+        LoadScene(sceneType);
+        return true;
+    }
+
     public void ReloadCurrentScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);

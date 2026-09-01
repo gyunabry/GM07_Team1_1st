@@ -169,6 +169,26 @@ public class AudioManager : MonoBehaviour
         sfxSource.PlayOneShot(data.clip, volume);
     }
 
+    public bool PlaySFX(ESFXType type, AudioSource source)
+    {
+        if (source == null)
+        {
+            Debug.LogWarning($"AudioSource가 없습니다: {type}");
+            return false;
+        }
+
+        if (!sfxDictionary.TryGetValue(type, out SFXClipData data))
+        {
+            Debug.LogWarning($"AudioData에 등록되지 않은 SFX입니다: {type}");
+            return false;
+        }
+
+        float volume = data.volume * sfxVolume * masterVolume;
+        source.PlayOneShot(data.clip, volume);
+
+        return true;
+    }
+
     // UI : BGM 볼륨 조절
     public void SetMasterVolume(float volume)
     {

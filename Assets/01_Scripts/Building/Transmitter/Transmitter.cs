@@ -28,6 +28,8 @@ public class Transmitter : MonoBehaviour
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
     public Transform DepositPoint => depositPoint;
 
+    public IntegratedTransmitter Destination => destination;
+
 
     private void Awake()
     {
@@ -124,5 +126,10 @@ public class Transmitter : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void SetDestination(IntegratedTransmitter newDestination)
+    {
+        destination = newDestination;
     }
 }
