@@ -59,6 +59,7 @@ public sealed class HunterWorker : MonoBehaviour
     public float MovementSpeed => movementSpeed;
     public float AttackDamage => attackDamage;
     public int CarryingCapacity => carryingCapacity;
+    public int AgentAreaMask => agent != null ? agent.areaMask : NavMesh.AllAreas;
 
     public string DebugStatus
     {
