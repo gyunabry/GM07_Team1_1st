@@ -3,23 +3,26 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 선택한 직원 건물의 추가 고용을 처리하는 UI입니다.
+/// ?�택??직원 건물??추�? 고용??처리?�는 UI?�니??
 /// </summary>
 public sealed class EmployeeHirePanel : MonoBehaviour
 {
     [SerializeField] private Button hireButton;
     [SerializeField] private TMP_Text employeeCountText;
+    [SerializeField] private TMP_Text hireCostText;
     [SerializeField] private TMP_Text attackDamageText;
     [SerializeField] private TMP_Text movementSpeedText;
     [SerializeField] private TMP_Text carryingCapacityText;
 
     private EmployeeManager employeeManager;
+    private CurrencySystem currencySystem;
     private PlacedBuilding selectedBuilding;
     private EmployeeRole selectedRole;
 
     private void Awake()
     {
         employeeManager = FindFirstObjectByType<EmployeeManager>();
+        currencySystem = CurrencySystem.Instance;
         hireButton?.onClick.AddListener(Hire);
     }
 
@@ -32,6 +35,12 @@ public sealed class EmployeeHirePanel : MonoBehaviour
             employeeManager.EmployeeHiringLimitChanged += Refresh;
         }
 
+        currencySystem ??= CurrencySystem.Instance;
+        if (currencySystem != null)
+        {
+            currencySystem.CurrencyChanged += HandleCurrencyChanged;
+        }
+
         Refresh();
     }
 
@@ -42,6 +51,11 @@ public sealed class EmployeeHirePanel : MonoBehaviour
             employeeManager.EmployeeHired -= HandleEmployeeChanged;
             employeeManager.EmployeeRemoved -= HandleEmployeeChanged;
             employeeManager.EmployeeHiringLimitChanged -= Refresh;
+        }
+
+        if (currencySystem != null)
+        {
+            currencySystem.CurrencyChanged -= HandleCurrencyChanged;
         }
     }
 
@@ -76,6 +90,11 @@ public sealed class EmployeeHirePanel : MonoBehaviour
         employeeManager.TryHireAdditional(selectedBuilding, out _);
     }
 
+    private void HandleCurrencyChanged(int money, int experience)
+    {
+        Refresh();
+    }
+
     private void HandleEmployeeChanged(EmployeeRuntimeData employee)
     {
         Refresh();
@@ -95,6 +114,13 @@ public sealed class EmployeeHirePanel : MonoBehaviour
         if (employeeCountText != null)
         {
             employeeCountText.text = $"{employeeCount}/{hiringLimit}";
+        }
+
+        if (hireCostText != null)
+        {
+            hireCostText.text = employeeManager != null && selectedBuilding != null
+                ? employeeManager.GetNextHireCost(selectedBuilding).ToString("N0")
+                : "-";
         }
 
         if (hireButton != null)

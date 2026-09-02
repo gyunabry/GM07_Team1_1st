@@ -104,6 +104,7 @@ public class PlayerInteractionController : MonoBehaviour, IBuildingUIOpener
             return;
         }
 
+        employeeHirePanel.transform.localScale = Vector3.one;
         employeeHirePanel.gameObject.SetActive(true);
 
         if (source is Component sourceComponent)
