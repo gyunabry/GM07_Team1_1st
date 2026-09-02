@@ -32,6 +32,7 @@ public class LevelUpPopUp : MonoBehaviour
     {
         //levelUpPopUp.SetActive(true);
         //co = StartCoroutine(DestroyPopUp());
+        AudioManager.Instance.PlaySFX(ESFXType.PlayerLevelUp);
         PopUpOpen();
 
         for (int i = 1; i < 20; i += 2)
@@ -53,7 +54,7 @@ public class LevelUpPopUp : MonoBehaviour
                     {
                         levelUpText[i].gameObject.SetActive(true);
                         levelUpText[i].text = $"공격속도";
-                        levelUpText[i + 1].text = $"+{player.levelUpStats[nowLevel].attackSpeed}";
+                        levelUpText[i + 1].text = $"{player.levelUpStats[nowLevel].attackSpeed}";
                     }
                     break;
                 case 5:

@@ -13,10 +13,16 @@ public class ProductionDetailView : BuildingDetailView
     [SerializeField] private Button itemButton; // 완성품 아이콘 버튼
     [SerializeField] private Image inputIcon;
     [SerializeField] private TMP_Text inputCountText;
+    [SerializeField] private Image addIcon; // 레시피 선택 전에 보여줄 + 이미지
     [SerializeField] private Image outputIcon;
     [SerializeField] private TMP_Text outputCountText;
     [SerializeField] private TMP_Text productionTimeText;
     [SerializeField] private Image progressFill;
+
+    [Header("생산 진행상황 표시")]
+    [SerializeField] private GameObject arrowRoot;
+    [SerializeField] private GameObject orangeMarker;   // 재료 아이템 부족
+    [SerializeField] private GameObject redMarker;      // 생산품 보관 공간 부족
 
     [Header("레시피")]
     [SerializeField] private RecipeSelectPanel recipeSelectPanel;
@@ -102,6 +108,7 @@ public class ProductionDetailView : BuildingDetailView
         RefreshRecipeInfo(currentBuilding.SelectedRecipe);
         SetProgress(currentBuilding.Progress);
         RefreshRemainingTime();
+        RefreshProductionStateIndicator();
         RefreshInventoryInfo();
     }
 
@@ -118,12 +125,18 @@ public class ProductionDetailView : BuildingDetailView
         recipeSelectPanel.Show(currentBuilding);
     }
 
+    // 레시피가 선택됐을 때 호출되는 메서드
     private void RefreshRecipeInfo(RecipeDataSO recipe)
     {
         if (recipe == null)
         {
             ResetView();
             return;
+        }
+
+        if (addIcon != null)
+        {
+            addIcon.enabled = false;
         }
 
         if (inputIcon != null)
@@ -148,10 +161,12 @@ public class ProductionDetailView : BuildingDetailView
 
         RecipeDataSO recipe = currentBuilding.SelectedRecipe;
 
+        // 레시피가 선택되지 않은 상태일때
         if (recipe == null)
         {
             inputCountText.text = string.Empty;
             outputCountText.text = string.Empty;
+            addIcon.enabled = true;
             return;
         }
 
@@ -201,6 +216,34 @@ public class ProductionDetailView : BuildingDetailView
         }
     }
 
+    private void RefreshProductionStateIndicator()
+    {
+        if (currentBuilding == null)
+        {
+            SetIndicatorVisible(arrowRoot, false);
+            SetIndicatorVisible(orangeMarker, false);
+            SetIndicatorVisible(redMarker, false);
+
+            return;
+        }
+
+        bool isWaitingForMaterials = currentBuilding.State == ProductionState.WaitingForMaterials;
+        bool isWaitingForOutputSpace = currentBuilding.State == ProductionState.WaitingForOutputSpace;
+
+        SetIndicatorVisible(orangeMarker, isWaitingForMaterials);
+        SetIndicatorVisible(redMarker, isWaitingForOutputSpace);
+
+        SetIndicatorVisible(arrowRoot, !isWaitingForMaterials && !isWaitingForOutputSpace);
+    }
+
+    private void SetIndicatorVisible(GameObject target, bool visible)
+    {
+        if (target != null)
+        {
+            target.SetActive(visible);
+        }
+    }
+
     private void ResetView()
     {
         if (inputIcon != null)
@@ -218,6 +261,10 @@ public class ProductionDetailView : BuildingDetailView
         if (productionTimeText != null) productionTimeText.text = string.Empty;
         if (inputCountText != null) inputCountText.text = string.Empty;
         if (outputCountText != null) outputCountText.text = string.Empty;
+
+        SetIndicatorVisible(arrowRoot, false);
+        SetIndicatorVisible(orangeMarker, false);
+        SetIndicatorVisible(redMarker, false);
 
         SetProgress(0f);
     }
@@ -239,6 +286,8 @@ public class ProductionDetailView : BuildingDetailView
         if (currentBuilding != null)
         {
             SetProgress(currentBuilding.Progress);
+            RefreshRemainingTime();
+            RefreshProductionStateIndicator();
         }
     }
 

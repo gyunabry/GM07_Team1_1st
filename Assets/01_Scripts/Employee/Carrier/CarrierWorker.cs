@@ -32,7 +32,7 @@ public sealed class CarrierWorker : MonoBehaviour
 
     [SerializeField, Min(0.1f)] private float movementSpeed = 3.5f;
     [SerializeField, Min(1)] private int carryingCapacity = 10;
-    [SerializeField, Min(0.05f)] private float stoppingDistance = 0.2f;
+    [SerializeField, Min(0.05f)] private float stoppingDistance = 1.5f;
     [SerializeField, Min(0.05f)] private float pickupDuration = 10f;
     [SerializeField, Min(0.05f)] private float deliveryDuration = 10f;
     [SerializeField] private ItemInventory cargoInventory = new();

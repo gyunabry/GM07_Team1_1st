@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.Android.Gradle.Manifest;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SaveGameService : MonoBehaviour
@@ -27,6 +25,7 @@ public class SaveGameService : MonoBehaviour
     [SerializeField] private PlacementSystem placementSystem;
     // [SerializeField] private EmployeeManager employeeManager;
     [SerializeField] private CounterInventory counterInventory;
+    [SerializeField] private HuntingFieldManager huntingFieldManager;
     [Tooltip("텔레포트 UI 참조 연결 복구")]
     [SerializeField] private TeleportUI teleportUI;
 
@@ -139,6 +138,13 @@ public class SaveGameService : MonoBehaviour
         {
             allSuccessed = false;
         }
+
+        // 사냥터 복구
+        List<string> savedHuntingFieldIds = data.progression != null
+            ? data.progression.unlockedHuntingFieldIds
+            : null;
+
+        huntingFieldManager.RestoreUnlockedIds(savedHuntingFieldIds);
 
         // 해금 레시피 복구
         //if (!RestoreUnlockedRecipes(data.progression.unlockedRecipeIds))
@@ -293,6 +299,9 @@ public class SaveGameService : MonoBehaviour
 
         // 월드 진행 데이터 저장
         data.world.workshopExpansionStage = expansionManager.CurrentStage;
+
+        data.progression.unlockedHuntingFieldIds.Clear();
+        data.progression.unlockedHuntingFieldIds = huntingFieldManager.CaptureUnlockedIds();
 
         // 판매대 인벤토리 저장
         data.world.sharedInventories.Add(new NamedInventorySaveData
@@ -883,6 +892,12 @@ public class SaveGameService : MonoBehaviour
         if (counterInventory == null)
         {
             Debug.LogError("counterInventory가 연결되지 않았습니다.");
+            valid = false;
+        }
+
+        if (huntingFieldManager == null)
+        {
+            Debug.LogError("huntingFieldManager가 연결되지 않았습니다.");
             valid = false;
         }
 

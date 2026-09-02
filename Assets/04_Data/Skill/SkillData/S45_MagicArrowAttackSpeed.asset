@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: S45_MagicArrowAttackSpeed
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S45
-  skillName: 
-  skillDesc: 
+  skillName: "\uB9E4\uC9C1 \uC560\uB85C\uC6B0 \uACF5\uACA9\uC18D\uB3C4 \uAC15\uD654"
+  skillDesc: "\uB9E4\uC9C1 \uC560\uB85C\uC6B0\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00
+    \uB2E8\uCD95\uB41C\uB2E4."
   skillSprite: {fileID: 21300000, guid: 279d3619121f50c4bb4d8701104c5f10, type: 3}
   skillMaxLevel: 3
   skillNeedSkillPoint: 1
@@ -27,3 +28,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 3d6b4e3e46f2c0c4b917b9f7accee2dd, type: 2}
   effect: {fileID: 11400000, guid: 0307f25eac7259445bde1d1eead7c8cb, type: 2}
+  skillChangeStat: "\uACF5\uACA9\uC18D\uB3C4"

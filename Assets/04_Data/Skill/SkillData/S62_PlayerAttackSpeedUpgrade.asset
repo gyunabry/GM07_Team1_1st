@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: S62_PlayerAttackSpeedUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S62
-  skillName: 
-  skillDesc: 
-  skillSprite: {fileID: 0}
+  skillName: "\uACF5\uACA9\uC18D\uB3C4 \uAC15\uD654 1"
+  skillDesc: "\uD50C\uB808\uC774\uC5B4\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00 \uB2E8\uCD95\uB41C\uB2E4."
+  skillSprite: {fileID: 21300000, guid: 910ecc85d95c749b9836ae70dfcd3831, type: 3}
   skillMaxLevel: 1
   skillNeedSkillPoint: 1
   skillNeedLevel: 0
@@ -25,3 +25,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 83bf96e235ac8004385a6cd2b95d5c00, type: 2}
   effect: {fileID: 11400000, guid: c25546761d4c6324b99c10a077a8d22e, type: 2}
+  skillChangeStat: "\uACF5\uACA9 \uC18D\uB3C4"

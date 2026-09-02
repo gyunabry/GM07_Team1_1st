@@ -73,6 +73,8 @@ MonoBehaviour:
   movementSpeed: 3.5
   carryingCapacity: 10
   stoppingDistance: 0.2
+  pickupDuration: 10
+  deliveryDuration: 10
   cargoInventory:
     capacity: 20
     entries: []
@@ -85,7 +87,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 2467066353107523032}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.3
+  m_Radius: 0.1
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50

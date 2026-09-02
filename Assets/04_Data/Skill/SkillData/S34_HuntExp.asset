@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: S34_HuntExp
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S34
-  skillName: HuntExp
-  skillDesc: 
+  skillName: "\uC0AC\uB0E5 \uACBD\uD5D8\uCE58 \uC99D\uAC00 1"
+  skillDesc: "\uC0AC\uB0E5\uC744 \uD1B5\uD574 \uD68D\uB4DD\uD558\uB294 \uACBD\uD5D8\uCE58\uB7C9\uC774
+    \uC99D\uAC00\uD55C\uB2E4."
   skillSprite: {fileID: 21300000, guid: 76da45a2d749ae84b975be357cbed24f, type: 3}
   skillMaxLevel: 2
   skillNeedSkillPoint: 0
@@ -26,3 +27,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: bd23b406df370094f95e8f5c845f9adc, type: 2}
   effect: {fileID: 11400000, guid: 7d27c15055fbfce4c8b4ac05bd739fcc, type: 2}
+  skillChangeStat: "\uC0AC\uB0E5 \uACBD\uD5D8\uCE58"

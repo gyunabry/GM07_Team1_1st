@@ -28,7 +28,7 @@ public class BuildTapController : MonoBehaviour
         {
             int capturedIndex = i;
 
-            clickActions[i] = () => ShowTab(capturedIndex);
+            clickActions[i] = () => OnTabClicked(capturedIndex);
 
             if (tabs[i].button != null)
             {
@@ -37,6 +37,17 @@ public class BuildTapController : MonoBehaviour
         }
 
         ShowTab(Mathf.Clamp(defaultTabIndex, 0, tabs.Length - 1));
+    }
+
+    private void OnTabClicked(int index)
+    {
+        if (index == CurrentTabIndex)
+        {
+            return;
+        }
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+        ShowTab(index);
     }
 
     public void ShowTab(int index)

@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: S54_LightningRayProjectileCount
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S54
-  skillName: 
-  skillDesc: 
+  skillName: "\uB77C\uC774\uD2B8\uB2DD \uB808\uC774 \uAC1C\uC218 \uC99D\uAC00"
+  skillDesc: "\uB77C\uC774\uD2B8\uB2DD \uB808\uC774\uC758 \uAC1C\uC218\uAC00 \uC99D\uAC00\uD55C\uB2E4."
   skillSprite: {fileID: 21300000, guid: 55a92f233f2debc43967597e5318b5c4, type: 3}
   skillMaxLevel: 3
   skillNeedSkillPoint: 1
@@ -27,3 +27,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 60662366f8d24204cbfa98e8325c2f5e, type: 2}
   effect: {fileID: 11400000, guid: ec10f4a87d7b4a641bee641d43179123, type: 2}
+  skillChangeStat: "\uAC1C\uC218"

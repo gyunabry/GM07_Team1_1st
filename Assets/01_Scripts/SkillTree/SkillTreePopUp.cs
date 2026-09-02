@@ -8,6 +8,7 @@ public class SkillTreePopUp : MonoBehaviour
     [SerializeField] GameObject descName;
     [SerializeField] GameObject descNeed;
     [SerializeField] GameObject descDesc;
+    [SerializeField] GameObject descChange;
     [SerializeField] PoolManager poolManager;
 
     
@@ -16,10 +17,10 @@ public class SkillTreePopUp : MonoBehaviour
         Image image = descSprite.GetComponent<Image>();
         image.sprite = sprite;
     }
-    public void SetName(string name, int level, int maxLevel)
+    public void SetName(string name)
     {
         TextMeshProUGUI text = descName.GetComponent<TextMeshProUGUI>();
-        text.text = $"{name}({level}/{maxLevel})";
+        text.text = $"{name}";
     }
     public void SetNeed(float needPoint, float needMoney)
     {
@@ -32,6 +33,19 @@ public class SkillTreePopUp : MonoBehaviour
         { 
             text.text = $"Need Money : {needMoney}";
         }
+    }
+    public void SetValue(string changeStat, float value)
+    {
+        TextMeshProUGUI text = descChange.GetComponent<TextMeshProUGUI>();
+        if(value != 0)
+        {
+            text.text = $"{changeStat} | {value}";
+        }
+        else
+        {
+            text.text = $"{changeStat}";
+        }
+        
     }
     public void SetDesc(string desc)
     {

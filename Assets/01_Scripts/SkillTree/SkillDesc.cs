@@ -9,7 +9,6 @@ public class SkillDesc : MonoBehaviour
     [SerializeField] GameObject descDistance;
     [SerializeField] GameObject descProjectile;
     [SerializeField] PoolManager poolManager;
-
     public void SetDamage(float damage)
     {
         TextMeshProUGUI text = descDamage.GetComponent<TextMeshProUGUI>();

@@ -12,40 +12,40 @@ public class SkillCSVExporter : EditorWindow
     [MenuItem("Tools/Export Skill Data to CSV")]
     public static void ExportCSV()
     {
-        // 1. ÀúÀåÇÒ CSV ÆÄÀÏ °æ·Î ¹× ÀÌ¸§ ÁöÁ¤
+        // 1. ì €ì¥í•  CSV íŒŒì¼ ê²½ë¡œ ì„ íƒ
         string savePath = EditorUtility.SaveFilePanel("Save Skill Data to CSV", "", "SkillData_Export.csv", "csv");
         if (string.IsNullOrEmpty(savePath)) return;
 
-        // 2. ÁöÁ¤µÈ Æú´õ ³»ÀÇ ¸ğµç SkillDataSO ¿¡¼Â °Ë»ö ¹× ·Îµå
+        // 2. ì§€ì •ëœ í´ë” ë‚´ì˜ ëª¨ë“  SkillDataSO ì—ì…‹ êµ¬í•˜ê¸°
         string[] guids = AssetDatabase.FindAssets("t:SkillDataSO", new[] { SOURCE_FOLDER });
         if (guids.Length == 0)
         {
-            Debug.LogWarning($"[{SOURCE_FOLDER}] Æú´õ¿¡¼­ SkillDataSO ¿¡¼ÂÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[{SOURCE_FOLDER}] í´ë” ë‚´ì— SkillDataSO ì—ì…‹ì´ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         List<string> csvLines = new List<string>();
 
-        // 3. CSV Çì´õ(Header) ÀÛ¼º (ImporterÀÇ ÅäÅ« ÀÎµ¦½º¿Í µ¿ÀÏÇÑ ¼ø¼­)
-        // 0: skillID, 1: skillName, 2: skillDesc, 3: maxLevel, 4: needPoint,
-        // 5: needLevel, 6: needMoney, 7: value, 8: needSkillIDs, 9: spritePath, 10: effectPath
-        string header = "skillID,skillName,skillDesc,maxLevel,needPoint,needLevel,needMoney,value,needSkillIDs,spritePath,effectPath";
+        // 3. CSV í—¤ë”(Header) ìƒì„±
+        // 0: soName, 1: skillID, 2: skillName, 3: skillDesc, 4: maxLevel, 5: needPoint,
+        // 6: needLevel, 7: needMoney, 8: value, 9: needSkillIDs, 10: spritePath, 11: effectPath, 12: changeStat
+        string header = "soName,skillID,skillName,skillDesc,maxLevel,needPoint,needLevel,needMoney,value,needSkillIDs,spritePath,effectPath,changeStat";
         csvLines.Add(header);
 
-        // ID¼øÀ¸·Î Á¤·ÄÇÏ¿© ¼öÃâ(Export)
+        // IDìˆœìœ¼ë¡œ ì •ë ¬í•˜ì—¬ Export
         List<SkillDataSO> skillList = guids
             .Select(guid => AssetDatabase.LoadAssetAtPath<SkillDataSO>(AssetDatabase.GUIDToAssetPath(guid)))
             .Where(so => so != null)
             .OrderBy(so => so.skillID)
             .ToList();
 
-        // 4. °¢ SkillDataSOÀÇ µ¥ÀÌÅÍ¸¦ CSV ¶óÀÎÀ¸·Î º¯È¯
+        // 4. ê° SkillDataSOì˜ ë°ì´í„°ë¥¼ CSV ì¤„ ë¬¸ìì—´ë¡œ ë³€í™˜
         foreach (SkillDataSO skillSO in skillList)
         {
-            // float[] ¹è¿­ -> "10|20|30"
+            // float[] ë°°ì—´ -> "10|20|30"
             string valueStr = skillSO.value != null ? string.Join("|", skillSO.value) : "";
 
-            // SkillDataSO[] ¹è¿­ -> "001|002" (skillIDµéÀ» '|'·Î ¿¬°á)
+            // SkillDataSO[] ë°°ì—´ -> "001|002" (skillIDë“¤ì„ '|'ë¡œ ì—°ê²°)
             string needSkillsStr = "";
             if (skillSO.needSkill != null && skillSO.needSkill.Length > 0)
             {
@@ -54,14 +54,15 @@ public class SkillCSVExporter : EditorWindow
                     .Select(reqSO => reqSO.skillID));
             }
 
-            // Sprite ¿¡¼Â °æ·Î ÃßÃâ
+            // Sprite ì—ì…‹ ìƒëŒ€ ê²½ë¡œ
             string spritePath = skillSO.skillSprite != null ? AssetDatabase.GetAssetPath(skillSO.skillSprite) : "";
 
-            // SkillEffectSO ¿¡¼Â °æ·Î ÃßÃâ
+            // SkillEffectSO ì—ì…‹ ìƒëŒ€ ê²½ë¡œ
             string effectPath = skillSO.effect != null ? AssetDatabase.GetAssetPath(skillSO.effect) : "";
 
-            // CSV ÁÙ ±¸¼º
-            string line = $"{EscapeCSV(skillSO.skillID)}," +
+            // CSV ì¤„ ìƒì„±
+            string line = $"{EscapeCSV(skillSO.name)}," +
+                          $"{EscapeCSV(skillSO.skillID)}," +
                           $"{EscapeCSV(skillSO.skillName)}," +
                           $"{EscapeCSV(skillSO.skillDesc)}," +
                           $"{skillSO.skillMaxLevel}," +
@@ -71,23 +72,24 @@ public class SkillCSVExporter : EditorWindow
                           $"{valueStr}," +
                           $"{needSkillsStr}," +
                           $"{spritePath}," +
-                          $"{effectPath}";
+                          $"{effectPath}," +
+                          $"{EscapeCSV(skillSO.skillChangeStat)}";
 
             csvLines.Add(line);
         }
 
-        // 5. CSV ÆÄÀÏ·Î ¾²±â (UTF-8 ÀÎÄÚµù)
+        // 5. CSV íŒŒì¼ ì €ì¥ (UTF-8 ì¸ì½”ë”©)
         File.WriteAllLines(savePath, csvLines, Encoding.UTF8);
 
         AssetDatabase.Refresh();
-        Debug.Log($"<color=green>SkillDataSO {skillList.Count}°³ÀÇ µ¥ÀÌÅÍ¸¦ [{savePath}]·Î ¼º°øÀûÀ¸·Î ³»º¸³Â½À´Ï´Ù!</color>");
+        Debug.Log($"<color=green>SkillDataSO {skillList.Count}ê°œì˜ ë°ì´í„°ê°€ [{savePath}]ì— ì„±ê³µì ìœ¼ë¡œ ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤!</color>");
     }
 
-    // ÄŞ¸¶(,)³ª ÁÙ¹Ù²ŞÀÌ µé¾î°£ ÅØ½ºÆ® Ã³¸®¿ë ÇïÆÛ ÇÔ¼ö
+    // ì‰¼í‘œ, í°ë”°ì˜´í‘œ, ì¤„ë°”ê¿ˆ í¬í•¨ ë¬¸ìì—´ ì´ìŠ¤ì¼€ì´í”„ ì²˜ë¦¬
     private static string EscapeCSV(string text)
     {
         if (string.IsNullOrEmpty(text)) return "";
-        if (text.Contains(",") || text.Contains("\"") || text.Contains("\n"))
+        if (text.Contains(",") || text.Contains("\"") || text.Contains("\n") || text.Contains("\r"))
         {
             text = text.Replace("\"", "\"\"");
             return $"\"{text}\"";

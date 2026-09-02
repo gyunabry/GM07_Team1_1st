@@ -21,6 +21,7 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
     [SerializeField] private TMP_Text facilityName;
     [SerializeField] private TMP_Text facilityCount;
     [SerializeField] private TMP_Text facilityPrice;
+    [SerializeField] private Image unavailableImage;
 
     [Header("»ö»ó")]
     [SerializeField] private Color disableColor = Color.red;
@@ -131,6 +132,11 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
         if (facilityPrice != null)
         {
             facilityPrice.color = moneyBlocked ? disableColor : defaultNameColor;
+        }
+
+        if (unavailableImage != null)
+        {
+            unavailableImage.gameObject.SetActive(levelBlocked || moneyBlocked || limitBlocked);
         }
     }
 }

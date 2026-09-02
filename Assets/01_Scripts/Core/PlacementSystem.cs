@@ -361,15 +361,6 @@ public partial class PlacementSystem : MonoBehaviour
             return false;
         }
 
-        if (IsHunterBuilding(selectedBuildingData))
-        {
-            HuntingFieldContext fieldContext = area.GetComponent<HuntingFieldContext>();
-            if (fieldContext == null || !fieldContext.TryGetCompletedTransmitter(out _))
-            {
-                return false;
-            }
-        }
-
         List<Vector3Int> cells = GetOccupiedCells(originCell, size);
 
         // 구매 배치 모드에서는 null
@@ -473,10 +464,14 @@ public partial class PlacementSystem : MonoBehaviour
     private void TryConfirmPurchase()
     {
         if (CurrentMode != PlacementMode.PurchasePlacement ||
-            currentArea == null ||
-            !canPlace ||
             selectedBuildingData == null)
         {
+            return;
+        }
+
+        if (currentArea == null || !canPlace)
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.ImpossibleBuild);
             return;
         }
 
@@ -490,6 +485,7 @@ public partial class PlacementSystem : MonoBehaviour
 
         if (!IsCellsAvailable(currentArea, currentCell, rotatedSize))
         {
+            AudioManager.Instance.PlaySFX(ESFXType.ImpossibleBuild);
             UpdatePreview();
             return;
         }
@@ -533,6 +529,8 @@ public partial class PlacementSystem : MonoBehaviour
 
         buildingObj.name = selectedBuildingData.BuildingName;
 
+        // 시설 배치 효과음 
+        AudioManager.Instance.PlaySFX(ESFXType.CanBuild);
         placedBuilding.BeginConstruction();
 
         OnBuildingPlaced?.Invoke(placedBuilding, selectedBuildingData);
@@ -622,17 +620,6 @@ public partial class PlacementSystem : MonoBehaviour
 
         Debug.LogWarning($"사전 배치 시설 등록에 실패했습니다 : {building.BuildingName}");
         return false;
-    }
-
-    // 임시 메서드
-    private static bool IsHunterBuilding(BuildingDataSO buildingData)
-    {
-        if (buildingData == null || buildingData.BuildingPrefab == null) 
-        {
-            return false;
-        }
-
-        return buildingData.BuildingPrefab.TryGetComponent<HunterBuildingController>(out _);
     }
 
     public void SetBuildModeActive(bool active)

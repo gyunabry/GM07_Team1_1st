@@ -59,6 +59,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         CurrencyChanged?.Invoke(money, experience);
         OnGoldChanged?.Invoke();
         OnGoldEarned?.Invoke();
+
+        CheckLevelUp();
     }
 
     public void GrantMoney(int amount)
@@ -69,7 +71,6 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public void GrantExperience(int amount)
     {
         GrantReward(0, amount);
-        CheckLevelUp();
     }
 
     public bool TrySpendMoney(int amount)
@@ -119,8 +120,10 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
     private void CheckLevelUp()
     {
+        if (level > needExp.Count) return;
         if (needExp[level - 1] <= nowExperience)
         {
+            nowExperience -= needExp[level - 1];
             level++;
             LevelUp?.Invoke();
         }

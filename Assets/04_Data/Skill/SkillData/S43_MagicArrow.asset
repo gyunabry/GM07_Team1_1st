@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: S43_MagicArrow
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S43
-  skillName: MagicArrow
-  skillDesc: 
-  skillSprite: {fileID: 0}
+  skillName: "\uB9E4\uC9C1 \uC560\uB85C\uC6B0"
+  skillDesc: "\uBC94\uC704 \uB0B4 \uC0DD\uBA85\uC744 \uCD94\uC801\uD558\uB294 \uB9C8\uB825
+    \uD654\uC0B4\uC744 \uC3D8\uC544 \uB2E8\uC77C \uC801\uC744 \uACF5\uACA9\uD55C\uB2E4."
+  skillSprite: {fileID: 21300000, guid: aab69ef85a04e4730a952f5058fd2633, type: 3}
   skillMaxLevel: 1
   skillNeedSkillPoint: 1
   skillNeedLevel: 0
@@ -24,3 +25,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: 83bf96e235ac8004385a6cd2b95d5c00, type: 2}
   effect: {fileID: 11400000, guid: 5a34435d78e17ca4aa898721848f8016, type: 2}
+  skillChangeStat: "\uB9E4\uC9C1 \uC560\uB85C\uC6B0 \uD68D\uB4DD"

@@ -47,9 +47,12 @@ public class SkillTreeManager : MonoBehaviour
                     }
                     else if (!(skill.skillNeedMoney == 0))
                     {
-                        if (effectContext.currencySystem.TrySpendMoney(skill.skillNeedMoney) && !(skill.skillMaxLevel <= state.skillLevel))
+                        if(!(skill.skillMaxLevel <= state.skillLevel))
                         {
-                            state.skillLevel++;
+                            if (effectContext.currencySystem.TrySpendMoney(skill.skillNeedMoney))
+                            {
+                                state.skillLevel++;
+                            }
                         }
                     }
                     else if(!(skill.skillMaxLevel <= state.skillLevel))

@@ -137,7 +137,7 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6372182821648462478}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -188,7 +188,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.6901398
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -228,13 +228,13 @@ LineRenderer:
       m_ColorSpace: -1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 0
-    numCapVertices: 0
+    numCornerVertices: 3
+    numCapVertices: 3
     alignment: 0
-    textureMode: 0
+    textureMode: 1
     textureScale: {x: 1, y: 1}
     shadowBias: 0.5
-    generateLightingData: 0
+    generateLightingData: 1
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
@@ -249,9 +249,9 @@ NavMeshAgent:
   m_AgentTypeID: 0
   m_Radius: 0.5
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 70
   avoidancePriority: 50
-  m_AngularSpeed: 360
+  m_AngularSpeed: 1080
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
@@ -380,11 +380,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
   - {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
   - {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
-  MagicArrowSO: {fileID: 11400000, guid: dc80ee0bf1d857e4c81cb389294fd8fc, type: 2}
-  FireCircleSO: {fileID: 11400000, guid: 32283dfdf928f1b42b30314b952e109c, type: 2}
-  ChasingSickleSO: {fileID: 11400000, guid: f18eb5b109b4d8a478d52c1a6bdd475d, type: 2}
-  LightningRaySO: {fileID: 11400000, guid: f856ee9cccfb59044b0b100f973cdf3e, type: 2}
-  FlowerThornsSO: {fileID: 11400000, guid: 259e617f711b3bc429252624a3ecdbae, type: 2}
   slots:
   - slotIndex: 0
     equipAttackID: 0

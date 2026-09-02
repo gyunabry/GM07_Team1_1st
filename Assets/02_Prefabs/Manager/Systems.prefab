@@ -55,6 +55,7 @@ MonoBehaviour:
   exitPoint: {fileID: 0}
   currencySystem: {fileID: 7639431466538978612}
   counterInventory: {fileID: 8565966294825179077}
+  economyModifierService: {fileID: 8261667966200680934}
   spawnInterval: 5
   spawnOnStart: 1
 --- !u!1 &1170767559675279026
@@ -180,6 +181,54 @@ MonoBehaviour:
   - level: 21
     productionLimit: 10
     salesLimit: 3
+--- !u!1 &1226560388596166306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2744392290980029438}
+  - component: {fileID: 3595694023088747465}
+  m_Layer: 0
+  m_Name: HuntingFieldManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2744392290980029438
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226560388596166306}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 684614707514807010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3595694023088747465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226560388596166306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d932c24db8adcc46909336bb3f4b554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HuntingFieldManager
+  fields:
+  - {fileID: 11400000, guid: 71522eaa431b9de418cd4e6d40f9fbab, type: 2}
+  - {fileID: 11400000, guid: 484250e9a4521214a9e1067e4e72fe0e, type: 2}
+  - {fileID: 11400000, guid: 3a8a26d4d16719943b3d5aa124e9d46a, type: 2}
 --- !u!1 &1674618562125681912
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,6 +527,7 @@ Transform:
   - {fileID: 2562983513259400015}
   - {fileID: 3573402552528928363}
   - {fileID: 6925406222427910695}
+  - {fileID: 2744392290980029438}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7044040682239475874
@@ -536,6 +586,7 @@ MonoBehaviour:
   expansionManager: {fileID: 4594496697931293496}
   placementSystem: {fileID: 8645873690436672994}
   counterInventory: {fileID: 8565966294825179077}
+  huntingFieldManager: {fileID: 3595694023088747465}
   teleportUI: {fileID: 0}
 --- !u!1 &7293180575848846353
 GameObject:
@@ -669,7 +720,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 11c1ba2cb5efdef4880a386689de45cf, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 6564ac556b3795e4caf6a4cc6c78d917, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1 &8336680834424567778
 GameObject:
@@ -815,6 +866,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d1fd662ac64f4a84f67d1ed56477cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeUnlockManager
+  huntingFieldManager: {fileID: 3595694023088747465}
+  fieldRecipesMappings:
+  - huntingField: {fileID: 11400000, guid: 71522eaa431b9de418cd4e6d40f9fbab, type: 2}
+    recipes:
+    - {fileID: 11400000, guid: 757b9e44b981c77459cc78997f063962, type: 2}
+    - {fileID: 11400000, guid: ca3373e6eeef1434b9b8050a80885b91, type: 2}
+  - huntingField: {fileID: 11400000, guid: 484250e9a4521214a9e1067e4e72fe0e, type: 2}
+    recipes:
+    - {fileID: 11400000, guid: 686892f28420efa4cbcee692aff64b00, type: 2}
+    - {fileID: 11400000, guid: 609cadeb163d7634ea03ffed06a34199, type: 2}
+  - huntingField: {fileID: 11400000, guid: 3a8a26d4d16719943b3d5aa124e9d46a, type: 2}
+    recipes:
+    - {fileID: 11400000, guid: 1d2c2d7a88393e84ab05a570fc732178, type: 2}
+    - {fileID: 11400000, guid: 2316e3fee05d4104db8b71da7b14e75b, type: 2}
   unlockConfig: {fileID: 11400000, guid: e1883fa490014fe2b044b3a4059d50da, type: 2}
 --- !u!1001 &1699624189125245447
 PrefabInstance:
@@ -868,8 +933,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: PoolManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[0].particlePrefab
+      value: 
+      objectReference: {fileID: 1941226523401448538, guid: 17865bcfb151cfa41b8040814b8374e5, type: 3}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[1].particlePrefab
+      value: 
+      objectReference: {fileID: 6476705285018846835, guid: 55ba4fc0787793b45843ae8a8fcf988d, type: 3}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[2].particlePrefab
+      value: 
+      objectReference: {fileID: 3894563636541966135, guid: 9c057b349289c674bbe4dba9c963b14f, type: 3}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[4].particlePrefab
+      value: 
+      objectReference: {fileID: 5242465537561784062, guid: a664b5b2468c8e04788ea034093164c0, type: 3}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 965431662256586543, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
@@ -931,9 +1013,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -2091524813546945963, guid: 950846757cf8ed0428a4677b9488ddba, type: 3}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: hunterCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: carrierCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: customerCount
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: skillDescCount
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: fireCirclePrefab
+      value: 
+      objectReference: {fileID: 7170219139168216134, guid: 55ba4fc0787793b45843ae8a8fcf988d, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: attackPointPrefab
+      value: 
+      objectReference: {fileID: 1544201681648542550, guid: 17865bcfb151cfa41b8040814b8374e5, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: flowerThornsPrefab
+      value: 
+      objectReference: {fileID: -557847215159735050, guid: a664b5b2468c8e04788ea034093164c0, type: 3}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: hunterWorkerPrefab
       value: 
@@ -942,6 +1048,10 @@ PrefabInstance:
       propertyPath: carrierWorkerPrefab
       value: 
       objectReference: {fileID: 4163047715311570166, guid: 1599bbb658fdda3479d5ee9219203b84, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: chasingSicklePrefab
+      value: 
+      objectReference: {fileID: 1442841952918593527, guid: 9c057b349289c674bbe4dba9c963b14f, type: 3}
     - target: {fileID: 7119374117894832108, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: m_Name
       value: PoolPreLoader

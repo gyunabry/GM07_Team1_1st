@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: S70_PlayerItemGetRange
   m_EditorClassIdentifier: Assembly-CSharp::SkillDataSO
   skillID: S70
-  skillName: 
-  skillDesc: 
+  skillName: "\uC544\uC774\uD15C \uD68D\uB4DD \uBC94\uC704 \uC99D\uAC00 2"
+  skillDesc: "\uD50C\uB808\uC774\uC5B4\uC758 \uC544\uC774\uD15C \uD68D\uB4DD \uBC94\uC704\uAC00
+    \uC99D\uAC00\uD55C\uB2E4."
   skillSprite: {fileID: 21300000, guid: 66e88738fe9b2504a8d1d344be66d7f6, type: 3}
   skillMaxLevel: 1
   skillNeedSkillPoint: 1
@@ -25,3 +26,4 @@ MonoBehaviour:
   needSkill:
   - {fileID: 11400000, guid: e1127f068c331c8478bff83ee265f80c, type: 2}
   effect: {fileID: 11400000, guid: e30245e6dae811c44bf1ac1cfeaae7ae, type: 2}
+  skillChangeStat: "\uC544\uC774\uD15C \uD68D\uB4DD \uBC94\uC704"

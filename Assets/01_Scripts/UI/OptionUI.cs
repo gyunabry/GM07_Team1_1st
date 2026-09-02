@@ -12,6 +12,10 @@ public class OptionUI : MonoBehaviour
     [Header("Screen Mode")]
     [SerializeField] private TMP_Dropdown dropdown;
 
+    [Header("저장 및 나가기")]
+    [SerializeField] private GameObject saveAndExitPopup;
+    [SerializeField] private SaveGameService saveGameService;
+
     public enum EScreenMode
     {
         FullScreen,
@@ -30,10 +34,16 @@ public class OptionUI : MonoBehaviour
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         }
         this.gameObject.SetActive(false);
+        
     }
 
     private void OnEnable()
     {
+        if (saveAndExitPopup != null)
+        {
+            saveAndExitPopup.SetActive(false);
+        }
+
         float currentBGM = 1f;
         float currentSFX = 1f;
 
@@ -53,6 +63,27 @@ public class OptionUI : MonoBehaviour
         }
 
         OnClickChangeWindow();
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void OnClickConfirmSaveAndExit()
+    {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+        GameSceneManager.Instance.SaveAndLoadScene(saveGameService, EScene.Title);
+    }
+
+    public void OnClickCancelSaveAndExit()
+    {
+        saveAndExitPopup.SetActive(false);
     }
 
     // 클릭 시 효과음
@@ -84,7 +115,7 @@ public class OptionUI : MonoBehaviour
     public void OnClickHomeBtn()
     {
         AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
-        GameSceneManager.Instance.LoadScene(EScene.Title);
+        saveAndExitPopup.SetActive(true);
     }
 
     // 화면 크기 변경

@@ -168,7 +168,7 @@ public sealed class HunterWorker : MonoBehaviour
         itemDeliveryElapsed = 0f;
 
         ApplyStatModifiers(); 
-        agent.stoppingDistance = 0.2f; 
+        agent.stoppingDistance = 1.5f; 
         manager.TrySetWorkState(employee, EmployeeWorkState.Idle);
     }
 
@@ -299,7 +299,7 @@ public sealed class HunterWorker : MonoBehaviour
     {
         if (!IsValidDropTarget(drop)) { ReleaseDrop(); RequestTargetSearch(); state=State.Idle; return; }
         if (cargo.Remaining <= 0) { state=State.Store; return; }
-        if (Distance(drop.transform.position) > .3f)
+        if (Distance(drop.transform.position) > 1.5f)
         {
             itemPickupElapsed = 0f;
             if (!Move(drop.transform.position, EmployeeWorkState.Moving))
@@ -343,7 +343,7 @@ public sealed class HunterWorker : MonoBehaviour
             return; 
         }
 
-        if (Distance(transmitter.DepositPoint.position) > .3f)
+        if (Distance(transmitter.DepositPoint.position) > 1.3f)
         {
             itemDeliveryElapsed = 0f;
             Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving);

@@ -19,9 +19,6 @@ public class RecipeSelectPanel : MonoBehaviour
     [Header("레시피 툴팁")]
     [SerializeField] private RecipeInfoToolTip recipeToolTip;
 
-    [Header("임시 해금 레시피 데이터")]
-    [SerializeField] private List<RecipeDataSO> unlockedRecipes = new();
-
     // 실제로 해당 시설에서 보여지는 레시피
     private readonly List<RecipeDataSO> visibleRecipes = new();
     private readonly List<RecipeButtonView> buttonViews = new();
@@ -60,13 +57,15 @@ public class RecipeSelectPanel : MonoBehaviour
     {
         visibleRecipes.Clear();
 
+        RecipeUnlockManager unlockManager = RecipeUnlockManager.Instance;
+
         foreach (RecipeDataSO recipe in currentBuilding.AvailableRecipes)
         {
             if (recipe == null) continue;
 
             // 해당 시설에서 해당 레시피를 사용할 수 없으면 패스
             if (!currentBuilding.CanProcess(recipe)) continue;
-            if (!unlockedRecipes.Contains(recipe)) continue;
+            if (unlockManager == null || !unlockManager.IsUnlocked(recipe)) continue;
 
             visibleRecipes.Add(recipe);
         }

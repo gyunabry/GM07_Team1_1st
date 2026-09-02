@@ -16,7 +16,7 @@ public class SkillTreeCoinHud : MonoBehaviour
     }
     private void OnEnable()
     {
-        text.text = currencySystem.Money.ToString();
+        text.text = $"{currencySystem.Money.ToString()}G";
         currencySystem.CurrencyChanged += CurrencySystem_CurrencyChanged;
     }
     private void OnDisable()
@@ -25,6 +25,6 @@ public class SkillTreeCoinHud : MonoBehaviour
     }
     private void CurrencySystem_CurrencyChanged(int arg1, int arg2)
     {
-        text.text = arg1.ToString();
+        text.text = $"{arg1.ToString()}G";
     }
 }
