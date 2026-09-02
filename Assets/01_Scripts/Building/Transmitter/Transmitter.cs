@@ -1,130 +1,33 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /*
-1. ìƒí˜¸ì‘ìš© ì˜ì—­ì— í”Œë ˆì´ì–´ë‚˜ ì‚¬ëƒ¥ ì§ì›ì´ ì ‘ê·¼í•˜ê³  ì „ì†¡ ê°€ëŠ¥í•œ ì¬ë£Œ ì•„ì´í…œì´ ìˆë‹¤ë©´ ì „ì†¡
-2. ê³µë°© ë‚´ë¶€ì— ë°°ì¹˜ë˜ëŠ” í†µí•© ì „ì†¡ê¸° ì¸ë²¤í† ë¦¬ë¡œ ì´ë™ë¨
-3. ì´ë•Œ, ì „ì†¡ê¸°ì˜ ì•„ì´í…œì€ ì¼ì •ì‹œê°„ë§ˆë‹¤ í•˜ë‚˜ì”© í†µí•© ì „ì†¡ê¸°ë¡œ ì „ì†¡
-4. í†µí•© ì „ì†¡ê¸°ëŠ” í”Œë ˆì´ì–´ê°€ ê·¼ì ‘í•˜ë©´ í”Œë ˆì´ì–´ ì¸ë²¤í† ë¦¬ë¡œ ì•„ì´í…œì„ ì´ë™ì‹œí‚´
-5. ê° ì „ì†¡ê¸°ì˜ ì¢…ì°©ì§€ëŠ” í†µí•© ì „ì†¡ê¸°
+1. »óÈ£ÀÛ¿ë ¿µ¿ª¿¡ ÇÃ·¹ÀÌ¾î³ª »ç³É Á÷¿øÀÌ Á¢±ÙÇÏ°í Àü¼Û °¡´ÉÇÑ Àç·á ¾ÆÀÌÅÛÀÌ ÀÖ´Ù¸é Àü¼Û
+2. °ø¹æ ³»ºÎ¿¡ ¹èÄ¡µÇ´Â ÅëÇÕ Àü¼Û±â ÀÎº¥Åä¸®·Î ÀÌµ¿µÊ
+3. ÀÌ¶§, Àü¼Û±âÀÇ ¾ÆÀÌÅÛÀº ÀÏÁ¤½Ã°£¸¶´Ù ÇÏ³ª¾¿ ÅëÇÕ Àü¼Û±â·Î Àü¼Û
+4. ÅëÇÕ Àü¼Û±â´Â ÇÃ·¹ÀÌ¾î°¡ ±ÙÁ¢ÇÏ¸é ÇÃ·¹ÀÌ¾î ÀÎº¥Åä¸®·Î ¾ÆÀÌÅÛÀ» ÀÌµ¿½ÃÅ´
+5. °¢ Àü¼Û±âÀÇ Á¾ÂøÁö´Â ÅëÇÕ Àü¼Û±â
 */
 
-// í”Œë ˆì´ì–´ì™€ ì‚¬ëƒ¥ ì§ì›ì´ ì´ìš©í•  ì „ì†¡ê¸° í´ë˜ìŠ¤
+// ÇÃ·¹ÀÌ¾î¿Í »ç³É Á÷¿øÀÌ ÀÌ¿ëÇÒ Àü¼Û±â Å¬·¡½º
 public class Transmitter : MonoBehaviour
 {
-    [Header("ì „ì†¡ê¸° ì¸ë²¤í† ë¦¬")]
+    [Header("Àü¼Û±â ÀÎº¥Åä¸®")]
     [SerializeField] private ItemInventory inventory = new();
 
-    [Header("ì „ì†¡ ì„¤ì •")]
+    [Header("Àü¼Û ¼³Á¤")]
     [SerializeField] private IntegratedTransmitter destination;
     [SerializeField] private Transform depositPoint;
-    [Tooltip("ë™ì‹œì— ë¬¼í’ˆì„ ë§¡ê¸¸ ì§ì› ìˆ˜ë§Œí¼ ì§€ì •í•©ë‹ˆë‹¤. ë¹„ì–´ ìˆìœ¼ë©´ Deposit Point í•˜ë‚˜ë¥¼ ë‹¨ì¼ ìŠ¬ë¡¯ìœ¼ë¡œ ì‚¬ìš©í•©ë‹ˆë‹¤.")]
-    [SerializeField] private Transform[] depositSlots;
-    [Header("ëŒ€ê¸°ì—´ ì„¤ì •")]
-    [SerializeField, Min(1)] private int waitingSlotCount = 3;
-    [SerializeField, Min(0.1f)] private float waitingSlotSpacing = 1f;
-    [SerializeField, Min(0f)] private float waitingDistanceFromDepositPoint = 1.5f;
     [SerializeField] private float transferInterval = 1f;
 
     private PlacedBuilding placedBuilding;
     private Coroutine transferCoroutine;
     private WaitForSeconds transferWait;
-    private readonly Dictionary<Component, Transform> depositSlotOwners = new();
-    private readonly Dictionary<Component, Vector3> waitingSlotOwners = new();
-    private readonly List<Component> staleDepositSlotOwners = new();
 
     public ItemInventory Inventory => inventory;
     public bool CanOperate => placedBuilding != null && placedBuilding.IsComplete;
     public Transform DepositPoint => depositPoint;
 
-    /// <summary>
-    /// ì§ì›ì´ ë…ì ì ìœ¼ë¡œ ì‚¬ìš©í•  ë¬¼í’ˆ ì „ë‹¬ ìœ„ì¹˜ë¥¼ ì˜ˆì•½í•©ë‹ˆë‹¤.
-    /// ê°™ì€ ì „ì†¡ê¸° ìœ„ì¹˜ë¡œ ì—¬ëŸ¬ NavMeshAgentê°€ ì§„ì…í•˜ëŠ” ê²ƒì„ ë°©ì§€í•©ë‹ˆë‹¤.
-    /// </summary>
-    public bool TryReserveDepositSlot(Component requester, out Transform slot)
-    {
-        slot = null;
-
-        if (requester == null || !CanOperate)
-        {
-            return false;
-        }
-
-        CleanupSlotOwners();
-
-        if (depositSlotOwners.TryGetValue(requester, out slot) && slot != null)
-        {
-            return true;
-        }
-
-        for (int i = 0; i < DepositSlotCount; i++)
-        {
-            Transform candidate = GetDepositSlot(i);
-            if (candidate == null || depositSlotOwners.ContainsValue(candidate))
-            {
-                continue;
-            }
-
-            depositSlotOwners.Add(requester, candidate);
-            slot = candidate;
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// ì „ì†¡ ìŠ¬ë¡¯ì„ ê¸°ë‹¤ë¦¬ëŠ” ì§ì›ì—ê²Œ ì „ì†¡ê¸° ì•ì˜ ëŒ€ê¸° ìœ„ì¹˜ë¥¼ í• ë‹¹í•©ë‹ˆë‹¤.
-    /// ë³„ë„ ì”¬ ì˜¤ë¸Œì íŠ¸ ì—†ì´ Deposit Pointì˜ ë°©í–¥ê³¼ ê°„ê²©ìœ¼ë¡œ ìœ„ì¹˜ë¥¼ ê³„ì‚°í•©ë‹ˆë‹¤.
-    /// </summary>
-    public bool TryReserveWaitingSlot(Component requester, out Vector3 waitingPosition)
-    {
-        waitingPosition = default;
-
-        if (requester == null || !CanOperate || depositPoint == null)
-        {
-            return false;
-        }
-
-        CleanupSlotOwners();
-
-        if (waitingSlotOwners.TryGetValue(requester, out waitingPosition))
-        {
-            return true;
-        }
-
-        for (int i = 0; i < waitingSlotCount; i++)
-        {
-            Vector3 candidate = GetWaitingSlotPosition(i);
-            if (IsWaitingPositionReserved(candidate))
-            {
-                continue;
-            }
-
-            waitingSlotOwners.Add(requester, candidate);
-            waitingPosition = candidate;
-            return true;
-        }
-
-        return false;
-    }
-
-    public void ReleaseDepositSlot(Component requester)
-    {
-        if (requester != null)
-        {
-            depositSlotOwners.Remove(requester);
-        }
-    }
-
-    public void ReleaseWaitingSlot(Component requester)
-    {
-        if (requester != null)
-        {
-            waitingSlotOwners.Remove(requester);
-        }
-    }
 
     private void Awake()
     {
@@ -151,17 +54,13 @@ public class Transmitter : MonoBehaviour
 
     private void OnDisable()
     {
-        if (transferCoroutine != null)
-        {
-            StopCoroutine(transferCoroutine);
-            transferCoroutine = null;
-        }
+        if (transferCoroutine == null) return;
 
-        depositSlotOwners.Clear();
-        waitingSlotOwners.Clear();
+        StopCoroutine(transferCoroutine);
+        transferCoroutine = null;
     }
 
-    // í”Œë ˆì´ì–´, ì‚¬ëƒ¥ ì§ì›ì˜ ì¸ë²¤í† ë¦¬ì—ì„œ í˜¸ì¶œí•´ ì¬ë£Œë¥¼ ë°›ëŠ” ë©”ì„œë“œ
+    // ÇÃ·¹ÀÌ¾î, »ç³É Á÷¿øÀÇ ÀÎº¥Åä¸®¿¡¼­ È£ÃâÇØ Àç·á¸¦ ¹Ş´Â ¸Ş¼­µå
     public int TryReceiveOne(ItemInventory sourceInventory)
     {
         if (!CanOperate || 
@@ -198,7 +97,7 @@ public class Transmitter : MonoBehaviour
 
         ItemInventory destinationInventory = destination.Inventory;
 
-        // ëª©ì ì§€ ì¸ë²¤í† ë¦¬ì˜ ìˆ˜ìš©ëŸ‰ì´ ë‚¨ì•„ìˆì§€ ì•Šë‹¤ë©´ 0 ë°˜í™˜
+        // ¸ñÀûÁö ÀÎº¥Åä¸®ÀÇ ¼ö¿ë·®ÀÌ ³²¾ÆÀÖÁö ¾Ê´Ù¸é 0 ¹İÈ¯
         if (destinationInventory == null || destinationInventory.RemainingCapacity <= 0)
         {
             return 0;
@@ -225,71 +124,5 @@ public class Transmitter : MonoBehaviour
         }
 
         return null;
-    }
-
-    private int DepositSlotCount => depositSlots != null && depositSlots.Length > 0 ? depositSlots.Length : 1;
-
-    private Transform GetDepositSlot(int index)
-    {
-        return depositSlots != null && depositSlots.Length > 0 ? depositSlots[index] : depositPoint;
-    }
-
-    private Vector3 GetWaitingSlotPosition(int index)
-    {
-        const int slotsPerRow = 3;
-        int row = index / slotsPerRow;
-        int column = index % slotsPerRow - 1;
-        Vector3 forward = depositPoint.forward;
-        Vector3 right = depositPoint.right;
-
-        return depositPoint.position +
-               forward * (waitingDistanceFromDepositPoint + row * waitingSlotSpacing) +
-               right * (column * waitingSlotSpacing);
-    }
-
-    private bool IsWaitingPositionReserved(Vector3 candidate)
-    {
-        foreach (Vector3 reservedPosition in waitingSlotOwners.Values)
-        {
-            if ((reservedPosition - candidate).sqrMagnitude < 0.01f)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private void CleanupSlotOwners()
-    {
-        staleDepositSlotOwners.Clear();
-
-        foreach (KeyValuePair<Component, Transform> owner in depositSlotOwners)
-        {
-            if (owner.Key == null || owner.Value == null)
-            {
-                staleDepositSlotOwners.Add(owner.Key);
-            }
-        }
-
-        foreach (Component owner in staleDepositSlotOwners)
-        {
-            depositSlotOwners.Remove(owner);
-            waitingSlotOwners.Remove(owner);
-        }
-
-        staleDepositSlotOwners.Clear();
-        foreach (KeyValuePair<Component, Vector3> owner in waitingSlotOwners)
-        {
-            if (owner.Key == null)
-            {
-                staleDepositSlotOwners.Add(owner.Key);
-            }
-        }
-
-        foreach (Component owner in staleDepositSlotOwners)
-        {
-            waitingSlotOwners.Remove(owner);
-        }
     }
 }
