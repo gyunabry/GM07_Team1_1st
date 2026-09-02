@@ -8,8 +8,15 @@ public class Dropitem : MonoBehaviour, ICollectable
     [SerializeField] private SpriteRenderer sr;
     [SerializeField] private float lifetimeSec = 45f;
 
+    [Header("자석 효과")]
+    [SerializeField] private float magnetSpeed = 7.5f;
+    [SerializeField] private float collectDistance = 0.25f;
+
     private Coroutine lifetimeCoroutine;
     private WaitForSeconds lifetimeWait;
+
+    private Transform magnetTarget;
+    private ItemInventory targetInventory;
 
     public ItemDataSO Item { get; private set; }
     public int Amount { get; private set; } = 1;
@@ -17,6 +24,33 @@ public class Dropitem : MonoBehaviour, ICollectable
     private void Awake()
     {
         lifetimeWait = new WaitForSeconds(lifetimeSec);
+    }
+
+    private void Update()
+    {
+        if (magnetTarget == null || targetInventory == null)
+        {
+            return;
+        }
+
+        // 대상 인벤토리가 가득 찬 상태라면 그대로 대기
+        if (targetInventory.RemainingCapacity <= 0)
+        {
+            return;
+        }
+
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            magnetTarget.position,
+            magnetSpeed * Time.deltaTime);
+
+        // 성능을 위해 Distance 대신 거리의 제곱을 비교
+        float collectDistanceSqr = collectDistance * collectDistance;
+
+        if ((transform.position - magnetTarget.position).sqrMagnitude <= collectDistanceSqr)
+        {
+            TryCollect(targetInventory);
+        }
     }
 
     public void Initialize(ItemDataSO item, int amount = 1)
@@ -56,6 +90,17 @@ public class Dropitem : MonoBehaviour, ICollectable
         {
             PoolManager.Instance.ReturnPool(this);
         }
+    }
+
+    public void StartMagnet(Transform target, ItemInventory inventory)
+    {
+        if (target == null || inventory == null)
+        {
+            return;
+        }
+
+        magnetTarget = target;
+        targetInventory = inventory;
     }
 
     public bool TryCollect(ItemInventory target)
@@ -100,6 +145,8 @@ public class Dropitem : MonoBehaviour, ICollectable
     private void OnDisable()
     {
         KillTween();
+        magnetTarget = null;
+        targetInventory = null;
 
         if (lifetimeCoroutine != null)
         {
