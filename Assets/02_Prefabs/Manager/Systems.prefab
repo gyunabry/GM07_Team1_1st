@@ -55,6 +55,7 @@ MonoBehaviour:
   exitPoint: {fileID: 0}
   currencySystem: {fileID: 7639431466538978612}
   counterInventory: {fileID: 8565966294825179077}
+  economyModifierService: {fileID: 8261667966200680934}
   spawnInterval: 5
   spawnOnStart: 1
 --- !u!1 &1170767559675279026
@@ -865,6 +866,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4d1fd662ac64f4a84f67d1ed56477cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RecipeUnlockManager
+  huntingFieldManager: {fileID: 3595694023088747465}
+  fieldRecipesMappings:
+  - huntingField: {fileID: 11400000, guid: 71522eaa431b9de418cd4e6d40f9fbab, type: 2}
+    recipes:
+    - {fileID: 11400000, guid: 757b9e44b981c77459cc78997f063962, type: 2}
+    - {fileID: 11400000, guid: ca3373e6eeef1434b9b8050a80885b91, type: 2}
+  - huntingField: {fileID: 11400000, guid: 484250e9a4521214a9e1067e4e72fe0e, type: 2}
+    recipes:
+    - {fileID: 11400000, guid: 686892f28420efa4cbcee692aff64b00, type: 2}
+    - {fileID: 11400000, guid: 609cadeb163d7634ea03ffed06a34199, type: 2}
+  - huntingField: {fileID: 11400000, guid: 3a8a26d4d16719943b3d5aa124e9d46a, type: 2}
+    recipes:
+    - {fileID: 11400000, guid: 1d2c2d7a88393e84ab05a570fc732178, type: 2}
+    - {fileID: 11400000, guid: 2316e3fee05d4104db8b71da7b14e75b, type: 2}
   unlockConfig: {fileID: 11400000, guid: e1883fa490014fe2b044b3a4059d50da, type: 2}
 --- !u!1001 &1699624189125245447
 PrefabInstance:

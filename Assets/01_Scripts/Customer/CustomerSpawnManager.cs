@@ -13,6 +13,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     [SerializeField] private Transform exitPoint;
     [SerializeField] private CurrencySystem currencySystem;
     [SerializeField] private CounterInventory counterInventory;
+    [SerializeField] private EconomyModifierService economyModifierService;
     [SerializeField, Min(0.1f)] private float spawnInterval = 5f;
     [SerializeField] private bool spawnOnStart = true;
 
@@ -40,7 +41,12 @@ public sealed class CustomerSpawnManager : MonoBehaviour
             return;
         }
 
-        Instance = this;
+        if (economyModifierService == null)
+        {
+            economyModifierService = GetComponent<EconomyModifierService>();
+        }
+
+        Instance = this; 
         currency = currencySystem;
         inventory = counterInventory;
     }
@@ -196,7 +202,7 @@ public sealed class CustomerSpawnManager : MonoBehaviour
         CustomerController customer = PoolManager.Instance.GetPool(customerPrefab);
         customer.transform.SetPositionAndRotation(entranceHit.position, entrancePoint.rotation);
         ApplyRandomVisual(customer);
-        if (customer.OnSpawned(station.Queue, station.Checkout, exitTurnPoint, exitPoint, order, inventory, currency))
+        if (customer.OnSpawned(station.Queue, station.Checkout, exitTurnPoint, exitPoint, order, inventory, currency, economyModifierService))
         {
             customer.SetPatienceBonusSeconds(patienceBonusSeconds);
             customer.SetPatienceBonusPercent(patienceBonusPercent);

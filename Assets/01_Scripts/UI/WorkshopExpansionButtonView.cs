@@ -17,7 +17,7 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
     [SerializeField] private Image iconImage;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text priceText;
-    [SerializeField] private GameObject selectedMarker;
+    [SerializeField] private GameObject unavailableImage;
 
     [Header("색상")]
     [SerializeField] private Color availableColor = Color.white;
@@ -115,6 +115,11 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
         if (button != null)
         {
             button.interactable = status.CanPurchase;
+        }
+
+        if (unavailableImage != null)
+        {
+            unavailableImage.SetActive(!status.CanPurchase);
         }
     }
 } 

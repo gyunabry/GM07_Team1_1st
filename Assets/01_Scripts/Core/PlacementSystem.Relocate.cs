@@ -94,10 +94,14 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (CurrentMode != PlacementMode.RelocatePlacement ||
             relocationSnapshot == null ||
-            selectedPlacedBuilding == null ||
-            currentArea == null ||
-            !canPlace)
+            selectedPlacedBuilding == null)
         {
+            return;
+        }
+
+        if (currentArea == null || !canPlace)
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.ImpossibleBuild);
             return;
         }
 
@@ -111,6 +115,7 @@ public partial class PlacementSystem : MonoBehaviour
 
         if (!currentArea.AreCellsAvailable(newCells, building))
         {
+            AudioManager.Instance.PlaySFX(ESFXType.ImpossibleBuild);
             return;
         }
 
@@ -137,26 +142,17 @@ public partial class PlacementSystem : MonoBehaviour
             worldRotation
         );
 
+        AudioManager.Instance.PlaySFX(ESFXType.CanBuild);
+
         ClearRelocationRuntime();
         ChangeMode(PlacementMode.RelocateSelect);
 
         OnBuildingMoved?.Invoke(building);
     }
 
-    // 재배치 취소
-    private void CancelRelocation()
-    {
-        ClearRelocationRuntime();
-    }
-
     //
     private void ClearRelocationRuntime()
     {
-        //if (selectedPlacedBuilding != null)
-        //{
-        //    selectedPlacedBuilding.SelectionVisual?.SetState(BuildingSelectionState.None);
-        //}
-
         if (previewObject != null) Destroy(previewObject);
 
         previewObject = null;
@@ -178,6 +174,7 @@ public partial class PlacementSystem : MonoBehaviour
         if (IsRelocateMode)
         {
             ExitCurrentMode();
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
             return;
         }
 
@@ -187,6 +184,7 @@ public partial class PlacementSystem : MonoBehaviour
             ExitCurrentMode();
         }
 
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
         BeginRelocateMode();
     }
 }

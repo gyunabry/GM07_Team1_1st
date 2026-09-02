@@ -7,8 +7,23 @@ using UnityEngine;
 // 1. 실제 게임을 실행하는 씬의 기존 활성 게임 오브젝트에 RecipeUnlockManager 컴포넌트를 추가한다. 활성 씬에는 하나만 존재해야 한다.
 // 2. Inspector의 Unlock Config에 RecipeUnlockConfig.asset을 연결한다.
 // 아직 해금 획득 기능은 없으며, 이후 스킬·퀘스트 등이 Unlock(RecipeDataSO)를 호출해 연동한다.
+
 public sealed class RecipeUnlockManager : MonoBehaviour
 {
+    // 사냥터와 레시피를 매핑하는 클래스
+    [Serializable]
+    private class HuntingFieldRecipeMapping
+    {
+        [SerializeField] private HuntingFieldUnlockDataSO huntingField;
+        [SerializeField] private List<RecipeDataSO> recipes = new();
+        public HuntingFieldUnlockDataSO HuntingField => huntingField;
+        public IReadOnlyList<RecipeDataSO> Recipes => recipes;
+    }
+
+    [Header("사냥터 레시피 해금")]
+    [SerializeField] private HuntingFieldManager huntingFieldManager;
+    [SerializeField] private List<HuntingFieldRecipeMapping> fieldRecipesMappings = new();
+
     [SerializeField] private RecipeUnlockConfigSO unlockConfig;
 
     private readonly List<RecipeDataSO> unlockedRecipes = new();
@@ -30,6 +45,22 @@ public sealed class RecipeUnlockManager : MonoBehaviour
 
         Instance = this;
         InitializeUnlockedRecipes();
+    }
+
+    private void OnEnable()
+    {
+        if (huntingFieldManager != null)
+        {
+            huntingFieldManager.StateChanged += HandleHuntingFieldChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (huntingFieldManager != null)
+        {
+            huntingFieldManager.StateChanged -= HandleHuntingFieldChanged;
+        }
     }
 
     private void OnDestroy()
@@ -107,5 +138,44 @@ public sealed class RecipeUnlockManager : MonoBehaviour
         }
 
         UnlockedRecipesChanged?.Invoke();
+    }
+
+    // 사냥터가 해금됐을때, 해당하는 레시피를 해금하는 메서드
+    private void UnlockRecipeForCurrentField()
+    {
+        if (huntingFieldManager == null) return;
+
+        bool changed = false;
+
+        foreach (HuntingFieldRecipeMapping mapping in fieldRecipesMappings)
+        {
+            if (mapping == null || 
+                mapping.HuntingField == null || 
+                !huntingFieldManager.IsUnlocked(mapping.HuntingField))
+            {
+                continue;
+            }
+
+            foreach (RecipeDataSO recipe in mapping.Recipes)
+            {
+                if (recipe == null || !unlockedRecipeSet.Add(recipe))
+                {
+                    continue;
+                }
+
+                unlockedRecipes.Add(recipe);
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            UnlockedRecipesChanged?.Invoke();
+        }
+    }
+
+    private void HandleHuntingFieldChanged()
+    {
+        UnlockRecipeForCurrentField();
     }
 }

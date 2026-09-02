@@ -42,6 +42,8 @@ public sealed class CustomerController : MonoBehaviour
     private bool didPatienceExpire;
     private readonly CustomerRuntimeData runtimeData = new CustomerRuntimeData();
 
+    private EconomyModifierService economyModifierService;
+
     public CustomerRuntimeData RuntimeData => runtimeData;
     public CustomerOrder Order => runtimeData.Order;
     public CustomerOrder DefaultOrder => customerData != null && customerData.DefaultOrder.IsValid
@@ -131,7 +133,14 @@ public sealed class CustomerController : MonoBehaviour
     }
 
     // PoolManager에서 대여한 직후 호출
-    public bool OnSpawned(ShopCustomerQueue shopQueue, ShopCheckout checkoutService, Transform exitTurn, Transform exit, CustomerOrder order, ICustomerInventory inventoryService, ICustomerCurrency currencyService)
+    public bool OnSpawned(ShopCustomerQueue shopQueue, 
+        ShopCheckout checkoutService, 
+        Transform exitTurn, 
+        Transform exit, 
+        CustomerOrder order, 
+        ICustomerInventory inventoryService, 
+        ICustomerCurrency currencyService,
+        EconomyModifierService economyService)
     {
         if (agent != null && !agent.enabled)
         {
@@ -149,6 +158,7 @@ public sealed class CustomerController : MonoBehaviour
         runtimeData.Initialize(shopQueue, checkoutService, selectedOrder);
         inventory = inventoryService;
         currency = currencyService;
+        economyModifierService = economyService;
         agent.speed = customerData != null ? customerData.MovementSpeed : defaultAgentSpeed;
 
         if (Queue == null || Checkout == null || exitPoint == null || !Order.IsValid || !Queue.TryJoin(this))
@@ -282,10 +292,11 @@ public sealed class CustomerController : MonoBehaviour
             return false;
         }
 
+        int finalMoney = economyModifierService.CalculateOrderPrice(Order.Items);
         int finalExp = RewardSkillRegistry.ApplySellExperience(Order.ExperienceReward);
 
         // 주문 재료를 모두 차감한 뒤에만 돈과 경험치를 함께 지급한다.
-        currency.GrantReward(Order.Reward, finalExp);
+        currency.GrantReward(finalMoney, finalExp);
         runtimeData.CompletePayment();
         return true;
     }

@@ -19,6 +19,11 @@ public class ProductionDetailView : BuildingDetailView
     [SerializeField] private TMP_Text productionTimeText;
     [SerializeField] private Image progressFill;
 
+    [Header("생산 진행상황 표시")]
+    [SerializeField] private GameObject arrowRoot;
+    [SerializeField] private GameObject orangeMarker;   // 재료 아이템 부족
+    [SerializeField] private GameObject redMarker;      // 생산품 보관 공간 부족
+
     [Header("레시피")]
     [SerializeField] private RecipeSelectPanel recipeSelectPanel;
 
@@ -103,6 +108,7 @@ public class ProductionDetailView : BuildingDetailView
         RefreshRecipeInfo(currentBuilding.SelectedRecipe);
         SetProgress(currentBuilding.Progress);
         RefreshRemainingTime();
+        RefreshProductionStateIndicator();
         RefreshInventoryInfo();
     }
 
@@ -210,6 +216,34 @@ public class ProductionDetailView : BuildingDetailView
         }
     }
 
+    private void RefreshProductionStateIndicator()
+    {
+        if (currentBuilding == null)
+        {
+            SetIndicatorVisible(arrowRoot, false);
+            SetIndicatorVisible(orangeMarker, false);
+            SetIndicatorVisible(redMarker, false);
+
+            return;
+        }
+
+        bool isWaitingForMaterials = currentBuilding.State == ProductionState.WaitingForMaterials;
+        bool isWaitingForOutputSpace = currentBuilding.State == ProductionState.WaitingForOutputSpace;
+
+        SetIndicatorVisible(orangeMarker, isWaitingForMaterials);
+        SetIndicatorVisible(redMarker, isWaitingForOutputSpace);
+
+        SetIndicatorVisible(arrowRoot, !isWaitingForMaterials && !isWaitingForOutputSpace);
+    }
+
+    private void SetIndicatorVisible(GameObject target, bool visible)
+    {
+        if (target != null)
+        {
+            target.SetActive(visible);
+        }
+    }
+
     private void ResetView()
     {
         if (inputIcon != null)
@@ -227,6 +261,10 @@ public class ProductionDetailView : BuildingDetailView
         if (productionTimeText != null) productionTimeText.text = string.Empty;
         if (inputCountText != null) inputCountText.text = string.Empty;
         if (outputCountText != null) outputCountText.text = string.Empty;
+
+        SetIndicatorVisible(arrowRoot, false);
+        SetIndicatorVisible(orangeMarker, false);
+        SetIndicatorVisible(redMarker, false);
 
         SetProgress(0f);
     }
@@ -248,6 +286,8 @@ public class ProductionDetailView : BuildingDetailView
         if (currentBuilding != null)
         {
             SetProgress(currentBuilding.Progress);
+            RefreshRemainingTime();
+            RefreshProductionStateIndicator();
         }
     }
 
