@@ -5,6 +5,7 @@ public class S70_PlayerItemGetRange : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-
+        PlayerItemCollector itemCollector = context.player.GetComponentInChildren<PlayerItemCollector>();
+        itemCollector.AddRangeBonusRate(skillData.value[nowLevel]);
     }
 }
