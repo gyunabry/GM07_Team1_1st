@@ -933,6 +933,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: PoolManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[0].particlePrefab
+      value: 
+      objectReference: {fileID: 1941226523401448538, guid: 17865bcfb151cfa41b8040814b8374e5, type: 3}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[1].particlePrefab
+      value: 
+      objectReference: {fileID: 6476705285018846835, guid: 55ba4fc0787793b45843ae8a8fcf988d, type: 3}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[2].particlePrefab
+      value: 
+      objectReference: {fileID: 3894563636541966135, guid: 9c057b349289c674bbe4dba9c963b14f, type: 3}
+    - target: {fileID: 6045880348129087353, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
+      propertyPath: particleList.Array.data[4].particlePrefab
+      value: 
+      objectReference: {fileID: 5242465537561784062, guid: a664b5b2468c8e04788ea034093164c0, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 965431662256586543, guid: 1b79790bb1c60f6449135fa6485e980f, type: 3}
@@ -1013,6 +1029,18 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: fireCirclePrefab
+      value: 
+      objectReference: {fileID: 7170219139168216134, guid: 55ba4fc0787793b45843ae8a8fcf988d, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: attackPointPrefab
+      value: 
+      objectReference: {fileID: 1544201681648542550, guid: 17865bcfb151cfa41b8040814b8374e5, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: flowerThornsPrefab
+      value: 
+      objectReference: {fileID: -557847215159735050, guid: a664b5b2468c8e04788ea034093164c0, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: hunterWorkerPrefab
       value: 
       objectReference: {fileID: 507510004, guid: 8d5a72d7e7d34b14a5780fc483eda907, type: 3}
@@ -1020,6 +1048,10 @@ PrefabInstance:
       propertyPath: carrierWorkerPrefab
       value: 
       objectReference: {fileID: 4163047715311570166, guid: 1599bbb658fdda3479d5ee9219203b84, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: chasingSicklePrefab
+      value: 
+      objectReference: {fileID: 1442841952918593527, guid: 9c057b349289c674bbe4dba9c963b14f, type: 3}
     - target: {fileID: 7119374117894832108, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: m_Name
       value: PoolPreLoader

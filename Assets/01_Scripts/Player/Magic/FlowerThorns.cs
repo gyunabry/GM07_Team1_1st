@@ -18,6 +18,7 @@ public class FlowerThorns : MonoBehaviour
     IEnumerator PlayCo()
     {
         yield return new WaitForSeconds(attackSo.attackSpeed);
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         monsterPoolManager.ReturnPool(this);
     }
 }

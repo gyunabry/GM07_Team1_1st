@@ -23,6 +23,7 @@ public class LightningRay : MonoBehaviour
     IEnumerator PlayCo()
     {
         yield return new WaitForSeconds(0.5f);
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         poolManager.ReturnPool(this);
     }
     private void OnTriggerEnter(Collider other)

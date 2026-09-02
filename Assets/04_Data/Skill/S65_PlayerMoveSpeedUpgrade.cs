@@ -6,5 +6,6 @@ public class S65_PlayerMoveSpeedUpgrade: SkillEffectSO
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
         context.player.navMeshAgent.speed += skillData.value[nowLevel];
+        context.characterPanelController.RefreshAll();
     }
 }

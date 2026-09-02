@@ -17,6 +17,7 @@ public class Portal : InteractableBase
     // 실제 사냥터 개수
     // 추후 해당 부분 수정해서 포탈 연결
     private const int HuntingFieldCount = 3;
+    public Portal WorkshopPortal => workshopPortal;
 
     [Header("포탈 연결")]
     [SerializeField] private PortalInteractionMode interactionMode;

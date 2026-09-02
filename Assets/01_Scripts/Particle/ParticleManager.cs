@@ -24,8 +24,7 @@ public class ParticleManager : MonoBehaviour
     {
         particleDic.TryGetValue(code, out nowParticle);
 
-        foreach (var data in particleList) 
-        { 
+        
             if(nowParticle.particleName == "ChasingSickle")
             {
                 ChasingSickle cs = monsterPoolManager.GetPool<ChasingSickle>();
@@ -34,13 +33,11 @@ public class ParticleManager : MonoBehaviour
                 cs.transform.rotation = rotation;
                 ParticleSystem[] ps = cs.GetComponentsInChildren<ParticleSystem>();
                 ps[0].Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                float dis = distance * 0.1f;
+                float dis = distance * 0.75f;
                 ps[0].transform.localScale = new Vector3(dis, dis, dis);
                 foreach (var p in ps)
                 {
                     var pm = p.main;
-                    pm.duration = attackSpeed;
-                    pm.startLifetime = attackSpeed;
                 }
 
                 ps[0].Play();
@@ -59,8 +56,6 @@ public class ParticleManager : MonoBehaviour
                 foreach (var p in ps)
                 {
                     var pm = p.main;
-                    pm.duration = attackSpeed;
-                    pm.startLifetime = attackSpeed;
                 }
 
                 ps[0].Play();
@@ -78,8 +73,6 @@ public class ParticleManager : MonoBehaviour
                 foreach (var p in ps)
                 {
                     var pm = p.main;
-                    pm.duration = attackSpeed;
-                    pm.startLifetime = attackSpeed;
                 }
 
                 ps[0].Play();
@@ -99,13 +92,11 @@ public class ParticleManager : MonoBehaviour
                 foreach (var p in ps)
                 {
                     var pm = p.main;
-                    pm.duration = attackSpeed;
-                    pm.startLifetime = attackSpeed;
                 }
 
                 ps[0].Play();
             }
-        }
+        
     }
 
 }

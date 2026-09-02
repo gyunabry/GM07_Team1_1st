@@ -18,6 +18,7 @@ public class TeleportUI : MonoBehaviour
     [Header("버튼")]
     [SerializeField] private Button closeButton;
     [SerializeField] private PortalButtonView[] destinationButtons = new PortalButtonView[DestinationCount];
+    [SerializeField] private Button workshopPortal;
 
     private readonly Dictionary<string, Portal> activePortalById = new();
 
@@ -129,12 +130,34 @@ public class TeleportUI : MonoBehaviour
             CloseUI();
         }
     }
+    private void OnClickReturnToWorkshop()
+    {
+        if (activeSourcePortal == null || activeInteractor == null) return;
+        // 현재 포탈이 사냥터 포탈이라면 연결된 공방 포탈 가져오기
+        Portal targetWorkshop = activeSourcePortal.WorkshopPortal;
+        if (targetWorkshop != null)
+        {
+            // 공방 포탈 도착 지점으로 플레이어 텔레포트
+            if (activeSourcePortal.TryTeleportTo(activeInteractor, targetWorkshop))
+            {
+                CloseUI(); // 텔레포트 성공 시 UI 닫기
+            }
+        }
+        else
+        {
+            Debug.LogWarning("돌아갈 공방 포탈(WorkshopPortal) 정보가 없습니다.");
+        }
+    }
 
     private void BindButtons()
     {
         if (closeButton != null)
         {
             closeButton.onClick.AddListener(CloseUI);
+        }
+        if(workshopPortal != null)
+        {
+            workshopPortal.onClick.AddListener(OnClickReturnToWorkshop);
         }
 
         destinationHandlers = new UnityAction[destinationButtons.Length];
@@ -158,6 +181,10 @@ public class TeleportUI : MonoBehaviour
         if (closeButton != null)
         {
             closeButton.onClick.RemoveListener(CloseUI);
+        }
+        if (workshopPortal != null)
+        {
+            workshopPortal.onClick.RemoveListener(OnClickReturnToWorkshop);
         }
 
         if (destinationHandlers == null) return;

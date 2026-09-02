@@ -18,7 +18,8 @@ public class ChasingSickle : MonoBehaviour
     }
     IEnumerator PlayCo()
     {
-        yield return new WaitForSeconds(attackSo.attackSpeed);
+        yield return new WaitForSeconds(1.2f);
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         poolManager.ReturnPool(this);
     }
 }
