@@ -55,6 +55,8 @@ public sealed class HunterWorker : MonoBehaviour
     private NavMeshPath reusablePath;
     private float nextTargetSearchTime;
     private float monsterPathFailureSince = -1f;
+    private EmployeeWorkProgressHUD workProgressHud;
+    private EmployeeCargoHUD cargoHud;
 
     public float MovementSpeed => movementSpeed;
     public float AttackDamage => attackDamage;
@@ -79,6 +81,8 @@ public sealed class HunterWorker : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
+        cargoHud = GetComponent<EmployeeCargoHUD>();
         baseMovementSpeed = movementSpeed;
         baseAttackRange = attackRange;
         baseAttackInterval = attackInterval;
@@ -89,7 +93,7 @@ public sealed class HunterWorker : MonoBehaviour
     private void Update()
     {
         if (employee == null) return;
-        cargo.SetCapacity(carryingCapacity); // ?�킬 ?�비???�결 ??기본 ?�도 ?��?
+        cargo.SetCapacity(carryingCapacity); // ?ㅽ궗 ?쒕퉬???곌껐 ??湲곕낯 ?쒕룄 ?좎?
         if (awaitingKillerDrop)
         {
             if (TryClaimKillerDrop())
@@ -161,6 +165,7 @@ public sealed class HunterWorker : MonoBehaviour
         home = homePoint;
         state = State.Idle; 
         cargo.Clear();
+        RefreshCargoHud();
         awaitingKillerDrop = false;
         collectingKillerDrop = false;
         nextTargetSearchTime = 0f;
@@ -215,12 +220,14 @@ public sealed class HunterWorker : MonoBehaviour
     {
         cargo.TransferTo(transmitter?.Inventory);
         cargo.Clear();
+        RefreshCargoHud();
     }
 
     public void ResetForPool() 
     { 
         ReleaseTargets(); 
         cargo.Clear(); 
+        RefreshCargoHud();
 
         manager = null;
         employee = null;
@@ -325,6 +332,7 @@ public sealed class HunterWorker : MonoBehaviour
         }
 
         cargo.Add(item, collectedAmount);
+        RefreshCargoHud();
 
         if (Valid(drop))
         {
@@ -352,11 +360,17 @@ public sealed class HunterWorker : MonoBehaviour
         }
 
         Stop(EmployeeWorkState.Working);
-        if (!TryCompleteItemDelivery()) return;
+        if (!TryCompleteItemDelivery())
+        {
+            workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration());
+            return;
+        }
 
         int cargoBeforeDeposit = cargo.TotalAmount;
         cargo.TransferTo(transmitter.Inventory);
         itemDeliveryElapsed = 0f;
+        workProgressHud?.Hide();
+        RefreshCargoHud();
 
         Stop(cargo.TotalAmount == cargoBeforeDeposit ? EmployeeWorkState.Idle : EmployeeWorkState.Working);
 
@@ -438,8 +452,8 @@ public sealed class HunterWorker : MonoBehaviour
         second.y = 0f;
         return (first - second).sqrMagnitude <= 0.25f;
     }
-    // NavMesh ?�동�??�호?�용 범위??지�?XZ) 기�??�다. ?�롭 ?�리?�과
-    // 직원???�벗 ?�이가 ?�라?? ?�평?�로 ?�착?�면 ?�득?????�어???�다.
+    // NavMesh ?대룞怨??곹샇?묒슜 踰붿쐞??吏硫?XZ) 湲곗??대떎. ?쒕∼ ?꾨━?밴낵
+    // 吏곸썝???쇰쿁 ?믪씠媛 ?щ씪?? ?섑룊?쇰줈 ?꾩갑?섎㈃ ?띾뱷?????덉뼱???쒕떎.
     private float Distance(Vector3 p)
     {
         Vector3 offset = p - transform.position;
@@ -456,8 +470,23 @@ public sealed class HunterWorker : MonoBehaviour
     private bool TryCompleteItemDelivery()
     {
         itemDeliveryElapsed += Time.deltaTime;
-        float duration = Mathf.Max(0.05f, itemDeliveryDuration * (1f - allEmployeeProcessingSpeedIncreasePercent / 100f));
-        return itemDeliveryElapsed >= duration;
+        return itemDeliveryElapsed >= GetItemDeliveryDuration();
+    }
+
+    private float GetItemDeliveryDuration()
+    {
+        return Mathf.Max(0.05f, itemDeliveryDuration * (1f - allEmployeeProcessingSpeedIncreasePercent / 100f));
+    }
+
+    private void RefreshCargoHud()
+    {
+        if (cargo.TryGetFirstItem(out ItemDataSO item, out int amount))
+        {
+            cargoHud?.Show(item, amount, cargo.Capacity);
+            return;
+        }
+
+        cargoHud?.Hide();
     }
 
     private void ApplyStatModifiers()
@@ -505,7 +534,7 @@ public sealed class HunterWorker : MonoBehaviour
             if (pair.Key == null || !pair.Key.gameObject.activeInHierarchy) workersToRelease.Add(pair.Key);
         foreach (HunterWorker worker in workersToRelease) KillerDropReservations.Remove(worker);
     }
-    private void Stop(EmployeeWorkState s){if(agent.isOnNavMesh){agent.ResetPath();agent.isStopped=true;}manager.TrySetWorkState(employee,s);}
+    private void Stop(EmployeeWorkState s){if(agent.isOnNavMesh){agent.ResetPath();agent.isStopped=true;}if(s != EmployeeWorkState.Working) workProgressHud?.Hide();manager.TrySetWorkState(employee,s);}
     private void ReleaseTargets(){awaitingKillerDrop=false;KillerDropReservations.Remove(this);ReleaseMonster();ReleaseDrop();}
     private bool HasActiveMonsterTarget() => monster != null && monster.CurrentHp > 0f;
 
@@ -536,14 +565,14 @@ public sealed class HunterWorker : MonoBehaviour
             return false;
         }
 
-        // ?�전 경로�??�거
+        // ?댁쟾 寃쎈줈瑜??쒓굅
         if (agent.isOnNavMesh)
         {
             agent.ResetPath();
             agent.isStopped = true;
         }
 
-        // agent ?��? ?�치�??�당 ?�치�??�동
+        // agent ?대? ?꾩튂瑜??대떦 ?꾩튂濡??대룞
         if (!agent.Warp(hit.position)) return false;
         transform.rotation = targetPoint.rotation;
 
