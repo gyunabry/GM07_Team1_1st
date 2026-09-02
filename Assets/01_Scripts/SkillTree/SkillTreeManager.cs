@@ -167,7 +167,7 @@ public class SkillTreeManager : MonoBehaviour
                 effectContext.playerAttack.upgrade[i].projectileCount = 0;
             }
         }
-        effectContext.player.navMeshAgent.speed = 5f;
+        effectContext.player.navMeshAgent.speed = 3.5f;
 
         BeginEffectsRebuild();
     }

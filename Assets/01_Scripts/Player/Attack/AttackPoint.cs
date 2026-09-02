@@ -35,7 +35,7 @@ public class AttackPoint : MonoBehaviour
     }
     IEnumerator ReturnCo()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
         poolManager.ReturnPool(this);
     }
 }
