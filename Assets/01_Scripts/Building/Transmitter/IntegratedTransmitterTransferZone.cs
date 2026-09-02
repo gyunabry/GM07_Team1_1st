@@ -51,6 +51,11 @@ public class IntegratedTransmitterTransferZone : MonoBehaviour
 
         if (transferCoroutine == null)
         {
+            if (currentProvider is PlayerInventory)
+            {
+                return;
+            }
+
             transferCoroutine = StartCoroutine(TransferCo());
         }
     }

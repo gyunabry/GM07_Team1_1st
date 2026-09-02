@@ -13,6 +13,9 @@ public class ProductionTransferZone : MonoBehaviour
     private Coroutine transferCoroutine;
     private WaitForSeconds transferWait;
 
+    private IntegratedTransmitter integratedTransmitter;
+    private bool isPlayerInteracting;
+
     private void Awake()
     {
         if (productionBuilding == null)
@@ -45,6 +48,7 @@ public class ProductionTransferZone : MonoBehaviour
         if (playerInventory == null) return;
 
         currentPlayer = playerInventory;
+        SetPlayerInteracting(true);
         if (transferCoroutine == null)
         {
             transferCoroutine = StartCoroutine(TransferCo());
@@ -58,6 +62,7 @@ public class ProductionTransferZone : MonoBehaviour
             return;
         }
 
+        SetPlayerInteracting(false);
         StopTransfer();
     }
 
@@ -77,24 +82,29 @@ public class ProductionTransferZone : MonoBehaviour
     // 한 번의 전송에서 납품 및 수령 처리
     private void TransferCycle(PlayerInventory player)
     {
-        if (player == null || productionBuilding == null || !productionBuilding.CanOperate)
+        if (player == null || 
+            productionBuilding == null || 
+            !productionBuilding.CanOperate)
         {
             return;
         }
 
-        TryTransferInput(player);
+        if (isPlayerInteracting)
+        {
+            TryTransferFromTransmitter();
+        }
 
         TryTransferOutput(player);
     }
 
-    private int TryTransferInput(PlayerInventory player)
+    private int TryTransferInput(ItemInventory sourceInventory)
     {
         RecipeDataSO recipe = productionBuilding.SelectedRecipe;
 
         if (recipe == null || recipe.Input == null) return 0;
 
         // 플레이어의 인벤토리에서 Input Inventory로 레시피에 해당하는 재료를 1개 이동
-        return player.Inventory.TransferTo(
+        return sourceInventory.TransferTo(
             productionBuilding.InputInventory, 
             recipe.Input, 
             1
@@ -113,6 +123,31 @@ public class ProductionTransferZone : MonoBehaviour
             outputItem,
             1
         );
+    }
+
+    private int TryTransferFromTransmitter()
+    {
+        RecipeDataSO recipe = productionBuilding.SelectedRecipe;
+
+        if (recipe == null || recipe.Input == null)
+        {
+            return 0;
+        }
+
+        if (integratedTransmitter == null)
+        {
+            integratedTransmitter = FindAnyObjectByType<IntegratedTransmitter>();
+        }
+
+        if (integratedTransmitter == null || !integratedTransmitter.CanOperate)
+        {
+            return 0;
+        }
+
+        return integratedTransmitter.Inventory.TransferTo(
+            productionBuilding.InputInventory,
+            recipe.Input,
+            1);
     }
 
     private ItemDataSO FindFirstOutputItem()
@@ -142,5 +177,10 @@ public class ProductionTransferZone : MonoBehaviour
         }
 
         currentPlayer = null;
+    }
+
+    private void SetPlayerInteracting(bool interacting)
+    {
+        isPlayerInteracting = interacting;
     }
 }

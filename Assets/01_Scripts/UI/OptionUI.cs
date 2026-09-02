@@ -83,6 +83,7 @@ public class OptionUI : MonoBehaviour
 
     public void OnClickCancelSaveAndExit()
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
         saveAndExitPopup.SetActive(false);
     }
 

@@ -72,6 +72,11 @@ public sealed class ItemInventory
         OnInventoryChanged?.Invoke();
     }
 
+    public void AddBonusCapacity(int amount)
+    {
+        SetBonusCapacity(bonusCapacity + amount);
+    }
+
     public int GetAmount(ItemDataSO item)
     {
         if (item == null) return 0;
@@ -274,6 +279,17 @@ public sealed class ItemInventory
 
         InventoryChanged?.Invoke();
         OnInventoryChanged?.Invoke();
+    }
+
+    // 전달 대상에 여유 공간이 충분한지 검사하는 메서드
+    public bool CanTransferAllTo(ItemInventory target)
+    {
+        if (target == null || target == this)
+        {
+            return false;
+        }
+
+        return target.RemainingCapacity >= TotalAmount;
     }
 
     // 실제 전송된 수를 반환

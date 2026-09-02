@@ -267,7 +267,7 @@ public class BuildModeController : MonoBehaviour
         }
 
         AudioManager.Instance.PlaySFX(ESFXType.UI_Cancel);
-        placementSystem.ConfirmSell();
+        placementSystem.CancelCurrentAction();
     }
 
     private void HandleCancelAction()

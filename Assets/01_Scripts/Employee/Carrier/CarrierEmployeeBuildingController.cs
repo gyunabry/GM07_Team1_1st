@@ -65,6 +65,7 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         employeeManager.EmployeeHired += HandleEmployeeHired;
         employeeManager.EmployeeRemoved += HandleEmployeeRemoved;
         employeeManager.CarrierTransferTimeReductionChanged += ApplyCarrierTransferTimeReduction;
+        employeeManager.CarrierCarryingCapacityBonusChanged += ApplyCarrierCarryingCapacityBonus;
         employeeManager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
         employeeManager.AllEmployeeMovementSpeedIncreaseChanged += ApplyAllEmployeeMovementSpeedIncrease;
         commandService = FindFirstObjectByType<CarrierCommandService>();
@@ -94,6 +95,7 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         employeeManager.EmployeeRemoved -= HandleEmployeeRemoved;
         employeeManager.CarrierTransferTimeReductionChanged -= ApplyCarrierTransferTimeReduction;
         employeeManager.AllEmployeeProcessingSpeedIncreaseChanged -= ApplyAllEmployeeProcessingSpeedIncrease;
+        employeeManager.CarrierCarryingCapacityBonusChanged -= ApplyCarrierCarryingCapacityBonus;
         employeeManager.AllEmployeeMovementSpeedIncreaseChanged -= ApplyAllEmployeeMovementSpeedIncrease;
         }
 
@@ -254,6 +256,7 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         ApplyCarrierTransferTimeReduction(worker, employeeManager.CarrierItemTransferTimeReductionPercent);
         ApplyCarrierMovementSpeedIncrease(worker);
         workers.Add(employee.EmployeeId, worker);
+        worker.SetSkillCarryingCapacityBonus(employeeManager.CarrierCarryingCapacityBonus);
     }
 
     private void ReturnAllWorkers()
@@ -287,6 +290,15 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
             100f);
         worker.SetTransferTimeReductionPercents(totalReductionPercent, totalReductionPercent);
     }
+
+    private void ApplyCarrierCarryingCapacityBonus(int amount)
+    {
+        foreach (CarrierWorker worker in workers.Values)
+        {
+            worker?.SetSkillCarryingCapacityBonus(amount);
+        }
+    }
+
 
     private void ApplyAllEmployeeProcessingSpeedIncrease(float _)
     {

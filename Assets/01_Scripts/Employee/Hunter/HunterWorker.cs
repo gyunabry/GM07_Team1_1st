@@ -47,6 +47,7 @@ public sealed class HunterWorker : MonoBehaviour
     private float attackDamageIncreasePercent;
     private float attackIntervalReductionPercent;
     private float attackRangeIncreasePercent;
+    private int skillCarryingCapacityBonus;
     private float itemPickupElapsed;
     private float itemDeliveryElapsed;
     private float allEmployeeProcessingSpeedIncreasePercent;
@@ -187,6 +188,12 @@ public sealed class HunterWorker : MonoBehaviour
         attackDamageIncreasePercent = Mathf.Max(0f, damageIncreasePercent);
         attackIntervalReductionPercent = Mathf.Clamp(intervalReductionPercent, 0f, 100f);
         attackRangeIncreasePercent = Mathf.Max(0f, rangeIncreasePercent);
+        ApplyStatModifiers();
+    }
+
+    public void SetSkillCarryingCapacityBonus(int amount)
+    {
+        skillCarryingCapacityBonus = Mathf.Max(0, amount);
         ApplyStatModifiers();
     }
 
@@ -455,7 +462,7 @@ public sealed class HunterWorker : MonoBehaviour
     private void ApplyStatModifiers()
     {
         movementSpeed = Mathf.Max(0.1f, (baseMovementSpeed + statModifiers.MovementSpeedBonus) * (1f + allEmployeeMovementSpeedIncreasePercent / 100f));
-        carryingCapacity = Mathf.Max(1, baseCarryingCapacity + statModifiers.CarryingCapacityBonus);
+        carryingCapacity = Mathf.Max(1, baseCarryingCapacity + statModifiers.CarryingCapacityBonus + skillCarryingCapacityBonus);
         attackDamage = Mathf.Max(0f, baseAttackDamage * (1f + attackDamageIncreasePercent / 100f) + statModifiers.AttackDamageBonus);
         attackInterval = Mathf.Max(0.05f, baseAttackInterval * (1f - attackIntervalReductionPercent / 100f));
         attackRange = Mathf.Max(0.1f, baseAttackRange * (1f + attackRangeIncreasePercent / 100f) + statModifiers.AttackRangeBonus);
