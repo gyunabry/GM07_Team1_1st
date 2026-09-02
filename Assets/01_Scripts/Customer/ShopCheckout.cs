@@ -11,6 +11,7 @@ public sealed class ShopCheckout : MonoBehaviour
     private float paymentDurationReductionPercent;
 
     public event Action OperatorPresenceChanged;
+    public event Action<float> PaymentProgressChanged;
 
     public bool HasOperator => operatorColliderCounts.Count > 0;
     public float PaymentDurationMultiplier => 1f - paymentDurationReductionPercent / 100f;
@@ -18,6 +19,16 @@ public sealed class ShopCheckout : MonoBehaviour
     public void SetPaymentDurationReductionPercent(float percent)
     {
         paymentDurationReductionPercent = Mathf.Clamp(percent, 0f, 100f);
+    }
+
+    public void SetPaymentProgress(float normalizedProgress)
+    {
+        PaymentProgressChanged?.Invoke(Mathf.Clamp01(normalizedProgress));
+    }
+
+    public void ClearPaymentProgress()
+    {
+        PaymentProgressChanged?.Invoke(-1f);
     }
 
     private void Awake()

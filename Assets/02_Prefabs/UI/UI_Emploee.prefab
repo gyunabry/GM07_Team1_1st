@@ -1734,11 +1734,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5943179631048644558}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -11, y: 0}
-  m_SizeDelta: {x: 100, y: 40}
-  m_Pivot: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 45, y: 0}
+  m_SizeDelta: {x: 60, y: 40}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4217914034817951586
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1801,7 +1801,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 4
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 2
@@ -1943,7 +1943,7 @@ RectTransform:
   m_GameObject: {fileID: 7025921007154224555}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4339215714604344848}
@@ -2031,6 +2031,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EmployeeHirePanel
   hireButton: {fileID: 7449617477060644985}
   employeeCountText: {fileID: 7637010624650233974}
+  hireCostText: {fileID: 5662470695484387610}
   attackDamageText: {fileID: 1912927807392095768}
   movementSpeedText: {fileID: 1353575043808071493}
   carryingCapacityText: {fileID: 4198874372881100938}
@@ -2576,7 +2577,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -30, y: 0}
+  m_AnchoredPosition: {x: -32, y: 0}
   m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3529577185123473651
@@ -2607,7 +2608,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f3d286c87f49f4cf0a0b01b039b713ac, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1229cb2f722b044fc9421035c4e71498, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
