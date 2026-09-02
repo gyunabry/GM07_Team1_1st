@@ -1038,7 +1038,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2363484874674347229}
-  m_Father: {fileID: 4681273187887077177}
+  m_Father: {fileID: 3718925388149275287}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -3474,6 +3474,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 491879158585241772}
+  - {fileID: 458598076648201081}
   m_Father: {fileID: 4681273187887077177}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6673,8 +6674,6 @@ RectTransform:
   - {fileID: 6219007523656117631}
   - {fileID: 3718925388149275287}
   - {fileID: 7352634008747823994}
-  - {fileID: 458598076648201081}
-  - {fileID: 1764718989099809608}
   - {fileID: 6743024030629597854}
   - {fileID: 8763153746593829701}
   - {fileID: 399638798322825092}
@@ -6732,7 +6731,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &4907151422482527017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46083,7 +46082,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1764718989099809608
 RectTransform:
   m_ObjectHideFlags: 0
@@ -46097,7 +46096,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7954492342454987022}
-  m_Father: {fileID: 4681273187887077177}
+  m_Father: {fileID: 7352634008747823994}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -52336,6 +52335,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7392224833521320318}
+  - {fileID: 1764718989099809608}
   m_Father: {fileID: 4681273187887077177}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -57159,8 +57159,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Battle
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 0}
-  m_sharedMaterial: {fileID: 7834994180810731740, guid: 152dec2ff772046a3a7b9ccf8e0f51ff, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
