@@ -33,7 +33,7 @@ public class OptionUI : MonoBehaviour
         {
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         }
-        this.gameObject.SetActive(false);
+        //this.gameObject.SetActive(false);
         
     }
 
