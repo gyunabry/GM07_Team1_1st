@@ -18,6 +18,7 @@ public class FireCircle : MonoBehaviour
     IEnumerator PlayCo()
     {
         yield return new WaitForSeconds(attackSo.attackSpeed);
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         PoolManager.Instance.ReturnPool(this);
     }
 }

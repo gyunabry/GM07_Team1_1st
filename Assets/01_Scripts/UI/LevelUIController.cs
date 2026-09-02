@@ -22,6 +22,13 @@ public class LevelUIController : MonoBehaviour
 
         currencySystem.CurrencyChanged += HandleCurrencyChanged;
 
+        currencySystem.LevelUp += CurrencySystem_LevelUp;
+
+        RefreshUI();
+    }
+
+    private void CurrencySystem_LevelUp()
+    {
         RefreshUI();
     }
 
@@ -30,6 +37,7 @@ public class LevelUIController : MonoBehaviour
         if (currencySystem != null)
         {
             currencySystem.CurrencyChanged -= HandleCurrencyChanged;
+            currencySystem.LevelUp -= CurrencySystem_LevelUp;
         }
     }
 

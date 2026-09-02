@@ -120,6 +120,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
     private void CheckLevelUp()
     {
+        if (level > needExp.Count) return;
         if (needExp[level - 1] <= nowExperience)
         {
             nowExperience -= needExp[level - 1];

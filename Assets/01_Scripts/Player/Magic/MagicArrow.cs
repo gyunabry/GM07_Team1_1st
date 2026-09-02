@@ -22,6 +22,7 @@ public class MagicArrow : MonoBehaviour
         }
         else
         {
+            ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             poolManager.ReturnPool(this);
         }
     }

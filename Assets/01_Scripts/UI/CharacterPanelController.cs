@@ -36,6 +36,7 @@ public class CharacterPanelController : MonoBehaviour
 
     private PlayerInventory playerInventory;
     private PlayerItemCollector playerItemCollector;
+    private CurrencySystem currencySystem;
 
     private bool isOpen;
 
@@ -48,7 +49,7 @@ public class CharacterPanelController : MonoBehaviour
             playerInventory = player.GetComponent<PlayerInventory>();
             playerItemCollector = player.GetComponentInChildren<PlayerItemCollector>();
         }
-
+        currencySystem = FindAnyObjectByType<CurrencySystem>();
         SetVisible(false);
     }
 
@@ -78,8 +79,11 @@ public class CharacterPanelController : MonoBehaviour
         {
             FacilityManager.Instance.FacilityInfoChanged += HandleFacilityInfoChanged;
         }
-        
+        currencySystem.LevelUp += CurrencySystem_LevelUp;
     }
+
+    
+
     private void OnDisable()
     {
         if (CurrencySystem.Instance != null)
@@ -101,8 +105,12 @@ public class CharacterPanelController : MonoBehaviour
         {
             FacilityManager.Instance.FacilityInfoChanged -= HandleFacilityInfoChanged;
         }
+        currencySystem.LevelUp -= CurrencySystem_LevelUp;
     }
-
+    private void CurrencySystem_LevelUp()
+    {
+        RefreshAll();
+    }
     public void ToggleUI()
     {
         bool nextVisible = !isOpen;
@@ -127,7 +135,7 @@ public class CharacterPanelController : MonoBehaviour
         if (graphicRaycaster != null) graphicRaycaster.enabled = visible;
     }
 
-    private void RefreshAll()
+    public void RefreshAll()
     {
         RefreshCharacterStats();
         RefreshInventoryStat();

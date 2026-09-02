@@ -54,7 +54,7 @@ public class LevelUpPopUp : MonoBehaviour
                     {
                         levelUpText[i].gameObject.SetActive(true);
                         levelUpText[i].text = $"공격속도";
-                        levelUpText[i + 1].text = $"+{player.levelUpStats[nowLevel].attackSpeed}";
+                        levelUpText[i + 1].text = $"{player.levelUpStats[nowLevel].attackSpeed}";
                     }
                     break;
                 case 5:
