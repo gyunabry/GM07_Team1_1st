@@ -7,13 +7,16 @@ using UnityEngine.UI;
 public class ItemHud : MonoBehaviour
 {
     [SerializeField] private PlayerInventory playerInventory; 
+    [SerializeField] private GameObject itemHud;
     [SerializeField] private List<ItemDataSO> itemUiList;
     [SerializeField] private List<GameObject> uiList;
 
+    private bool isItem; //유무 확인
 
     private void OnEnable()
     {
         playerInventory.Inventory.InventoryChanged += Inventory_InventoryChanged;
+        itemHud.SetActive(false);
     }
     private void OnDisable()
     {
@@ -22,13 +25,21 @@ public class ItemHud : MonoBehaviour
 
     private void Inventory_InventoryChanged()
     {
-        for(int i = 0; i < uiList.Count; i++)
+        isItem = false;
+
+        for (int i = 0; i < uiList.Count; i++)
         {
-            if (uiList[i] == null || itemUiList[i] == null) return;
+            if (uiList[i] == null || itemUiList[i] == null)
+            {
+                itemHud.gameObject.SetActive(false);
+                return;
+            }
+
             Image selectUi = uiList[i].GetComponentInChildren<Image>();
             selectUi.sprite = itemUiList[i].Icon;
             TextMeshProUGUI selectText = uiList[i].GetComponentInChildren<TextMeshProUGUI>();
             selectText.text = $"{playerInventory.GetAmount(itemUiList[i])}";
+
             if (playerInventory.Inventory.GetAmount(itemUiList[i]) <= 0)
             {
                 uiList[i].SetActive(false);
@@ -37,6 +48,16 @@ public class ItemHud : MonoBehaviour
             {
                 uiList[i].SetActive(true);
                 ItemEffect(uiList[i]);
+                isItem = true;
+            }
+
+            if (isItem)
+            {
+                itemHud.SetActive(true);
+            }
+            else
+            {
+                itemHud.SetActive(false);
             }
         }
     }
