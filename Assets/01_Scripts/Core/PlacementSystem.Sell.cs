@@ -3,6 +3,7 @@ using UnityEngine;
 public partial class PlacementSystem : MonoBehaviour
 {
     [SerializeField] private BuildingSaleService buildingSaleService;
+    [SerializeField] private WarningPopupController saleWarningPopup;
 
     private bool salePorcessing;
 
