@@ -11,6 +11,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     [SerializeField, Min(0)] private int nowExperience;
 
     public event Action<int, int> CurrencyChanged;
+    public event Action<int> CurrencyChanged_Gold;
+    public event Action<int> CurrencyChanged_EXP;
     public event Action LevelUp;
 
     // DOTween ÀÌº¥Æ®
@@ -56,9 +58,17 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         experience += experienceAmount;
         nowExperience += experienceAmount;
 
-        CurrencyChanged?.Invoke(money, experience);
-        OnGoldChanged?.Invoke();
-        OnGoldEarned?.Invoke();
+        if (moneyAmount > 0)
+        {
+            CurrencyChanged_Gold?.Invoke(money);
+            OnGoldChanged?.Invoke();
+            OnGoldEarned?.Invoke();
+        }
+        if (experienceAmount > 0)
+        {
+            CurrencyChanged_EXP?.Invoke(experience);
+        }
+        //CurrencyChanged?.Invoke(money, experience);
 
         CheckLevelUp();
     }
@@ -88,7 +98,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
         money -= amount;
 
-        CurrencyChanged?.Invoke(money, experience);
+        //CurrencyChanged?.Invoke(money, experience);
+        CurrencyChanged_Gold?.Invoke(money);
         OnGoldChanged?.Invoke();
         OnGoldSpent?.Invoke();
         return true;
@@ -108,7 +119,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
 
         nowExperience -= amount;
 
-        CurrencyChanged?.Invoke(money, experience);
+        //CurrencyChanged?.Invoke(money, experience);
+        CurrencyChanged_EXP?.Invoke(experience);
         return true;
     }
 

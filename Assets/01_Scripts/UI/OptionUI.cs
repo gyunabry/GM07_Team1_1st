@@ -33,7 +33,7 @@ public class OptionUI : MonoBehaviour
         {
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         }
-        this.gameObject.SetActive(false);
+        //this.gameObject.SetActive(false);
         
     }
 
@@ -83,6 +83,7 @@ public class OptionUI : MonoBehaviour
 
     public void OnClickCancelSaveAndExit()
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
         saveAndExitPopup.SetActive(false);
     }
 

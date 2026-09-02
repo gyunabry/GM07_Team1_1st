@@ -29,11 +29,17 @@ public class Player : MonoBehaviour
     public List<LevelUpStat> levelUpStats = new List<LevelUpStat>();
 
     public event Action LevelUp;
-    
+
+    [SerializeField] private CharacterPanelController characterPanelController;
+
     private void OnEnable()
     {
         currencySystem.LevelUp += CurrencySystem_LevelUp;
         navMeshAgent = GetComponent<NavMeshAgent>();
+        if(characterPanelController == null)
+        {
+            characterPanelController = FindAnyObjectByType<CharacterPanelController>();
+        }
     }
 
     private void OnDisable()
@@ -61,6 +67,7 @@ public class Player : MonoBehaviour
         }
         skillPoint += 3;
         nowLevel++;
+        characterPanelController.RefreshAll();
     }
 
     public void RestoreProgress(int savedCurrencyLevel, int savedSkillPoints)

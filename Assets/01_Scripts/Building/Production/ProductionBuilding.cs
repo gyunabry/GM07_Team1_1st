@@ -101,9 +101,33 @@ public class ProductionBuilding : MonoBehaviour
     // UI에서 호출할 레시피 선택 메서드
     public bool TrySetRecipe(RecipeDataSO recipe)
     {
-        if (!CanProcess(recipe)) return false;
+        if (!CanProcess(recipe) || machine.SelectedRecipe == recipe) return false;
 
-        return machine.TrySetRecipe(recipe);
+        IntegratedTransmitter transmitter = FindAnyObjectByType<IntegratedTransmitter>();
+
+        ItemInventory materialInventory = transmitter != null ? transmitter.Inventory : null;
+        ItemInventory salesInventory = CounterInventory.Instance != null ?
+            CounterInventory.Instance.Inventory 
+            : null;
+
+        Vector3 dropPosition = transform.position;
+
+        BuildingSaleService.TransferAllOrDrop(
+            inputInventory,
+            materialInventory,
+            dropPosition);
+
+        BuildingSaleService.TransferAllOrDrop(
+            outputInventory,
+            salesInventory,
+            dropPosition);
+
+        if (!machine.TrySetRecipe(recipe))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public void ApplySkillModifiers(ProductionSkillModifiers modifiers)

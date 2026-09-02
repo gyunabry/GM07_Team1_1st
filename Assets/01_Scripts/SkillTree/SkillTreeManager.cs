@@ -167,7 +167,21 @@ public class SkillTreeManager : MonoBehaviour
                 effectContext.playerAttack.upgrade[i].projectileCount = 0;
             }
         }
-        effectContext.player.navMeshAgent.speed = 5f;
+        effectContext.player.navMeshAgent.speed = 3.5f;
+
+        // 플레이어 인벤토리 수용량 초기화
+        PlayerInventory playerInventory = effectContext.player.GetComponent<PlayerInventory>();
+        if (playerInventory != null) 
+        {
+            playerInventory.Inventory.SetBonusCapacity(0);
+        }
+
+        // 플레이어 아이템 획득 범위 초기화
+        PlayerItemCollector itemCollector = effectContext.player.GetComponent<PlayerItemCollector>();
+        if (itemCollector != null)
+        {
+            itemCollector.ResetRangeBonus();
+        }
 
         BeginEffectsRebuild();
     }

@@ -64,10 +64,10 @@ public class PlayerItemCollector : MonoBehaviour
             return;
         }
 
-        ICollectable collectable = other.GetComponentInParent<ICollectable>();
-        if (collectable == null) return;
+        Dropitem dropItem = other.GetComponentInParent<Dropitem>();
+        if (dropItem == null) return;
 
-        collectable.TryCollect(playerInventory.Inventory);
+        dropItem.StartMagnet(transform, playerInventory.Inventory);
     }
 
     private void EnsureRangeInitialized()
