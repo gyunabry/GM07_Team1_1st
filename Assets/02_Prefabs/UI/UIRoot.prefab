@@ -25105,7 +25105,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5037246558950786741, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4602091590370741007}
+    - targetCorrespondingSourceObject: {fileID: 8754895847079554685, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7983958385973378943}
   m_SourcePrefab: {fileID: 100100000, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
+--- !u!114 &2629140670914024540 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 14720416969865127, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
+  m_PrefabInstance: {fileID: 2614578892860810235}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2977804262756691576 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 944507519415504259, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
@@ -25123,6 +25137,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49ac25432359c6242b6095a2512e11b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SkillTreeESC
+--- !u!114 &4230694865114339602 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2233410713874234089, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
+  m_PrefabInstance: {fileID: 2614578892860810235}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4615821811817582092 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7225577954549493239, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
@@ -25143,6 +25168,25 @@ MonoBehaviour:
   zoomSpeed: 0.01
   minZoom: 1
   maxZoom: 3
+--- !u!1 &6716972358735482246 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8754895847079554685, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
+  m_PrefabInstance: {fileID: 2614578892860810235}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7983958385973378943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6716972358735482246}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e5c70ccff770fa42b9f4fbe060bf879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CurrencyUIControler
+  currencyText: {fileID: 4230694865114339602}
+  currencyIcon: {fileID: 2629140670914024540}
 --- !u!1 &7038911435163952462 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5037246558950786741, guid: cc0e8f49e983d9c438627381108a8678, type: 3}
