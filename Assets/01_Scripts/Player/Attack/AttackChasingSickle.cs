@@ -11,7 +11,7 @@ public class AttackChasingSickle : SkillBase
 
         AudioManager.Instance.PlaySFX(ESFXType.Active_ChasingSickle);
         attack.ChasingSickle(ad.attackDamage, ad, poolManager, layer);
-        particleManager.GetParticle(2, player.transform.position, player.transform.rotation, 0, ad.distance, ad.attackSpeed);
+        particleManager.GetParticle(2, player.transform.position, new Quaternion(player.transform.rotation.x, player.transform.rotation.y + 0.4f, player.transform.rotation.z, player.transform.rotation.w) , 0, ad.distance, ad.attackSpeed);
 
         yield return null;
     }

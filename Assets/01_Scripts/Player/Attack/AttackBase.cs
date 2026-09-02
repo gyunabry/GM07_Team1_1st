@@ -20,7 +20,7 @@ public class AttackBase : IAttack
             }
         }
         ap.attackDamage = AttackDamage;
-        ap.transform.position = data.position;
+        ap.transform.position = new Vector3(data.position.x, data.position.y + 0.7f, data.position.z);
         Quaternion baseRota = Quaternion.LookRotation(data.direction);
         baseRota.x = 0f;
         Quaternion side = Quaternion.Euler(0f, 0f, 0f);

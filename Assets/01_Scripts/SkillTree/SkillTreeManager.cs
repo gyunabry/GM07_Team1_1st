@@ -167,7 +167,7 @@ public class SkillTreeManager : MonoBehaviour
                 effectContext.playerAttack.upgrade[i].projectileCount = 0;
             }
         }
-        effectContext.player.navMeshAgent.speed = 5f;
+        effectContext.player.navMeshAgent.speed = 3.5f;
 
         // 플레이어 인벤토리 수용량 초기화
         PlayerInventory playerInventory = effectContext.player.GetComponent<PlayerInventory>();
