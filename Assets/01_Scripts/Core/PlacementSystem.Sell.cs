@@ -106,6 +106,7 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (IsSellMode)
         {
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
             ExitCurrentMode();
             return;
         }
@@ -115,6 +116,7 @@ public partial class PlacementSystem : MonoBehaviour
             ExitCurrentMode();
         }
 
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
         BeginSellMode();
     }
 }

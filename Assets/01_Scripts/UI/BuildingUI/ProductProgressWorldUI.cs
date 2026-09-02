@@ -16,6 +16,11 @@ public class ProductProgressWorldUI : MonoBehaviour
     [Header("갱신 속도")]
     [SerializeField] private float refreshInterval = 0.1f;
 
+    [Header("색상")]
+    [SerializeField] private Color defaultColor = Color.green;
+    [SerializeField] private Color warningColor = Color.orange;
+    [SerializeField] private Color errorColor = Color.red;
+
     private ProductionBuilding productionBuilding;
     private ItemInventory outputInventory;
 
@@ -84,12 +89,14 @@ public class ProductProgressWorldUI : MonoBehaviour
     {
         isProducing = state == ProductionState.Producing;
 
-        bool shoudShow = isProducing 
-            || state == ProductionState.WaitingForOutputSpace 
-            || outputInventory.TotalAmount > 0;
+        //bool shoudShow = isProducing 
+        //    || state == ProductionState.WaitingForOutputSpace 
+        //    || outputInventory.TotalAmount > 0;
 
         // 생산 중이거나 출력물 인벤토리에 아이템이 있을 때 활성화
-        SetVisible(shoudShow);
+        // 0901 수정 : 항상 보이도록 수정
+        SetVisible(true);
+        SetColor();
 
         if (isProducing)
         {
@@ -147,6 +154,32 @@ public class ProductProgressWorldUI : MonoBehaviour
         if (!Mathf.Approximately(progressFill.fillAmount, value))
         {
             progressFill.fillAmount = value;
+        }
+    }
+
+    private void SetColor()
+    {
+        if (productionBuilding.State == ProductionState.WaitingForMaterials)
+        {
+            if (progressFill != null)
+            {
+                progressFill.color = warningColor;
+                return;
+            }
+        }
+
+        if (productionBuilding.State == ProductionState.WaitingForOutputSpace)
+        {
+            if (progressFill != null)
+            {
+                progressFill.color = errorColor;
+                return;
+            }
+        }
+
+        if (progressFill != null)
+        {
+            progressFill.color = defaultColor;
         }
     }
 

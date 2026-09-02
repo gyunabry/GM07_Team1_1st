@@ -464,10 +464,14 @@ public partial class PlacementSystem : MonoBehaviour
     private void TryConfirmPurchase()
     {
         if (CurrentMode != PlacementMode.PurchasePlacement ||
-            currentArea == null ||
-            !canPlace ||
             selectedBuildingData == null)
         {
+            return;
+        }
+
+        if (currentArea == null || !canPlace)
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.ImpossibleBuild);
             return;
         }
 
@@ -481,6 +485,7 @@ public partial class PlacementSystem : MonoBehaviour
 
         if (!IsCellsAvailable(currentArea, currentCell, rotatedSize))
         {
+            AudioManager.Instance.PlaySFX(ESFXType.ImpossibleBuild);
             UpdatePreview();
             return;
         }
@@ -524,6 +529,8 @@ public partial class PlacementSystem : MonoBehaviour
 
         buildingObj.name = selectedBuildingData.BuildingName;
 
+        // 시설 배치 효과음 
+        AudioManager.Instance.PlaySFX(ESFXType.CanBuild);
         placedBuilding.BeginConstruction();
 
         OnBuildingPlaced?.Invoke(placedBuilding, selectedBuildingData);

@@ -7,8 +7,10 @@ public sealed class EmployeeRuntimeData
     public int EmployeeId { get; }
     public EmployeeDataSO Data { get; }
     public EmployeeRole Role => Data.Role;
+
     public PlacedBuilding AssignedBuilding { get; private set; }
     public EmployeeWorkState WorkState { get; private set; }
+
     public bool IsEmployed => AssignedBuilding != null;
 
     internal EmployeeRuntimeData(int employeeId, EmployeeDataSO data, PlacedBuilding assignedBuilding)

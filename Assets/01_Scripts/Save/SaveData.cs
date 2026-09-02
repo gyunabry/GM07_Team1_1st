@@ -56,7 +56,6 @@ public class WorldSaveData
     public List<NamedInventorySaveData> sharedInventories = new();
 
     public List<FacilitySaveData> facilities = new();
-    public List<EmployeeSaveData> employees = new();
 }
 
 #region 플레이어 데이터

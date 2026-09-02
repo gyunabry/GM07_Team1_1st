@@ -77,8 +77,8 @@ public class BuildModeController : MonoBehaviour
             editModeButton?.onClick.AddListener(placementSystem.ToggleRelocateMode);
             sellModeButton?.onClick.AddListener(placementSystem.ToggleSellMode);
 
-            sellConfirmButton?.onClick.AddListener(placementSystem.ConfirmSell);
-            sellCancelButton?.onClick.AddListener(placementSystem.CancelCurrentAction);
+            sellConfirmButton?.onClick.AddListener(HandleSellConfirmClicked);
+            sellCancelButton?.onClick.AddListener(HandleSellCancelClicked);
 
             HandlePlacementModeChanged(placementSystem.CurrentMode);
         }
@@ -108,8 +108,16 @@ public class BuildModeController : MonoBehaviour
 
     public void ToggleBuildMode()
     {
-        if (IsBuildMode) CloseBuildMode();
-        else OpenBuildMode();
+        if (IsBuildMode)
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
+            CloseBuildMode();
+        }
+        else
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
+            OpenBuildMode();
+        }
     }
 
     public void OpenBuildMode()
@@ -238,6 +246,28 @@ public class BuildModeController : MonoBehaviour
         }
 
         return false;
+    }
+
+    private void HandleSellConfirmClicked()
+    {
+        if (placementSystem == null || placementSystem.CurrentMode != PlacementMode.SellConfirm)
+        {
+            return;
+        }
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+        placementSystem.ConfirmSell();
+    }
+
+    private void HandleSellCancelClicked()
+    {
+        if (placementSystem == null || placementSystem.CurrentMode != PlacementMode.SellConfirm)
+        {
+            return;
+        }
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Cancel);
+        placementSystem.ConfirmSell();
     }
 
     private void HandleCancelAction()
