@@ -31,7 +31,7 @@ public sealed class CarrierWorker : MonoBehaviour
     }
 
     [SerializeField, Min(0.1f)] private float movementSpeed = 3.5f;
-    [SerializeField, Min(1)] private int carryingCapacity = 10;
+    [SerializeField, Min(1)] private int carryingCapacity = 5;
     [SerializeField, Min(0.05f)] private float stoppingDistance = 1.5f;
     [SerializeField, Min(0.05f)] private float pickupDuration = 10f;
     [SerializeField, Min(0.05f)] private float deliveryDuration = 10f;
@@ -82,6 +82,7 @@ public sealed class CarrierWorker : MonoBehaviour
         cargoInventory.InventoryChanged += RefreshCargoHud;
         baseMovementSpeed = movementSpeed;
         baseCarryingCapacity = carryingCapacity;
+        ApplyCarryingCapacity();
     }
 
     private void OnDisable()
@@ -207,7 +208,14 @@ public sealed class CarrierWorker : MonoBehaviour
     public void SetSkillCarryingCapacityBonus(int amount)
     {
         skillCarryingCapacityBonus = Mathf.Max(0, amount);
+        ApplyCarryingCapacity();
+    }
+
+    private void ApplyCarryingCapacity()
+    {
         carryingCapacity = Mathf.Max(1, baseCarryingCapacity + skillCarryingCapacityBonus);
+        cargoInventory.SetBaseCapacity(carryingCapacity);
+        RefreshCargoHud();
     }
 
     private void ApplyMovementSpeed()
