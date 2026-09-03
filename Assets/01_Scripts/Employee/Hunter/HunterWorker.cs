@@ -58,7 +58,6 @@ public sealed class HunterWorker : MonoBehaviour
     private float nextTargetSearchTime;
     private float monsterPathFailureSince = -1f;
     private EmployeeWorkProgressHUD workProgressHud;
-    private EmployeeCargoHUD cargoHud;
 
     public float MovementSpeed => movementSpeed;
     public float AttackDamage => attackDamage;
@@ -84,7 +83,6 @@ public sealed class HunterWorker : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
-        cargoHud = GetComponent<EmployeeCargoHUD>();
         baseMovementSpeed = movementSpeed;
         baseAttackRange = attackRange;
         baseAttackInterval = attackInterval;
@@ -364,7 +362,14 @@ public sealed class HunterWorker : MonoBehaviour
         Stop(EmployeeWorkState.Working);
         if (!TryCompleteItemDelivery())
         {
-            workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration());
+            if (cargo.TryGetFirstItem(out ItemDataSO item, out _))
+            {
+                workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration(), item, cargo.TotalAmount, cargo.Capacity);
+            }
+            else
+            {
+                workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration());
+            }
             return;
         }
 
@@ -482,13 +487,13 @@ public sealed class HunterWorker : MonoBehaviour
 
     private void RefreshCargoHud()
     {
-        if (cargo.TryGetFirstItem(out ItemDataSO item, out int amount))
+        if (cargo.TryGetFirstItem(out ItemDataSO item, out _))
         {
-            cargoHud?.Show(item, amount, cargo.Capacity);
+            workProgressHud?.RefreshCargo(item, cargo.TotalAmount, cargo.Capacity);
             return;
         }
 
-        cargoHud?.Hide();
+        workProgressHud?.RefreshCargo(null, 0, 0);
     }
 
     private void ApplyStatModifiers()

@@ -59,7 +59,6 @@ public sealed class CarrierWorker : MonoBehaviour
     private int skillCarryingCapacityBonus;
     private float movementSpeedIncreasePercent;
     private EmployeeWorkProgressHUD workProgressHud;
-    private EmployeeCargoHUD cargoHud;
 
     public EmployeeRuntimeData Employee => employee;
     public ItemInventory CargoInventory => cargoInventory;
@@ -80,7 +79,6 @@ public sealed class CarrierWorker : MonoBehaviour
         }
 
         workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
-        cargoHud = GetComponent<EmployeeCargoHUD>();
         cargoInventory.InventoryChanged += RefreshCargoHud;
         baseMovementSpeed = movementSpeed;
         baseCarryingCapacity = carryingCapacity;
@@ -548,7 +546,7 @@ public sealed class CarrierWorker : MonoBehaviour
         SetWorkingState(EmployeeWorkState.Working);
         pickupElapsed += Time.deltaTime;
         float duration = Mathf.Max(0.05f, pickupDuration * (1f - pickupTimeReductionPercent / 100f));
-        workProgressHud?.ShowProgress(pickupElapsed / duration);
+        workProgressHud?.ShowProgress(pickupElapsed / duration, cargoInventory);
         return pickupElapsed >= duration;
     }
 
@@ -557,7 +555,7 @@ public sealed class CarrierWorker : MonoBehaviour
         SetWorkingState(EmployeeWorkState.Working);
         deliveryElapsed += Time.deltaTime;
         float duration = Mathf.Max(0.05f, deliveryDuration * (1f - deliveryTimeReductionPercent / 100f));
-        workProgressHud?.ShowProgress(deliveryElapsed / duration);
+        workProgressHud?.ShowProgress(deliveryElapsed / duration, cargoInventory);
         return deliveryElapsed >= duration;
     }
 
@@ -615,7 +613,7 @@ public sealed class CarrierWorker : MonoBehaviour
 
     private void RefreshCargoHud()
     {
-        cargoHud?.Refresh(cargoInventory);
+        workProgressHud?.RefreshCargo(cargoInventory);
     }
 
     private void SetCommandClearDestination(ItemInventory destination, Transform destinationPoint)
