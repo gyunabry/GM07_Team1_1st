@@ -5,10 +5,14 @@ using UnityEngine;
 public sealed class CustomerOrderGenerator
 {
     private readonly RecipeUnlockManager unlockManager;
+    private readonly float refineWeight;
+    private readonly float heatWeight;
 
-    public CustomerOrderGenerator(RecipeUnlockManager unlockManager)
+    public CustomerOrderGenerator(RecipeUnlockManager unlockManager, float refineWeight = 0.8f, float heatWeight = 0.2f)
     {
         this.unlockManager = unlockManager;
+        this.refineWeight = Mathf.Max(0f, refineWeight);
+        this.heatWeight = Mathf.Max(0f, heatWeight);
     }
 
     public bool TryCreateOrder(CustomerOrder rewardTemplate, out CustomerOrder order)
@@ -26,7 +30,7 @@ public sealed class CustomerOrderGenerator
             return false;
         }
 
-        ItemDataSO selectedItem = candidates[Random.Range(0, candidates.Count)];
+        ItemDataSO selectedItem = SelectWeightedCandidate(candidates);
         order = new CustomerOrder
         {
             Items = new List<CustomerOrderItem>
@@ -38,6 +42,56 @@ public sealed class CustomerOrderGenerator
         };
 
         return true;
+    }
+
+    private ItemDataSO SelectWeightedCandidate(IReadOnlyList<ItemDataSO> candidates)
+    {
+        int refineCandidateCount = 0;
+        int heatCandidateCount = 0;
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            if (candidates[i].ProcessType == ProcessType.Refine)
+            {
+                refineCandidateCount++;
+            }
+            else
+            {
+                heatCandidateCount++;
+            }
+        }
+
+        float availableRefineWeight = refineCandidateCount > 0 ? refineWeight : 0f;
+        float availableHeatWeight = heatCandidateCount > 0 ? heatWeight : 0f;
+        float totalWeight = availableRefineWeight + availableHeatWeight;
+
+        // 모든 타입의 가중치가 0이면 기존처럼 균등 확률로 선택한다.
+        if (totalWeight <= 0f)
+        {
+            return candidates[Random.Range(0, candidates.Count)];
+        }
+
+        ProcessType selectedProcessType = Random.value * totalWeight < availableRefineWeight
+            ? ProcessType.Refine
+            : ProcessType.Heat;
+
+        int selectedCandidateIndex = Random.Range(
+            0,
+            selectedProcessType == ProcessType.Refine ? refineCandidateCount : heatCandidateCount);
+
+        for (int i = 0; i < candidates.Count; i++)
+        {
+            if (candidates[i].ProcessType != selectedProcessType)
+            {
+                continue;
+            }
+
+            if (selectedCandidateIndex-- == 0)
+            {
+                return candidates[i];
+            }
+        }
+
+        return candidates[candidates.Count - 1];
     }
 
     private List<ItemDataSO> CollectProductCandidates()
