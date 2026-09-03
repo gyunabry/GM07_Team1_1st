@@ -153,9 +153,9 @@ public class SkillTreeManager : MonoBehaviour
     }
     public void ResetEffect()
     {
-        effectContext.player.attackDamage = 20;
+        effectContext.player.attackDamage = 10;
         effectContext.player.attackSpeed = 1;
-        effectContext.player.attackDistance = 1;
+        effectContext.player.attackDistance = 2.5f;
         
          for (int i = 0; i < effectContext.playerAttack.upgrade.Length; i++)
          {
@@ -167,7 +167,7 @@ public class SkillTreeManager : MonoBehaviour
                 effectContext.playerAttack.upgrade[i].projectileCount = 0;
             }
         }
-        effectContext.player.navMeshAgent.speed = 3.5f;
+        effectContext.player.navMeshAgent.speed = 3f;
 
         // 플레이어 인벤토리 수용량 초기화
         PlayerInventory playerInventory = effectContext.player.GetComponent<PlayerInventory>();
