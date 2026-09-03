@@ -19,8 +19,8 @@ public sealed class HunterWorker : MonoBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackInterval = 2f;
     [SerializeField] private float attackDamage = 5f;
-    [SerializeField, Min(0.05f)] private float itemPickupDuration = 10f;
-    [SerializeField, Min(0.05f)] private float itemDeliveryDuration = 10f;
+    [SerializeField, Min(0.05f)] private float itemPickupDuration = 1.5f;
+    [SerializeField, Min(0.05f)] private float itemDeliveryDuration = 1.5f;
     [SerializeField] private int carryingCapacity = 20;
     [SerializeField] private GameObject attackEffect;
     [SerializeField, Min(0.05f)] private float targetSearchInterval = 0.25f;
