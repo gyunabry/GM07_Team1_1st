@@ -1,5 +1,14 @@
 using UnityEngine;
 
+public enum SaleBlockReason
+{
+    None,
+    FacilityManagerUnavailable,
+    NotSellable,
+    MinimumRequiredCount
+}
+
+
 // 시설 판매 시 판매 가능 여부, 환불액, 재고 이동량을 관리할 클래스
 // 재료는 통합 전송기, 생산품은 판매대 인벤토리로 이동
 
@@ -8,17 +17,20 @@ public readonly struct BuildingSaleEvaluation
     public bool CanSell { get; }
     public int Refund { get; }
     public bool HasItemToDiscard { get; } // 아이템 소실 여부
+    public SaleBlockReason BlockReason { get; }
 
     public BuildingSaleEvaluation(
         bool canSell,
         int refund,
-        bool hasItemsToDiscard)
+        bool hasItemsToDiscard,
+        SaleBlockReason blockReason = SaleBlockReason.None)
     {
         CanSell = canSell;
         Refund = refund;
         HasItemToDiscard = hasItemsToDiscard;
+        BlockReason = blockReason;
     }
- }
+}
 
 public class BuildingSaleService : MonoBehaviour
 {
@@ -32,18 +44,31 @@ public class BuildingSaleService : MonoBehaviour
             return new BuildingSaleEvaluation(false, 0, false);
         }
 
-        SellableType sellableType = building.Data.Sellable;
-
-        // 판매 가능한 시설과 부분적 판매가 가능한 시설은 2개 이상일때 판매 가능
-        bool canSell =
-            sellableType == SellableType.Possible ||
-            (sellableType == SellableType.Patial &&
-            FacilityManager.Instance != null &&
-            FacilityManager.Instance.GetPlacedCount(building.Data) >= 2);
-
-        if (!canSell)
+        switch (building.Data.Sellable)
         {
-            return new BuildingSaleEvaluation(false, 0, false);
+            case SellableType.Possible:
+                break;
+
+            case SellableType.Patial:
+                {
+                    FacilityManager manager = FacilityManager.Instance;
+
+                    if (manager == null)
+                    {
+                        return new BuildingSaleEvaluation(false, 0, false, SaleBlockReason.FacilityManagerUnavailable);
+                    }
+
+                    if (manager.GetPlacedCount(building.Data) < 2)
+                    {
+                        return new BuildingSaleEvaluation(false, 0, false, SaleBlockReason.MinimumRequiredCount);
+                    }
+
+                    break;
+                }
+
+            case SellableType.Impossible:
+            default:
+                return new BuildingSaleEvaluation(false, 0, false, SaleBlockReason.NotSellable);
         }
 
         int refund = Mathf.RoundToInt(building.Data.BuildCost * refundRatio);

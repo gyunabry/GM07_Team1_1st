@@ -30,6 +30,16 @@ public class BuildModeController : MonoBehaviour
     [SerializeField] private Button sellConfirmButton;
     [SerializeField] private Button sellCancelButton;
 
+    [Header("판매 불가 안내")]
+    [SerializeField] private WarningPopupController saleWarningPopup;
+    [SerializeField, TextArea] 
+    private string notSellableMessage =
+        "이 시설은 판매할 수 없습니다.";
+    [SerializeField, TextArea] 
+    private string minimumReuqiredMessage =
+        "이 시설은 최소 1개가 필요하므로 판매할 수 없습니다.";
+
+
     [Header("현재 배치 모드 표시")]
     [SerializeField] private GameObject currentPlacementMode;
     [SerializeField] private TMP_Text currentPlacementModeText;
@@ -77,6 +87,8 @@ public class BuildModeController : MonoBehaviour
         {
             placementSystem.ModeChanged += HandlePlacementModeChanged;
 
+            placementSystem.SaleRejection += HandleSaleRejected;
+
             editModeButton?.onClick.AddListener(placementSystem.ToggleRelocateMode);
             sellModeButton?.onClick.AddListener(placementSystem.ToggleSellMode);
 
@@ -98,13 +110,16 @@ public class BuildModeController : MonoBehaviour
         {
             placementSystem.ModeChanged -= HandlePlacementModeChanged;
 
+            placementSystem.SaleRejection -= HandleSaleRejected;
+
             editModeButton?.onClick.RemoveListener(placementSystem.ToggleRelocateMode);
             sellModeButton?.onClick.RemoveListener(placementSystem.ToggleSellMode);
 
-            sellConfirmButton?.onClick.RemoveListener(placementSystem.ConfirmSell);
-            sellCancelButton?.onClick.RemoveListener(placementSystem.CancelCurrentAction);
+            sellConfirmButton?.onClick.RemoveListener(HandleSellConfirmClicked);
+            sellCancelButton?.onClick.RemoveListener(HandleSellCancelClicked);
         }
 
+        saleWarningPopup?.ClosePopup();
         anim?.Kill();
         anim = null;
     }
@@ -189,6 +204,11 @@ public class BuildModeController : MonoBehaviour
             mode == PlacementMode.SellSelect ||
             mode == PlacementMode.SellConfirm;
 
+        if (!isSellMode)
+        {
+            saleWarningPopup?.ClosePopup();
+        }
+
         bool showCurrentMode = isEditMode || isSellMode;
 
         if (currentPlacementMode != null)
@@ -267,6 +287,12 @@ public class BuildModeController : MonoBehaviour
 
     private void HandleCancelAction()
     {
+        if (saleWarningPopup != null && saleWarningPopup.isOpen)
+        {
+            saleWarningPopup.ClosePopup();
+            return;
+        }
+
         if (placementSystem != null && placementSystem.IsPlacementMode)
         {
             placementSystem.CancelCurrentAction();
@@ -286,5 +312,24 @@ public class BuildModeController : MonoBehaviour
         }
 
         CloseBuildMode();
+    }
+
+    private void HandleSaleRejected(SaleBlockReason reason)
+    {
+        string message;
+
+        switch (reason)
+        {
+            case SaleBlockReason.NotSellable:
+                message = notSellableMessage;
+                break;
+            case SaleBlockReason.MinimumRequiredCount:
+                message = minimumReuqiredMessage;
+                break;
+            default:
+                return;
+        }
+
+        saleWarningPopup?.ShowMessage(message);
     }
 }
