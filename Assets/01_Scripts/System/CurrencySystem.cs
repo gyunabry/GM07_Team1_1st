@@ -24,8 +24,8 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public int Experience => experience;
 
 
-    List<int> needExp = new List<int>() { 60, 110, 260, 330, 430, 800, 950, 1100, 6500, 7200, 10000, 12000, 18000, 20000, 24000, 27000,
-    32000, 35000, 40000, 44000};
+    List<int> needExp = new List<int>() { 300, 360, 430, 520, 650, 800, 950, 1150, 1400, 1700, 2050, 2450, 2950, 3500, 4200, 5000,
+    6000, 7200, 8600, 10300};
     private int level = 1;
     public int Level => level;
 
