@@ -23,14 +23,12 @@ public class WorkshopExpansionManager : MonoBehaviour
     [SerializeField] private WorkshopExpansionPreview preview;
     [SerializeField] private WorkshopStageVisualController visualController;
 
-    [Header("저장")]
-    [SerializeField] private WorkshopExpansionSaveService saveService;
-
     private RectInt baseBounds;
     private int currentStage;
     private bool isPurchasing;
 
     private WorkshopExpansionDataSO selectedExpansion;
+    private CurrencySystem currencySystem;
 
     public int CurrentStage => currentStage;
 
@@ -45,11 +43,14 @@ public class WorkshopExpansionManager : MonoBehaviour
 
         baseBounds = workshopArea.UnlockedAreas[0];
 
-        // currentStage = saveService != null ? saveService.LoadStage() : 0;
+        currencySystem = CurrencySystem.Instance;
 
         currentStage = 0;
+    }
 
-        // RestoreStage(currentStage);
+    private void Start()
+    {
+        currencySystem = CurrencySystem.Instance;
     }
 
     // 목표 확장 영역 계산
@@ -87,13 +88,12 @@ public class WorkshopExpansionManager : MonoBehaviour
             reasons |= ExpansionBlockReason.PreviousExpansionRequired;
         }
 
-        // TODO: 추후 레벨 구조 변경 시 수정 필요
-        if (player == null || player.NowLevel < data.RequiredLevel)
+        if (currencySystem == null || currencySystem.Level < data.RequiredLevel)
         {
             reasons |= ExpansionBlockReason.LevelRequired;
         }
 
-        if (CurrencySystem.Instance == null || CurrencySystem.Instance.Money < data.Price)
+        if (currencySystem == null || currencySystem.Money < data.Price)
         {
             reasons |= ExpansionBlockReason.NotEnoughMoney;
         }
@@ -143,7 +143,7 @@ public class WorkshopExpansionManager : MonoBehaviour
 
         isPurchasing = true;
 
-        if (!CurrencySystem.Instance.TrySpendMoney(data.Price))
+        if (!currencySystem.TrySpendMoney(data.Price))
         {
             isPurchasing = false;
             StateChanged?.Invoke();
@@ -159,8 +159,6 @@ public class WorkshopExpansionManager : MonoBehaviour
         visualController?.ApplyStage(currentStage);
 
         selectedExpansion = null;
-
-        // saveService?.SaveStage(currentStage);
 
         SelectionChanged?.Invoke(null);
         StateChanged?.Invoke();
