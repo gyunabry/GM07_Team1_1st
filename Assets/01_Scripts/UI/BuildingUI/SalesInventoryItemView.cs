@@ -1,7 +1,5 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.Composites;
 using UnityEngine.UI;
 
 // 판매대와 통합 전송기가 같은 아이템 뷰를 사용하도록 리팩토링 예정
@@ -14,6 +12,7 @@ public class SalesInventoryItemView : MonoBehaviour
 
     private Button button;
 
+    private ItemInventory sourceInventory;
     private StorageDecomposition storageDecomposition;
     private ItemDataSO currentItem;
     private int currentAmount;
@@ -30,6 +29,7 @@ public class SalesInventoryItemView : MonoBehaviour
         SetEmpty();
     }
 
+
     private void OnDestroy()
     {
         if (button != null)
@@ -38,7 +38,7 @@ public class SalesInventoryItemView : MonoBehaviour
         }
     }
 
-    public void Bind(InventoryEntry entry, StorageDecomposition SD = null)
+    public void Bind(InventoryEntry entry, ItemInventory inventory, StorageDecomposition sd = null)
     {
         if (entry == null || entry.IsEmpty || entry.Item == null)
         {
@@ -46,9 +46,11 @@ public class SalesInventoryItemView : MonoBehaviour
             return;
         }
 
-        storageDecomposition = SD;
+        sourceInventory = inventory;
+        storageDecomposition = sd;
         currentItem = entry.Item;
         int amount = Mathf.Max(0, entry.Amount);
+        currentAmount = amount;
 
         if (itemIcon != null)
         {
@@ -56,7 +58,7 @@ public class SalesInventoryItemView : MonoBehaviour
             itemIcon.enabled = currentItem.Icon != null;
         }
 
-        if (amountText != null) amountText.text = AmountFormat(amount);
+        if (amountText != null) amountText.text = AmountFormat(currentAmount);
 
         if (button != null) button.interactable = storageDecomposition != null;
     }
@@ -64,6 +66,7 @@ public class SalesInventoryItemView : MonoBehaviour
     // 해당 슬롯을 비우는 메서드
     public void SetEmpty()
     {
+        sourceInventory = null;
         storageDecomposition = null;
         currentItem = null;
         currentAmount = 0;
@@ -80,12 +83,15 @@ public class SalesInventoryItemView : MonoBehaviour
 
     private void HandleClick()
     {
-        if (storageDecomposition == null || currentItem == null || currentAmount <= 0)
+        if (storageDecomposition == null || 
+            sourceInventory == null || 
+            currentItem == null || 
+            currentAmount <= 0)
         {
             return;
         }
 
-        storageDecomposition.OnClickDecompositionButton(currentAmount, currentItem);
+        storageDecomposition.OnClickDecompositionButton(sourceInventory, currentItem);
     }
 
     // 1,000을 넘어가면 k로 표시하는 메서드

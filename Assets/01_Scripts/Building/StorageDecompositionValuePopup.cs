@@ -34,6 +34,8 @@ public class StorageDecompositionValuePopup : MonoBehaviour
 
         if (btnConfirm != null) btnConfirm.onClick.AddListener(OnClickonfirm);
         if (btnCancel != null) btnCancel.onClick.AddListener(ClosePopup);
+
+        ClosePopup();
     }
     public void OpenPopup(int maxCount, Action<int> onConfirm)
     {

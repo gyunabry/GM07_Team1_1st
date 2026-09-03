@@ -3,9 +3,14 @@ using UnityEngine;
 
 public class SalesCounterTransferZone : MonoBehaviour
 {
+    [Header("전송 설정")]
     [SerializeField] private SalesCounter salesCounter;
     [SerializeField] private float transferInterval = 0.1f;
     [SerializeField] private LayerMask playerLayer;
+
+    [Header("전송 효과")]
+    [SerializeField] private ItemTransferEffect transferEffectPrefab;
+    [SerializeField] private Transform transferAnchor;
 
     private PlayerInventory currentPlayer;
     private Coroutine transferCoroutine;
@@ -86,7 +91,21 @@ public class SalesCounterTransferZone : MonoBehaviour
 
         if (product == null) return 0;
 
-        return player.Inventory.TransferTo(targetInventory, product, 1);
+        int moved = player.Inventory.TransferTo(targetInventory, product, 1);
+
+        if (moved > 0)
+        {
+            Transform destination = transferAnchor != null ? transferAnchor : transform;
+
+            ItemTransferEffect.Play(
+                transferEffectPrefab,
+                product.Icon,
+                player.TransferAnchor.position,    // 생산 시설 출발
+                destination
+            );     // 플레이어 도착
+        }
+
+        return moved;
     }
 
     private static ItemDataSO FindFirstProduct(ItemInventory playerInventory)

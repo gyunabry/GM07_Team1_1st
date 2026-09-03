@@ -3,9 +3,14 @@ using UnityEngine;
 
 public class TransmitterTransferZone : MonoBehaviour
 {
+    [Header("전송 설정")]
     [SerializeField] private Transmitter transmitter;
     [SerializeField] private float inputInterval = 0.05f;
     [SerializeField] private LayerMask sourceLayer;
+
+    [Header("전송 연출")]
+    [SerializeField] private ItemTransferEffect transferEffectPrefab;
+    [SerializeField] private Transform transferAnchor;
 
     private IInventoryProvider currentProvider;
     private Component currentProviderComponent;
@@ -52,7 +57,28 @@ public class TransmitterTransferZone : MonoBehaviour
     {
         while (currentProviderComponent != null && currentProvider != null)
         {
-            transmitter.TryReceiveOne(currentProvider.Inventory);
+            int moved = transmitter.TryReceiveOne(currentProvider.Inventory, out ItemDataSO item);
+            
+            if (moved > 0 &&
+                item != null &&
+                    currentProviderComponent is PlayerInventory player)
+            {
+                Transform source = player.TransferAnchor != null 
+                    ? player.TransferAnchor
+                    : player.transform;
+
+                Transform destination = transferAnchor != null
+                    ? transferAnchor
+                    : transmitter.transform;
+
+                ItemTransferEffect.Play(
+                    transferEffectPrefab,
+                    item.Icon,
+                    source.position,
+                    destination
+                );
+            }
+
             yield return inputWait;
         }
     }

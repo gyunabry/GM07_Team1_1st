@@ -17,6 +17,7 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private AttackEquPrefab buttonPrefab;
     [SerializeField] private SkillTreePopUp skillTreePopUpPrefab;
     [SerializeField] private SkillDesc skillDesc;
+    [SerializeField] private ItemTransferEffect transferEffectPrefab;
 
     [Header("생성 개수")]
     [SerializeField] private int carrierCount;
@@ -31,6 +32,7 @@ public class PoolPreLoader : MonoBehaviour
     [SerializeField] private int buttonCount;
     [SerializeField] private int skillTreePopUpCount;
     [SerializeField] private int skillDescCount;
+    [SerializeField] private int transferEffectCount;
 
     private bool setup = false;
 
@@ -56,6 +58,7 @@ public class PoolPreLoader : MonoBehaviour
         PoolManager.Instance.PreLoadPool(buttonPrefab, buttonCount);
         PoolManager.Instance.PreLoadPool(skillTreePopUpPrefab, skillTreePopUpCount);
         PoolManager.Instance.PreLoadPool(skillDesc, skillDescCount);
+        PoolManager.Instance.PreLoadPool(transferEffectPrefab, transferEffectCount);
         setup = true;
     }
 

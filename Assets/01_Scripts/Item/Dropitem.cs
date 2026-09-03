@@ -18,12 +18,19 @@ public class Dropitem : MonoBehaviour, ICollectable
     private Transform magnetTarget;
     private ItemInventory targetInventory;
 
+    private Vector3 visualLocalPosition;
+
     public ItemDataSO Item { get; private set; }
     public int Amount { get; private set; } = 1;
 
     private void Awake()
     {
         lifetimeWait = new WaitForSeconds(lifetimeSec);
+
+        if (sr != null)
+        {
+            visualLocalPosition = sr.transform.position;
+        }
     }
 
     private void Update()
@@ -103,6 +110,14 @@ public class Dropitem : MonoBehaviour, ICollectable
         targetInventory = inventory;
     }
 
+    public void StopMagnet(Transform target)
+    {
+        if (target == null) return;
+
+        magnetTarget = null;
+        targetInventory = null;
+    }
+
     public bool TryCollect(ItemInventory target)
     {
         if (target == null || Item == null || Amount <= 0)
@@ -167,7 +182,11 @@ public class Dropitem : MonoBehaviour, ICollectable
     // DOTween Ãß°¡
     private void ItemFloating()
     {
-        sr.transform.DOMoveY(0.3f, 0.8f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+        if (sr == null) return;
+
+        sr.transform.localPosition = visualLocalPosition;
+
+        sr.transform.DOMoveY(visualLocalPosition.y + 0.3f, 0.8f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
     }
 
     private void KillTween()
