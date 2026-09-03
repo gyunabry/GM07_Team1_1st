@@ -28,6 +28,7 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     
     private CarrierCommandService commandService;
     private CarrierCommandType currentType = CarrierCommandType.Material;
+    private InputManager inputManager;
 
     private bool isOpen;
 
@@ -35,10 +36,27 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
 
     private void Awake()
     {
+        inputManager = FindFirstObjectByType<InputManager>();
         materialButton.onClick.AddListener(() => SelectType(CarrierCommandType.Material));
         productButton.onClick.AddListener(() => SelectType(CarrierCommandType.Product));
         SetVisible(false);
         isOpen = false;
+    }
+
+    private void OnEnable()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnCancelPressed += Hide;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (inputManager != null)
+        {
+            inputManager.OnCancelPressed -= Hide;
+        }
     }
 
     private void Start()
@@ -46,7 +64,7 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
         commandService = employeeManager != null ? employeeManager.GetComponent<CarrierCommandService>() : null;
         if (commandService == null)
         {
-            Debug.LogWarning("CommandSystem이 연결되지 않았습니다.");
+            Debug.LogWarning("CommandSystem???�결?��? ?�았?�니??");
         }
     }
 
@@ -104,8 +122,8 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     {
         currentType = type;
 
-        // IngredientUI와 ProductUI는 같은 위치에 겹쳐 있으며 ProductUI가 더 앞에 렌더링된다.
-        // 내용 컨테이너만 전환하면 재료 행이 ProductUI 뒤에 가려지므로, 각 탭의 상위 패널을 전환한다.
+        // IngredientUI?� ProductUI??같�? ?�치??겹쳐 ?�으�?ProductUI가 ???�에 ?�더링된??
+        // ?�용 컨테?�너�??�환?�면 ?�료 ?�이 ProductUI ?�에 가?��?므�? �???�� ?�위 ?�널???�환?�다.
         materialContent.parent.gameObject.SetActive(type == CarrierCommandType.Material);
         productContent.parent.gameObject.SetActive(type == CarrierCommandType.Product);
 

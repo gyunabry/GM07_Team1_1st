@@ -12,6 +12,7 @@ public sealed class ShopCheckout : MonoBehaviour
 
     public event Action OperatorPresenceChanged;
     public event Action<float> PaymentProgressChanged;
+    public event Action PaymentCompleted;
 
     public bool HasOperator => operatorColliderCounts.Count > 0;
     public float PaymentDurationMultiplier => 1f - paymentDurationReductionPercent / 100f;
@@ -29,6 +30,11 @@ public sealed class ShopCheckout : MonoBehaviour
     public void ClearPaymentProgress()
     {
         PaymentProgressChanged?.Invoke(-1f);
+    }
+
+    public void NotifyPaymentCompleted()
+    {
+        PaymentCompleted?.Invoke();
     }
 
     private void Awake()

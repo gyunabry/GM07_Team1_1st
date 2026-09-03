@@ -7,6 +7,8 @@ public sealed class HunterWorker : MonoBehaviour
 {
     private const float NavMeshSampleDistance = 1f;
     private const float MonsterPathFailureGraceDuration = 1.5f;
+    private const float DefaultStoppingDistance = 1.5f;
+    private const float DeliveryStoppingDistance = 1.2f;
 
     private enum State { Idle, Trace, Attack, Get, Store }
     private static readonly Dictionary<Enemy, HunterWorker> MonsterOwners = new();
@@ -17,8 +19,8 @@ public sealed class HunterWorker : MonoBehaviour
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackInterval = 2f;
     [SerializeField] private float attackDamage = 5f;
-    [SerializeField, Min(0.05f)] private float itemPickupDuration = 10f;
-    [SerializeField, Min(0.05f)] private float itemDeliveryDuration = 10f;
+    [SerializeField, Min(0.05f)] private float itemPickupDuration = 1.5f;
+    [SerializeField, Min(0.05f)] private float itemDeliveryDuration = 1.5f;
     [SerializeField] private int carryingCapacity = 20;
     [SerializeField] private GameObject attackEffect;
     [SerializeField, Min(0.05f)] private float targetSearchInterval = 0.25f;
@@ -56,7 +58,6 @@ public sealed class HunterWorker : MonoBehaviour
     private float nextTargetSearchTime;
     private float monsterPathFailureSince = -1f;
     private EmployeeWorkProgressHUD workProgressHud;
-    private EmployeeCargoHUD cargoHud;
 
     public float MovementSpeed => movementSpeed;
     public float AttackDamage => attackDamage;
@@ -82,7 +83,6 @@ public sealed class HunterWorker : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
-        cargoHud = GetComponent<EmployeeCargoHUD>();
         baseMovementSpeed = movementSpeed;
         baseAttackRange = attackRange;
         baseAttackInterval = attackInterval;
@@ -174,7 +174,7 @@ public sealed class HunterWorker : MonoBehaviour
         itemDeliveryElapsed = 0f;
 
         ApplyStatModifiers(); 
-        agent.stoppingDistance = 1.5f; 
+        agent.stoppingDistance = DefaultStoppingDistance;
         manager.TrySetWorkState(employee, EmployeeWorkState.Idle);
     }
 
@@ -355,14 +355,21 @@ public sealed class HunterWorker : MonoBehaviour
         if (Distance(transmitter.DepositPoint.position) > 1.3f)
         {
             itemDeliveryElapsed = 0f;
-            Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving);
+            Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving, DeliveryStoppingDistance);
             return;
         }
 
         Stop(EmployeeWorkState.Working);
         if (!TryCompleteItemDelivery())
         {
-            workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration());
+            if (cargo.TryGetFirstItem(out ItemDataSO item, out _))
+            {
+                workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration(), item, cargo.TotalAmount, cargo.Capacity);
+            }
+            else
+            {
+                workProgressHud?.ShowProgress(itemDeliveryElapsed / GetItemDeliveryDuration());
+            }
             return;
         }
 
@@ -480,13 +487,13 @@ public sealed class HunterWorker : MonoBehaviour
 
     private void RefreshCargoHud()
     {
-        if (cargo.TryGetFirstItem(out ItemDataSO item, out int amount))
+        if (cargo.TryGetFirstItem(out ItemDataSO item, out _))
         {
-            cargoHud?.Show(item, amount, cargo.Capacity);
+            workProgressHud?.RefreshCargo(item, cargo.TotalAmount, cargo.Capacity);
             return;
         }
 
-        cargoHud?.Hide();
+        workProgressHud?.RefreshCargo(null, 0, 0);
     }
 
     private void ApplyStatModifiers()
@@ -500,10 +507,11 @@ public sealed class HunterWorker : MonoBehaviour
         if (agent != null) agent.speed = movementSpeed;
         cargo.SetCapacity(carryingCapacity);
     }
-    private bool Move(Vector3 p, EmployeeWorkState s)
+    private bool Move(Vector3 p, EmployeeWorkState s, float stoppingDistance = DefaultStoppingDistance)
     {
         if (!CanReach(p)) return false;
         NavMesh.SamplePosition(p, out NavMeshHit hit, 3f, agent.areaMask);
+        agent.stoppingDistance = stoppingDistance;
         agent.isStopped = false;
         agent.SetDestination(hit.position);
         manager.TrySetWorkState(employee, s);

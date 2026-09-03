@@ -16,6 +16,9 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     [SerializeField] private EconomyModifierService economyModifierService;
     [SerializeField, Min(0.1f)] private float spawnInterval = 5f;
     [SerializeField] private bool spawnOnStart = true;
+    [Header("Order Process Weights")]
+    [SerializeField, Min(0f)] private float refineOrderWeight = 0.8f;
+    [SerializeField, Min(0f)] private float heatOrderWeight = 0.2f;
 
     private readonly HashSet<CustomerCheckoutStation> stations = new HashSet<CustomerCheckoutStation>();
     private readonly Dictionary<CustomerController, GameObject[]> customerVisualInstances = new Dictionary<CustomerController, GameObject[]>();
@@ -257,7 +260,10 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     {
         CustomerOrder fallbackOrder = customerPrefab != null ? customerPrefab.DefaultOrder : default;
         RecipeUnlockManager unlockManager = RecipeUnlockManager.Instance;
-        CustomerOrderGenerator generator = new CustomerOrderGenerator(unlockManager);
+        CustomerOrderGenerator generator = new CustomerOrderGenerator(
+            unlockManager,
+            refineOrderWeight,
+            heatOrderWeight);
         if (generator.TryCreateOrder(fallbackOrder, out CustomerOrder generatedOrder))
         {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
