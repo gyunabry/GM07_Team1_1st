@@ -52,6 +52,19 @@ public class PlayerItemCollector : MonoBehaviour
         TryCollect(other);
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (!IsCollectableLayer(other.gameObject.layer))
+        {
+            return;
+        }
+
+        Dropitem dropItem = other.GetComponentInParent<Dropitem>();
+        if (dropItem == null) return;
+
+        dropItem.StopMagnet(transform);
+    }
+
     private void TryCollect(Collider other)
     {
         if (other == null || playerInventory == null)
