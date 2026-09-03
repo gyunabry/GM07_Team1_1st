@@ -27100,6 +27100,14 @@ PrefabInstance:
       propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4010978991303931599, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4010978991303931599, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5834069631dd341f4b1f9e2c3f509a0e, type: 3}
     - target: {fileID: 4166653920868154162, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -27148,6 +27156,14 @@ PrefabInstance:
       propertyPath: m_Padding.m_Left
       value: 30
       objectReference: {fileID: 0}
+    - target: {fileID: 6351495481109239837, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6351495481109239837, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 81692815d477d426aba278e6221fd9f4, type: 3}
     - target: {fileID: 6693974068268596339, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
       propertyPath: m_RaycastTarget
       value: 0
@@ -27240,7 +27256,9 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -290
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 206892524207751520, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
+    - {fileID: 764617752476085043, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
     m_RemovedGameObjects:
     - {fileID: 6844417301191026326, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
     - {fileID: 5781053138410759151, guid: 48c96ae2ee5e6a748897bea8e62bf931, type: 3}
