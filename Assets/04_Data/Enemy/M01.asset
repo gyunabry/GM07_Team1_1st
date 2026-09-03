@@ -15,13 +15,13 @@ MonoBehaviour:
   enemyId: M01
   enemyName: "\uD30C\uB2E5 \uBC15\uC950"
   discription: "\uC219\uC131\uC2DC\uD0AC \uC218\uB85D \uD6A8\uACFC\uAC00 \uAC15\uD574\uC9C4\uB2E4."
-  hp: 150
+  hp: 210
   patrolSpeed: 2.5
   runSpeed: 3
   reward:
     drop:
       item: {fileID: 11400000, guid: e1e92148abe7e6c4e90af86cdd9a8fee, type: 2}
       amount: 1
-    killExp: 3
+    killExp: 15
   runStartDistance: 2
   runEndDistance: 4
