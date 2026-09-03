@@ -74,6 +74,11 @@ public sealed class CarrierWorker : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        if (GetComponent<CarrierVisualMotionController>() == null)
+        {
+            gameObject.AddComponent<CarrierVisualMotionController>();
+        }
+
         workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
         cargoHud = GetComponent<EmployeeCargoHUD>();
         cargoInventory.InventoryChanged += RefreshCargoHud;
