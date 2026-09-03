@@ -1,7 +1,5 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem.Composites;
 using UnityEngine.UI;
 
 // 판매대와 통합 전송기가 같은 아이템 뷰를 사용하도록 리팩토링 예정
@@ -30,6 +28,7 @@ public class SalesInventoryItemView : MonoBehaviour
         SetEmpty();
     }
 
+
     private void OnDestroy()
     {
         if (button != null)
@@ -38,7 +37,7 @@ public class SalesInventoryItemView : MonoBehaviour
         }
     }
 
-    public void Bind(InventoryEntry entry, StorageDecomposition SD = null)
+    public void Bind(InventoryEntry entry, StorageDecomposition sd = null)
     {
         if (entry == null || entry.IsEmpty || entry.Item == null)
         {
@@ -46,9 +45,10 @@ public class SalesInventoryItemView : MonoBehaviour
             return;
         }
 
-        storageDecomposition = SD;
+        storageDecomposition = sd;
         currentItem = entry.Item;
         int amount = Mathf.Max(0, entry.Amount);
+        currentAmount = amount;
 
         if (itemIcon != null)
         {
@@ -56,7 +56,7 @@ public class SalesInventoryItemView : MonoBehaviour
             itemIcon.enabled = currentItem.Icon != null;
         }
 
-        if (amountText != null) amountText.text = AmountFormat(amount);
+        if (amountText != null) amountText.text = AmountFormat(currentAmount);
 
         if (button != null) button.interactable = storageDecomposition != null;
     }
