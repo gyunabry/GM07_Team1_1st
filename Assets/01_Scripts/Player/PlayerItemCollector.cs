@@ -124,3 +124,8 @@ public class PlayerItemCollector : MonoBehaviour
         return (collectableLayer.value & (1 << layer)) != 0;
     }
 }
+[System.Serializable]
+public class PlayerItemCollectorLevelUpStat
+{
+    public float rangeBonusRate = 0f;
+}

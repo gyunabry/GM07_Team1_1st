@@ -1262,6 +1262,10 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 1033554108}
+    - target: {fileID: 8309171493582960228, guid: 1a2b3f65ba58b6a4fbf1a2e6034388ca, type: 3}
+      propertyPath: placementLayer.m_Bits
+      value: 16384
+      objectReference: {fileID: 0}
     - target: {fileID: 8645873690436672994, guid: 1a2b3f65ba58b6a4fbf1a2e6034388ca, type: 3}
       propertyPath: grid
       value: 
@@ -1438,6 +1442,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1314460393 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+  m_PrefabInstance: {fileID: 4628730426635063980}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!65 &1351698216 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 149590992208089338, guid: f799aac3f6deae746b2d493cd64f0f22, type: 3}
@@ -1491,6 +1506,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61cefbb276717a47a6634ad64b025cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorkshopExpansionManager
+--- !u!114 &1715176922 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+  m_PrefabInstance: {fileID: 4628730426635063980}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!1001 &1733149397
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1899,6 +1925,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 255530919491551463, guid: f799aac3f6deae746b2d493cd64f0f22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 308737822934742097, guid: f799aac3f6deae746b2d493cd64f0f22, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -2219,6 +2249,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 31991742085395416, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 115529278167543792, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_PresetInfoIsWorld
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 160762262031487093, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
@@ -4106,6 +4140,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 87912731951259645, guid: f799aac3f6deae746b2d493cd64f0f22, type: 3}
   m_PrefabInstance: {fileID: 1847961223}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2106404072 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+  m_PrefabInstance: {fileID: 4628730426635063980}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: daa61bc73fcc14d4aae6053a32e9d35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Portal
 --- !u!1 &2107946816
 GameObject:
   m_ObjectHideFlags: 0
@@ -4306,6 +4351,26 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: teleportUI
+      value: 
+      objectReference: {fileID: 2024550380}
+    - target: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: interactionMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2106404072}
+    - target: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1715176922}
+    - target: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1314460393}
+    - target: {fileID: 1652922299818699721, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
       propertyPath: onArrived.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1744276424}
@@ -4362,9 +4427,49 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: teleportUI
+      value: 
+      objectReference: {fileID: 2024550380}
+    - target: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: interactionMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2106404072}
+    - target: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1715176922}
+    - target: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1314460393}
+    - target: {fileID: 7896181082081889189, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
       propertyPath: onArrived.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1744276424}
+    - target: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: teleportUI
+      value: 
+      objectReference: {fileID: 2024550380}
+    - target: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: interactionMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2106404072}
+    - target: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1715176922}
+    - target: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
+      propertyPath: 'huntingFieldPortals.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1314460393}
     - target: {fileID: 8241464058637713626, guid: 4c5c0604189c1f44bab3e9e8714a7dd1, type: 3}
       propertyPath: onArrived.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
