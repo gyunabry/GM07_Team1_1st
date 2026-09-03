@@ -20,6 +20,9 @@ public class CameraModeController : MonoBehaviour
     [SerializeField] private CinemachineCamera cinemachineCamera;
     [SerializeField] private Transform playerFollowTarget;
 
+    [Header("카메라 조작")]
+    [SerializeField] private InputActionReference cameraMoveAction;
+
     [Header("엣지 스크롤")]
     [SerializeField, Min(1f)] private float edgeThickness = 20f;
     [SerializeField, Min(0f)] private float moveSpeed = 12f;
@@ -79,19 +82,25 @@ public class CameraModeController : MonoBehaviour
     {
         HandleZoom();
 
-        if (currentMode != CameraMode.EdgeScroll || !CanEdgeScroll())
+        if (currentMode != CameraMode.EdgeScroll || !CanMoveFreeCamera())
         {
             return;
         }
 
-        Vector2 direction = GetEdgeScrollDirection(Mouse.current.position.ReadValue());
+        Vector2 keyboardDir = cameraMoveAction != null
+            ? cameraMoveAction.action.ReadValue<Vector2>()
+            : Vector2.zero;
 
-        if (direction == Vector2.zero)
+        Vector2 edgeDir = CanEdgeScroll() 
+            ? GetEdgeScrollDirection(Mouse.current.position.ReadValue())
+            : Vector2.zero;
+
+        Vector2 direction = Vector2.ClampMagnitude(keyboardDir + edgeDir, 1f);
+
+        if (direction.sqrMagnitude > 0.001f)
         {
-            return;
+            MoveFreeCameraTarget(direction);
         }
-
-        MoveFreeCameraTarget(direction);
     }
 
     public void SetMode(CameraMode mode)
@@ -147,6 +156,8 @@ public class CameraModeController : MonoBehaviour
         cinemachineCamera.Follow = freeCameraTarget;
         currentMode = CameraMode.EdgeScroll;
 
+        cameraMoveAction?.action.Enable();
+
         return true;
     }
 
@@ -157,6 +168,8 @@ public class CameraModeController : MonoBehaviour
         cinemachineCamera.Follow = playerFollowTarget;
         activeEdgeScrollBounds = null;
         currentMode = CameraMode.PlayerFollow;
+
+        cameraMoveAction?.action.Disable();
     }
 
     private bool CanEdgeScroll()
@@ -279,6 +292,11 @@ public class CameraModeController : MonoBehaviour
             Mathf.Infinity,
             Time.unscaledDeltaTime
         );
+    }
+
+    private bool CanMoveFreeCamera()
+    {
+        return Application.isFocused && freeCameraTarget != null && activeEdgeScrollBounds != null;
     }
 
     private void OnDestroy()

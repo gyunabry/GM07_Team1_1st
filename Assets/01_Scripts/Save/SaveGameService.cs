@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class SaveGameService : MonoBehaviour
@@ -23,7 +25,7 @@ public class SaveGameService : MonoBehaviour
     [Header("게임 월드")]
     [SerializeField] private WorkshopExpansionManager expansionManager;
     [SerializeField] private PlacementSystem placementSystem;
-    // [SerializeField] private EmployeeManager employeeManager;
+    [SerializeField] private EmployeeManager employeeManager;
     [SerializeField] private CounterInventory counterInventory;
     [SerializeField] private HuntingFieldManager huntingFieldManager;
     [Tooltip("텔레포트 UI 참조 연결 복구")]
@@ -35,6 +37,13 @@ public class SaveGameService : MonoBehaviour
     {
         public ProductionBuilding building;
         public ProductionSaveData savedData;
+    }
+
+    private class PendingEmployeeRestore
+    {
+        public PlacedBuilding building;
+        public EmployeeRuntimeData employee;
+        public EmployeeSaveData saved;
     }
 
     private void Awake()
@@ -119,6 +128,9 @@ public class SaveGameService : MonoBehaviour
             return false;
         }
 
+        Dictionary<string, PlacedBuilding> buildingsByGuid = new();
+        List<PendingEmployeeRestore> pendingEmployees = new();
+
         bool allSuccessed = true;
 
         // 플레이어 상태 복구
@@ -145,12 +157,6 @@ public class SaveGameService : MonoBehaviour
             : null;
 
         huntingFieldManager.RestoreUnlockedIds(savedHuntingFieldIds);
-
-        // 해금 레시피 복구
-        //if (!RestoreUnlockedRecipes(data.progression.unlockedRecipeIds))
-        //{
-        //    allSuccessed = false;
-        //}
 
         // 확장 복구
         placementSystem.ClearBuildingsOnLoad();
@@ -215,6 +221,14 @@ public class SaveGameService : MonoBehaviour
                         savedData = savedFacility.production
                     });
                 }
+
+                // 직원 복구
+                buildingsByGuid[restoredBuilding.PersistentId] = restoredBuilding;
+
+                if (!RestoreEmployeeEntries(restoredBuilding, savedFacility, pendingEmployees))
+                {
+                    allSuccessed = false;
+                }
             }
         }
 
@@ -246,6 +260,8 @@ public class SaveGameService : MonoBehaviour
         {
             Debug.LogWarning("일부 데이터의 복구에 실패했습니다.");
         }
+
+        StartCoroutine(RestoreEmployeeState(pendingEmployees, buildingsByGuid));
 
         return allSuccessed;
     }
@@ -511,8 +527,12 @@ public class SaveGameService : MonoBehaviour
         };
 
         CaptureBuildingInventories(building, result);
-
         CaptureProductionState(building, result);
+
+        if (!CaptureEmployees(building, result))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -783,6 +803,163 @@ public class SaveGameService : MonoBehaviour
         Debug.LogWarning($"생산 레시피를 찾지 못했습니다: {recipeId}");
 
         return false;
+    }
+    #endregion
+
+    #region 직원 상태 저장/복구
+    private bool CaptureEmployees(PlacedBuilding building, FacilitySaveData target)
+    {
+        target.employees.Clear();
+
+        if (building.Data.BuildingTag != BuildingTag.Employee)
+        {
+            return true;
+        }
+
+        if (!employeeManager.TryGetEmployees(building, out var employess))
+        {
+            return true;
+        }
+
+        building.TryGetComponent(out HunterBuildingController hunterController);
+        building.TryGetComponent(out CarrierEmployeeBuildingController carrierController);
+
+        foreach (EmployeeRuntimeData employee in employess)
+        {
+            EmployeeSaveData saved = new();
+
+            if (hunterController != null)
+            {
+                if (!hunterController.TryGetWorker(employee.EmployeeId, out HunterWorker worker))
+                {
+                    return false;
+                }
+
+                // 사냥 직원 인벤토리 정보 저장
+                saved.cargo = worker.CaptureCargo();
+            }
+            else if (carrierController != null)
+            {
+                if (!carrierController.TryGetWorker(employee.EmployeeId, out CarrierWorker worker))
+                {
+                    return false;
+                }
+
+                // 운반 직원 인벤토리 정보 저장
+                saved.cargo = CaptureInventory(worker.CargoInventory);
+
+                // 운반 직원이 배정된 상태이고 현재 명령이 유효할 때
+                if (worker.HasCommand && worker.CurrentCommand.IsValid)
+                {
+                    CarrierCommand command = worker.CurrentCommand;
+                    PlacedBuilding targetBuilding = command.TargetBuilding.GetComponent<PlacedBuilding>();
+
+                    // 운반 직원에게 내려진 명령 저장
+                    saved.command = new CarrierCommandSaveData
+                    {
+                        commandType = command.Type,
+                        targetBuildingGuid = targetBuilding.PersistentId,
+                        assignedRecipeId = command.AssignedRecipe.RecipeId
+                    };
+                }
+            }
+
+            // 타겟 시설에 직원 데이터 추가
+            target.employees.Add(saved);
+        }
+
+        return true;
+    }
+
+    private bool RestoreEmployeeEntries(
+        PlacedBuilding building, 
+        FacilitySaveData savedFacility, 
+        List<PendingEmployeeRestore> pending)
+    {
+        if (building.Data.BuildingTag != BuildingTag.Employee || !building.IsComplete)
+        {
+            return true;
+        }
+
+        if (!employeeManager.TryRegisterBuildingOnLoad(building))
+        {
+            return false;
+        }
+
+        if (savedFacility.employees == null)
+        {
+            return true;
+        }
+
+        bool success = true;
+
+        foreach (EmployeeSaveData savedEmployee in savedFacility.employees)
+        {
+            if (savedEmployee == null ||
+                !employeeManager.TryRestoreEmployee(building, out EmployeeRuntimeData employee))
+            {
+                success = false;
+                continue;
+            }
+
+            pending.Add(new PendingEmployeeRestore
+            {
+                building = building,
+                employee = employee,
+                saved = savedEmployee
+            });
+        }
+
+        return success;
+    }
+
+    private IEnumerator RestoreEmployeeState(
+        List<PendingEmployeeRestore> pending, 
+        Dictionary<string, PlacedBuilding> buildingsByGuid)
+    {
+        yield return null;
+
+        foreach (PendingEmployeeRestore entry in pending)
+        {
+            if (entry == null ||
+                entry.building == null ||
+                entry.employee == null ||
+                entry.saved == null)
+            {
+                continue;
+            }
+
+            if (entry.building.TryGetComponent(out HunterBuildingController hunterController))
+            {
+                if (hunterController.TryGetWorker(entry.employee.EmployeeId, out HunterWorker hunter))
+                {
+                    hunter.RestoreCargo(entry.saved.cargo, itemDatabase);
+                }
+
+                continue;
+            }
+
+            if (!entry.building.TryGetComponent(out CarrierEmployeeBuildingController carrierController) ||
+                !carrierController.TryGetWorker(entry.employee.EmployeeId, out CarrierWorker carrier))
+            {
+                continue;
+            }
+
+            RestoreInventory(entry.saved.cargo ?? new InventorySaveData(),
+                carrier.CargoInventory);
+
+            ProductionBuilding commandTarget = null;
+
+            if (entry.saved.command != null &&
+                buildingsByGuid.TryGetValue(
+                    entry.saved.command.targetBuildingGuid,
+                    out PlacedBuilding targetBuilding))
+            {
+                targetBuilding.TryGetComponent(out commandTarget);
+            }
+
+            carrier.ResumeAfterLoad(entry.saved.command, commandTarget);
+        }
     }
     #endregion
 
