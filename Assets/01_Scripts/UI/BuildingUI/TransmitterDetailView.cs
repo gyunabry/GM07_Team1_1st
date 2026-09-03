@@ -137,7 +137,7 @@ public class TransmitterDetailView : BuildingDetailView
             }
 
             // 유효한 아이템을 슬롯 하나에 연결
-            itemViews[slotIndex].Bind(entry, storageDecomposition);
+            itemViews[slotIndex].Bind(entry, currentInventory, storageDecomposition);
             slotIndex++;
         }
 

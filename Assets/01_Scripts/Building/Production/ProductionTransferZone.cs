@@ -5,9 +5,14 @@ using UnityEngine;
 
 public class ProductionTransferZone : MonoBehaviour
 {
+    [Header("생산 시설 설정")]
     [SerializeField] private ProductionBuilding productionBuilding;
     [SerializeField] private float transferInterval = 0.1f;
     [SerializeField] private LayerMask playerLayer;
+
+    [Header("전송 효과")]
+    [SerializeField] private ItemTransferEffect transferEffectPrefab;
+    [SerializeField] private Transform transferAnchor;
 
     private PlayerInventory currentPlayer;
     private Coroutine transferCoroutine;
@@ -97,19 +102,21 @@ public class ProductionTransferZone : MonoBehaviour
         TryTransferOutput(player);
     }
 
-    private int TryTransferInput(ItemInventory sourceInventory)
-    {
-        RecipeDataSO recipe = productionBuilding.SelectedRecipe;
+    // 기획 수정으로 인해 안 쓰는 메서드
+    // 추후 재사용 가능성 고려해 삭제 X
+    //private int TryTransferInput(ItemInventory sourceInventory)
+    //{
+    //    RecipeDataSO recipe = productionBuilding.SelectedRecipe;
 
-        if (recipe == null || recipe.Input == null) return 0;
+    //    if (recipe == null || recipe.Input == null) return 0;
 
-        // 플레이어의 인벤토리에서 Input Inventory로 레시피에 해당하는 재료를 1개 이동
-        return sourceInventory.TransferTo(
-            productionBuilding.InputInventory, 
-            recipe.Input, 
-            1
-        );
-    }
+    //    // 플레이어의 인벤토리에서 Input Inventory로 레시피에 해당하는 재료를 1개 이동
+    //    return sourceInventory.TransferTo(
+    //        productionBuilding.InputInventory, 
+    //        recipe.Input, 
+    //        1
+    //    );
+    //}
 
     private int TryTransferOutput(PlayerInventory player)
     {
@@ -118,11 +125,25 @@ public class ProductionTransferZone : MonoBehaviour
         if (outputItem == null) return 0;
 
         // 산출물 인벤토리에서 플레이어 인벤토리로 산출물을 1개 이동
-        return productionBuilding.OutputInventory.TransferTo(
+        int moved = productionBuilding.OutputInventory.TransferTo(
             player.Inventory,
             outputItem,
-            1
-        );
+            1);
+
+        // 실제 이동량이 1개 이상이라면 
+        if (moved > 0)
+        {
+            Transform source = transferAnchor != null ? transferAnchor : transform;
+
+            ItemTransferEffect.Play(
+                transferEffectPrefab,
+                outputItem.Icon,
+                source.position,    // 생산 시설 출발
+                player.TransferAnchor
+            );     // 플레이어 도착
+        }
+
+        return moved;
     }
 
     private int TryTransferFromTransmitter()

@@ -334,6 +334,37 @@ Transform:
   - {fileID: 3716450351369181084}
   m_Father: {fileID: 1694295960140826187}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4299291124502057386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7820679125495172590}
+  m_Layer: 12
+  m_Name: TransferAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7820679125495172590
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4299291124502057386}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1694295960140826187}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4379322799211307012
 GameObject:
   m_ObjectHideFlags: 0
@@ -1074,7 +1105,7 @@ GameObject:
   - component: {fileID: 851658902391898009}
   - component: {fileID: 1119394745067593728}
   m_Layer: 12
-  m_Name: Collider
+  m_Name: TransferZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1133,6 +1164,8 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
+  transferEffectPrefab: {fileID: 8469898518912321821, guid: 2f7669aea79fe764d835147b2b18d49a, type: 3}
+  transferAnchor: {fileID: 7820679125495172590}
 --- !u!1 &7437105359199679208
 GameObject:
   m_ObjectHideFlags: 0
@@ -1173,6 +1206,7 @@ Transform:
   - {fileID: 3930410399307874733}
   - {fileID: 1871250395386672213}
   - {fileID: 423538140310428795}
+  - {fileID: 7820679125495172590}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!208 &8437319850643907391

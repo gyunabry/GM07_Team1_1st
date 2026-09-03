@@ -63,8 +63,10 @@ public class Transmitter : MonoBehaviour
     }
 
     // 플레이어, 사냥 직원의 인벤토리에서 호출해 재료를 받는 메서드
-    public int TryReceiveOne(ItemInventory sourceInventory)
+    public int TryReceiveOne(ItemInventory sourceInventory, out ItemDataSO receivedItem)
     {
+        receivedItem = null;
+
         if (!CanOperate || 
             sourceInventory == null || 
             inventory == null || 
@@ -77,7 +79,14 @@ public class Transmitter : MonoBehaviour
 
         if (material == null) return 0;
 
-        return sourceInventory.TransferTo(inventory, material, 1);
+        int moved = sourceInventory.TransferTo(inventory, material, 1);
+
+        if (moved > 0)
+        {
+            receivedItem = material;
+        }
+
+        return moved;
     }
 
     private IEnumerator TransferCo()
