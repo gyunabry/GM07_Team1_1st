@@ -298,6 +298,7 @@ public sealed class CustomerController : MonoBehaviour
         // 주문 재료를 모두 차감한 뒤에만 돈과 경험치를 함께 지급한다.
         currency.GrantReward(finalMoney, finalExp);
         runtimeData.CompletePayment();
+        Checkout?.NotifyPaymentCompleted();
         return true;
     }
 

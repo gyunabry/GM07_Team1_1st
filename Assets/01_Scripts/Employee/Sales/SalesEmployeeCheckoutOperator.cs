@@ -18,6 +18,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
     private ShopCheckout checkout;
     private GameObject operatorObject;
     private EmployeeWorkProgressHUD operatorProgressHud;
+    private SalesEmployeeAnimationController operatorAnimationController;
     private bool registeredByThisComponent;
 
     private void Awake()
@@ -55,6 +56,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         employeeManager.SalesPaymentTimeReductionChanged += ApplySalesPaymentTimeReduction;
         employeeManager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
         checkout.PaymentProgressChanged += HandlePaymentProgressChanged;
+        checkout.PaymentCompleted += HandlePaymentCompleted;
         RefreshPaymentDuration();
 
         if (placedBuilding.IsComplete)
@@ -81,6 +83,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         if (checkout != null)
         {
             checkout.PaymentProgressChanged -= HandlePaymentProgressChanged;
+            checkout.PaymentCompleted -= HandlePaymentCompleted;
         }
 
         RemoveOperator();
@@ -189,6 +192,11 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
 
         EnsureCheckoutOperatorComponents(operatorObject);
         operatorProgressHud = operatorObject.GetComponent<EmployeeWorkProgressHUD>();
+        operatorAnimationController = operatorObject.GetComponent<SalesEmployeeAnimationController>();
+        if (operatorAnimationController == null)
+        {
+            operatorAnimationController = operatorObject.AddComponent<SalesEmployeeAnimationController>();
+        }
     }
 
     private Vector3 GetOperatorPosition()
@@ -224,10 +232,13 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         Destroy(operatorObject);
         operatorObject = null;
         operatorProgressHud = null;
+        operatorAnimationController = null;
     }
 
     private void HandlePaymentProgressChanged(float normalizedProgress)
     {
+        operatorAnimationController?.SetSelling(normalizedProgress >= 0f);
+
         if (operatorProgressHud == null)
         {
             return;
@@ -240,5 +251,10 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         }
 
         operatorProgressHud.ShowProgress(normalizedProgress);
+    }
+
+    private void HandlePaymentCompleted()
+    {
+        operatorAnimationController?.PlaySaleCompleted();
     }
 }
