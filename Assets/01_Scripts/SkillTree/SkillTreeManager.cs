@@ -182,6 +182,7 @@ public class SkillTreeManager : MonoBehaviour
         {
             itemCollector.ResetRangeBonus();
         }
+        effectContext.customerSpawnManager.ResetSpawnIntervalReductionPercent();
 
         BeginEffectsRebuild();
     }
