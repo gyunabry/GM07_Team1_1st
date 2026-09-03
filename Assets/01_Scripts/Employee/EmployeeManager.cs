@@ -32,6 +32,7 @@ public sealed class EmployeeManager : MonoBehaviour
     private float carrierItemTransferTimeReductionPercent;
     private float allEmployeeProcessingSpeedIncreasePercent;
     private int carrierCarryingCapacityBonus;
+    private int allEmployeeCarryingCapacityBonus;
     private float allEmployeeMovementSpeedIncreasePercent;
     private CurrencySystem currencySystem;
 
@@ -54,11 +55,11 @@ public sealed class EmployeeManager : MonoBehaviour
     public float CarrierItemTransferTimeReductionPercent => carrierItemTransferTimeReductionPercent;
     public float AllEmployeeProcessingSpeedIncreasePercent => allEmployeeProcessingSpeedIncreasePercent;
     public float AllEmployeeMovementSpeedIncreasePercent => allEmployeeMovementSpeedIncreasePercent;
-    public int HunterCarryingCapacityBonus => hunterCarryingCapacityBonus;
+    public int HunterCarryingCapacityBonus => hunterCarryingCapacityBonus + allEmployeeCarryingCapacityBonus;
     public int HunterEmployeeCount => GetHiredEmployeeCount(EmployeeRole.Hunter);
     public int CarrierEmployeeCount => GetHiredEmployeeCount(EmployeeRole.Carrier);
 
-    public int CarrierCarryingCapacityBonus => carrierCarryingCapacityBonus;
+    public int CarrierCarryingCapacityBonus => carrierCarryingCapacityBonus + allEmployeeCarryingCapacityBonus;
     public void SetHunterAttackDamageIncreasePercent(float percent)
     {
         hunterAttackDamageIncreasePercent = Mathf.Max(0f, percent);
@@ -87,7 +88,7 @@ public sealed class EmployeeManager : MonoBehaviour
     public void SetHunterCarryingCapacityBonus(int amount)
     {
         hunterCarryingCapacityBonus = Mathf.Max(0, amount);
-        HunterCarryingCapacityBonusChanged?.Invoke(hunterCarryingCapacityBonus);
+        HunterCarryingCapacityBonusChanged?.Invoke(HunterCarryingCapacityBonus);
     }
 
     public void SetCarrierItemTransferTimeReductionPercent(float percent)
@@ -110,7 +111,23 @@ public sealed class EmployeeManager : MonoBehaviour
     public void SetCarrierCarryingCapacityBonus(int amount)
     {
         carrierCarryingCapacityBonus = Mathf.Max(0, amount);
-        CarrierCarryingCapacityBonusChanged?.Invoke(carrierCarryingCapacityBonus);
+        CarrierCarryingCapacityBonusChanged?.Invoke(CarrierCarryingCapacityBonus);
+    }
+
+    public void SetAllEmployeeCarryingCapacityBonus(int amount)
+    {
+        allEmployeeCarryingCapacityBonus = Mathf.Max(0, amount);
+        HunterCarryingCapacityBonusChanged?.Invoke(HunterCarryingCapacityBonus);
+        CarrierCarryingCapacityBonusChanged?.Invoke(CarrierCarryingCapacityBonus);
+    }
+
+    public void ResetCarryingCapacityBonuses()
+    {
+        hunterCarryingCapacityBonus = 0;
+        carrierCarryingCapacityBonus = 0;
+        allEmployeeCarryingCapacityBonus = 0;
+        HunterCarryingCapacityBonusChanged?.Invoke(HunterCarryingCapacityBonus);
+        CarrierCarryingCapacityBonusChanged?.Invoke(CarrierCarryingCapacityBonus);
     }
 
 

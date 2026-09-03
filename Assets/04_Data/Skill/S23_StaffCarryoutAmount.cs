@@ -12,7 +12,6 @@ public class S23_StaffCarryoutAmount : SkillEffectSO
         }
 
         int capacityBonus = Mathf.Max(0, Mathf.RoundToInt(skillData.value[nowLevel]));
-        context.employeeManager.SetHunterCarryingCapacityBonus(capacityBonus);
-        context.employeeManager.SetCarrierCarryingCapacityBonus(capacityBonus);
+        context.employeeManager.SetAllEmployeeCarryingCapacityBonus(capacityBonus);
     }
 }

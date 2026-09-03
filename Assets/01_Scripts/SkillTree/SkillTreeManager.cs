@@ -183,6 +183,8 @@ public class SkillTreeManager : MonoBehaviour
             itemCollector.ResetRangeBonus();
         }
 
+        effectContext.employeeManager?.ResetCarryingCapacityBonuses();
+
         BeginEffectsRebuild();
     }
 
