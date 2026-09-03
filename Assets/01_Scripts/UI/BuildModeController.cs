@@ -19,6 +19,9 @@ public class BuildModeController : MonoBehaviour
     [Header("배치 시스템")]
     [SerializeField] private PlacementSystem placementSystem;
 
+    [Header("배치 모드 닫기 버튼")]
+    [SerializeField] private Button exitButton;
+
     [Header("편집 모드 버튼")]
     [SerializeField] private Button editModeButton;
     [SerializeField] private Button sellModeButton;
@@ -106,20 +109,6 @@ public class BuildModeController : MonoBehaviour
         anim = null;
     }
 
-    public void ToggleBuildMode()
-    {
-        if (IsBuildMode)
-        {
-            AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
-            CloseBuildMode();
-        }
-        else
-        {
-            AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
-            OpenBuildMode();
-        }
-    }
-
     public void OpenBuildMode()
     {
         if (IsBuildMode) return;
@@ -128,6 +117,9 @@ public class BuildModeController : MonoBehaviour
         {
             cameraModeController?.EnterEdgeScroll(activeArea.CameraBounds);
         }
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
+        exitButton.gameObject.SetActive(true);
 
         IsBuildMode = true;
         placementSystem.SetBuildModeActive(true);
@@ -154,6 +146,9 @@ public class BuildModeController : MonoBehaviour
 
         cameraModeController?.FollowPlayer();
         activeArea = null;
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
+        exitButton.gameObject.SetActive(false);
 
         IsBuildMode = false;
         placementSystem.SetBuildModeActive(false);
