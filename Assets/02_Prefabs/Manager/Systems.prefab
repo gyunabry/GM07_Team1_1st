@@ -818,10 +818,12 @@ MonoBehaviour:
     employeeData: {fileID: 11400000, guid: 10a6e090f7c20ee4e99820664bb38122, type: 2}
     maxEmployees: 5
     automaticHireCount: 1
+    additionalHireCosts: [100, 200, 300, 400]
   - buildingId: B11
     employeeData: {fileID: 11400000, guid: fbddff4d63c778e449f4ee90a82c31ef, type: 2}
     maxEmployees: 20
     automaticHireCount: 1
+    additionalHireCosts: [100, 200, 300, 400, 500]
 --- !u!1 &8921850648760782774
 GameObject:
   m_ObjectHideFlags: 0

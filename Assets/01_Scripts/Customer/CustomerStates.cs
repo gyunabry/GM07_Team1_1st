@@ -79,6 +79,7 @@ public sealed class CustomerIdleState : ICustomerState
     public void Enter()
     {
         controller.StopAtCheckout();
+        controller.Checkout?.ClearPaymentProgress();
         controller.SubscribeInventoryChanged(OnInventoryChanged);
         controller.SubscribeOperatorPresenceChanged(OnOperatorPresenceChanged);
         paymentElapsed = 0f;
@@ -107,12 +108,14 @@ public sealed class CustomerIdleState : ICustomerState
         {
             paymentElapsed = 0f;
             paymentReady = false;
+            controller.Checkout?.ClearPaymentProgress();
             return;
         }
 
         if (!paymentReady)
         {
             paymentElapsed += UnityEngine.Time.deltaTime;
+            controller.Checkout?.SetPaymentProgress(paymentElapsed / controller.PaymentDuration);
             if (paymentElapsed < controller.PaymentDuration) return;
 
             paymentReady = true;
@@ -127,7 +130,7 @@ public sealed class CustomerIdleState : ICustomerState
             TryAutoPayment();
         }
     }
-    public void Exit() { controller.UnsubscribeInventoryChanged(OnInventoryChanged); controller.UnsubscribeOperatorPresenceChanged(OnOperatorPresenceChanged); }
+    public void Exit() { controller.Checkout?.ClearPaymentProgress(); controller.UnsubscribeInventoryChanged(OnInventoryChanged); controller.UnsubscribeOperatorPresenceChanged(OnOperatorPresenceChanged); }
     private void OnInventoryChanged() { inventoryChanged = true; }
     private void OnOperatorPresenceChanged() { operatorPresenceChanged = true; }
     private void TryAutoPayment()

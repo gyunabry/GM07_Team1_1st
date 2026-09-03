@@ -34,5 +34,22 @@ public sealed class HunterCargo
         }
     }
 
+    public bool TryGetFirstItem(out ItemDataSO item, out int amount)
+    {
+        foreach (KeyValuePair<ItemDataSO, int> entry in amounts)
+        {
+            if (entry.Key != null && entry.Value > 0)
+            {
+                item = entry.Key;
+                amount = entry.Value;
+                return true;
+            }
+        }
+
+        item = null;
+        amount = 0;
+        return false;
+    }
+
     public void Clear() { amounts.Clear(); TotalAmount = 0; }
 }

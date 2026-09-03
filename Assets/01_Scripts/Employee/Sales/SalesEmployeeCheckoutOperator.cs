@@ -17,6 +17,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
     private PlacedBuilding placedBuilding;
     private ShopCheckout checkout;
     private GameObject operatorObject;
+    private EmployeeWorkProgressHUD operatorProgressHud;
     private bool registeredByThisComponent;
 
     private void Awake()
@@ -53,6 +54,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         employeeManager.EmployeeRemoved += HandleEmployeeChanged;
         employeeManager.SalesPaymentTimeReductionChanged += ApplySalesPaymentTimeReduction;
         employeeManager.AllEmployeeProcessingSpeedIncreaseChanged += ApplyAllEmployeeProcessingSpeedIncrease;
+        checkout.PaymentProgressChanged += HandlePaymentProgressChanged;
         RefreshPaymentDuration();
 
         if (placedBuilding.IsComplete)
@@ -74,6 +76,11 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
             employeeManager.EmployeeRemoved -= HandleEmployeeChanged;
             employeeManager.SalesPaymentTimeReductionChanged -= ApplySalesPaymentTimeReduction;
             employeeManager.AllEmployeeProcessingSpeedIncreaseChanged -= ApplyAllEmployeeProcessingSpeedIncrease;
+        }
+
+        if (checkout != null)
+        {
+            checkout.PaymentProgressChanged -= HandlePaymentProgressChanged;
         }
 
         RemoveOperator();
@@ -181,6 +188,7 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
         operatorObject.name = OperatorObjectName;
 
         EnsureCheckoutOperatorComponents(operatorObject);
+        operatorProgressHud = operatorObject.GetComponent<EmployeeWorkProgressHUD>();
     }
 
     private Vector3 GetOperatorPosition()
@@ -215,5 +223,22 @@ public sealed class SalesEmployeeCheckoutOperator : MonoBehaviour
 
         Destroy(operatorObject);
         operatorObject = null;
+        operatorProgressHud = null;
+    }
+
+    private void HandlePaymentProgressChanged(float normalizedProgress)
+    {
+        if (operatorProgressHud == null)
+        {
+            return;
+        }
+
+        if (normalizedProgress < 0f)
+        {
+            operatorProgressHud.Hide();
+            return;
+        }
+
+        operatorProgressHud.ShowProgress(normalizedProgress);
     }
 }

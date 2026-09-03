@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(PlacedBuilding))]
 public sealed class HunterBuildingController : MonoBehaviour
 {
+    private const float SpawnPointSampleDistance = 1f;
     [SerializeField] private HunterWorker hunterPrefab;
     [SerializeField] private Transform homePoint;
 
@@ -12,6 +14,7 @@ public sealed class HunterBuildingController : MonoBehaviour
     private EmployeeManager manager; 
     private PlacedBuilding building;
     private HuntingFieldContext areaContext;
+    private Transform fallbackHomePoint;
 
     public bool TryGetEmployeeStats(out float attackDamage, out float movementSpeed, out int carryingCapacity)
     {
@@ -124,7 +127,9 @@ public sealed class HunterBuildingController : MonoBehaviour
 
         if (worker == null) return;
 
-        if (!worker.TryPlaceAt(homePoint))
+        Transform workerHomePoint = ResolveWorkerHomePoint(worker);
+
+        if (workerHomePoint == null || !worker.TryPlaceAt(workerHomePoint))
         {
             Debug.LogWarning($"HomePoint에 배치 실패했습니다.");
 
@@ -138,7 +143,7 @@ public sealed class HunterBuildingController : MonoBehaviour
             e, 
             areaContext,
             transmitter, 
-            homePoint
+            workerHomePoint
         );
         ApplyHunterSkillModifiers(worker);
         worker.SetAllEmployeeProcessingSpeedIncreasePercent(manager.AllEmployeeProcessingSpeedIncreasePercent);
@@ -217,6 +222,65 @@ public sealed class HunterBuildingController : MonoBehaviour
             manager.HunterAttackRangeIncreasePercent);
     }
 
+    private Transform ResolveWorkerHomePoint(HunterWorker worker)
+    {
+        if (worker == null || homePoint == null)
+        {
+            return null;
+        }
+
+        int areaMask = worker.AgentAreaMask;
+
+        if (IsReachableSpawnPoint(homePoint.position, areaMask, out _))
+        {
+            return homePoint;
+        }
+
+        Vector3 preferredOffset = homePoint.position - transform.position;
+        preferredOffset.y = 0f;
+
+        float distance = preferredOffset.magnitude;
+        Vector3 forward = distance > 0.01f ? preferredOffset / distance : transform.forward;
+        forward.y = 0f;
+        forward.Normalize();
+
+        if (forward.sqrMagnitude < 0.01f)
+        {
+            forward = Vector3.forward;
+        }
+
+        distance = Mathf.Max(1f, distance);
+
+        Vector3 right = new Vector3(forward.z, 0f, -forward.x);
+        Vector3[] candidateDirections = { forward, right, -forward, -right };
+
+        foreach (Vector3 direction in candidateDirections)
+        {
+            Vector3 candidate = transform.position + direction * distance;
+            candidate.y = homePoint.position.y;
+
+            if (!IsReachableSpawnPoint(candidate, areaMask, out NavMeshHit hit))
+            {
+                continue;
+            }
+
+            if (fallbackHomePoint == null)
+            {
+                fallbackHomePoint = new GameObject("HunterFallbackHomePoint").transform;
+                fallbackHomePoint.SetParent(transform, true);
+            }
+
+            fallbackHomePoint.SetPositionAndRotation(hit.position, Quaternion.LookRotation(direction));
+            return fallbackHomePoint;
+        }
+
+        return null;
+    }
+
+    private bool IsReachableSpawnPoint(Vector3 candidate, int areaMask, out NavMeshHit spawnHit)
+    {
+        return NavMesh.SamplePosition(candidate, out spawnHit, SpawnPointSampleDistance, areaMask);
+    }
     private bool TryResolveHuntingArea()
     {
         BuildableArea assignedArea = building.AssignedArea;

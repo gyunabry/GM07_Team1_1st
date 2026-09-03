@@ -58,6 +58,8 @@ public sealed class CarrierWorker : MonoBehaviour
     private int baseCarryingCapacity;
     private int skillCarryingCapacityBonus;
     private float movementSpeedIncreasePercent;
+    private EmployeeWorkProgressHUD workProgressHud;
+    private EmployeeCargoHUD cargoHud;
 
     public EmployeeRuntimeData Employee => employee;
     public ItemInventory CargoInventory => cargoInventory;
@@ -72,6 +74,9 @@ public sealed class CarrierWorker : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
+        cargoHud = GetComponent<EmployeeCargoHUD>();
+        cargoInventory.InventoryChanged += RefreshCargoHud;
         baseMovementSpeed = movementSpeed;
         baseCarryingCapacity = carryingCapacity;
     }
@@ -172,6 +177,7 @@ public sealed class CarrierWorker : MonoBehaviour
         }
 
         EnterDormant();
+        RefreshCargoHud();
     }
 
     /// <summary>
@@ -254,6 +260,7 @@ public sealed class CarrierWorker : MonoBehaviour
         taskState = TaskState.Idle;
         pickupElapsed = 0f;
         deliveryElapsed = 0f;
+        RefreshCargoHud();
     }
 
     private void BeginCommandCycle()
@@ -274,6 +281,20 @@ public sealed class CarrierWorker : MonoBehaviour
 
     private void ProcessSource()
     {
+        ItemDataSO itemToPickUp = command.Type == CarrierCommandType.Material
+            ? command.AssignedRecipe.Input
+            : command.AssignedRecipe.Output;
+        ItemInventory sourceInventory = command.Type == CarrierCommandType.Material
+            ? materialStorage
+            : command.TargetBuilding.OutputInventory;
+
+        if (itemToPickUp == null || sourceInventory == null || sourceInventory.GetAmount(itemToPickUp) <= 0)
+        {
+            pickupElapsed = 0f;
+            SetWorkingState(EmployeeWorkState.Idle);
+            return;
+        }
+
         if (!TryCompletePickup())
         {
             return;
@@ -521,14 +542,18 @@ public sealed class CarrierWorker : MonoBehaviour
     {
         SetWorkingState(EmployeeWorkState.Working);
         pickupElapsed += Time.deltaTime;
-        return pickupElapsed >= Mathf.Max(0.05f, pickupDuration * (1f - pickupTimeReductionPercent / 100f));
+        float duration = Mathf.Max(0.05f, pickupDuration * (1f - pickupTimeReductionPercent / 100f));
+        workProgressHud?.ShowProgress(pickupElapsed / duration);
+        return pickupElapsed >= duration;
     }
 
     private bool TryCompleteDelivery()
     {
         SetWorkingState(EmployeeWorkState.Working);
         deliveryElapsed += Time.deltaTime;
-        return deliveryElapsed >= Mathf.Max(0.05f, deliveryDuration * (1f - deliveryTimeReductionPercent / 100f));
+        float duration = Mathf.Max(0.05f, deliveryDuration * (1f - deliveryTimeReductionPercent / 100f));
+        workProgressHud?.ShowProgress(deliveryElapsed / duration);
+        return deliveryElapsed >= duration;
     }
 
     private void TransferAllCargo(ItemInventory destination)
@@ -570,7 +595,22 @@ public sealed class CarrierWorker : MonoBehaviour
 
     private void SetWorkingState(EmployeeWorkState state)
     {
+        if (state != EmployeeWorkState.Working)
+        {
+            workProgressHud?.Hide();
+        }
+
         employeeManager?.TrySetWorkState(employee, state);
+    }
+
+    private void OnDestroy()
+    {
+        cargoInventory.InventoryChanged -= RefreshCargoHud;
+    }
+
+    private void RefreshCargoHud()
+    {
+        cargoHud?.Refresh(cargoInventory);
     }
 
     private void SetCommandClearDestination(ItemInventory destination, Transform destinationPoint)

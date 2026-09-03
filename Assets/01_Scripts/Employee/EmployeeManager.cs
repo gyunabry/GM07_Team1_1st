@@ -155,7 +155,7 @@ public sealed class EmployeeManager : MonoBehaviour
             return false;
         }
 
-        return TryRegisterBuilding(building, profile.EmployeeData, profile.MaxEmployees, profile.AutomaticHireCount);
+        return TryRegisterBuilding(building, profile.EmployeeData, profile.MaxEmployees, profile.AutomaticHireCount, profile);
     }
 
     /// <summary>
@@ -197,13 +197,35 @@ public sealed class EmployeeManager : MonoBehaviour
             return false;
         }
 
+        int hireCost = registeredBuilding.GetNextAdditionalHireCost();
+        CurrencySystem currentCurrencySystem = currencySystem != null ? currencySystem : CurrencySystem.Instance;
+
+        if (hireCost > 0 && (currentCurrencySystem == null || !currentCurrencySystem.TrySpendMoney(hireCost)))
+        {
+            return false;
+        }
+
         employee = Hire(registeredBuilding);
         return true;
     }
 
+    public int GetNextHireCost(PlacedBuilding building)
+    {
+        return TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding)
+            ? registeredBuilding.GetNextAdditionalHireCost()
+            : 0;
+    }
+
     public bool CanHireAdditional(PlacedBuilding building)
     {
-        return TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) && CanHire(registeredBuilding);
+        if (!TryGetRegisteredBuilding(building, out RegisteredBuilding registeredBuilding) || !CanHire(registeredBuilding))
+        {
+            return false;
+        }
+
+        int hireCost = registeredBuilding.GetNextAdditionalHireCost();
+        CurrencySystem currentCurrencySystem = currencySystem != null ? currencySystem : CurrencySystem.Instance;
+        return hireCost <= 0 || (currentCurrencySystem != null && currentCurrencySystem.Money >= hireCost);
     }
 
     public int GetHiringLimit(EmployeeRole role)
@@ -335,14 +357,14 @@ public sealed class EmployeeManager : MonoBehaviour
         return false;
     }
 
-    private bool TryRegisterBuilding(PlacedBuilding building, EmployeeDataSO employeeData, int maxEmployees, int automaticHireCount)
+    private bool TryRegisterBuilding(PlacedBuilding building, EmployeeDataSO employeeData, int maxEmployees, int automaticHireCount, EmployeeBuildingProfile profile = null)
     {
         if (building == null || employeeData == null || registeredBuildings.ContainsKey(building.GetInstanceID()))
         {
             return false;
         }
 
-        RegisteredBuilding registeredBuilding = new(building, employeeData, maxEmployees);
+        RegisteredBuilding registeredBuilding = new(building, employeeData, maxEmployees, automaticHireCount, profile);
         registeredBuildings.Add(building.GetInstanceID(), registeredBuilding);
 
         int hireCount = Mathf.Clamp(automaticHireCount, 0, registeredBuilding.MaxEmployees);
@@ -394,7 +416,7 @@ public sealed class EmployeeManager : MonoBehaviour
             return false;
         }
 
-        return TryRegisterBuilding(building, profile.EmployeeData, profile.MaxEmployees, 0);
+        return TryRegisterBuilding(building, profile.EmployeeData, profile.MaxEmployees, 0, profile);
     }
 
     public bool TryRestoreEmployee(PlacedBuilding assignedBuilding, out EmployeeRuntimeData employee)
@@ -434,13 +456,23 @@ public sealed class EmployeeManager : MonoBehaviour
         public PlacedBuilding Building { get; }
         public EmployeeDataSO EmployeeData { get; }
         public int MaxEmployees { get; }
+        public int AutomaticHireCount { get; }
+        public EmployeeBuildingProfile Profile { get; }
         public List<EmployeeRuntimeData> Employees { get; } = new();
 
-        public RegisteredBuilding(PlacedBuilding building, EmployeeDataSO employeeData, int maxEmployees)
+        public RegisteredBuilding(PlacedBuilding building, EmployeeDataSO employeeData, int maxEmployees, int automaticHireCount, EmployeeBuildingProfile profile)
         {
             Building = building;
             EmployeeData = employeeData;
             MaxEmployees = Mathf.Max(1, maxEmployees);
+            AutomaticHireCount = profile != null ? profile.AutomaticHireCount : Mathf.Clamp(automaticHireCount, 0, MaxEmployees);
+            Profile = profile;
+        }
+
+        public int GetNextAdditionalHireCost()
+        {
+            int additionalHireIndex = Mathf.Max(0, Employees.Count - AutomaticHireCount);
+            return Profile != null ? Profile.GetAdditionalHireCost(additionalHireIndex) : 0;
         }
     }
 }
