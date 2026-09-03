@@ -7,6 +7,8 @@ public sealed class HunterWorker : MonoBehaviour
 {
     private const float NavMeshSampleDistance = 1f;
     private const float MonsterPathFailureGraceDuration = 1.5f;
+    private const float DefaultStoppingDistance = 1.5f;
+    private const float DeliveryStoppingDistance = 1.2f;
 
     private enum State { Idle, Trace, Attack, Get, Store }
     private static readonly Dictionary<Enemy, HunterWorker> MonsterOwners = new();
@@ -174,7 +176,7 @@ public sealed class HunterWorker : MonoBehaviour
         itemDeliveryElapsed = 0f;
 
         ApplyStatModifiers(); 
-        agent.stoppingDistance = 1.5f; 
+        agent.stoppingDistance = DefaultStoppingDistance;
         manager.TrySetWorkState(employee, EmployeeWorkState.Idle);
     }
 
@@ -355,7 +357,7 @@ public sealed class HunterWorker : MonoBehaviour
         if (Distance(transmitter.DepositPoint.position) > 1.3f)
         {
             itemDeliveryElapsed = 0f;
-            Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving);
+            Move(transmitter.DepositPoint.position, EmployeeWorkState.Moving, DeliveryStoppingDistance);
             return;
         }
 
@@ -500,10 +502,11 @@ public sealed class HunterWorker : MonoBehaviour
         if (agent != null) agent.speed = movementSpeed;
         cargo.SetCapacity(carryingCapacity);
     }
-    private bool Move(Vector3 p, EmployeeWorkState s)
+    private bool Move(Vector3 p, EmployeeWorkState s, float stoppingDistance = DefaultStoppingDistance)
     {
         if (!CanReach(p)) return false;
         NavMesh.SamplePosition(p, out NavMeshHit hit, 3f, agent.areaMask);
+        agent.stoppingDistance = stoppingDistance;
         agent.isStopped = false;
         agent.SetDestination(hit.position);
         manager.TrySetWorkState(employee, s);
