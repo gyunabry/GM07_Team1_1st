@@ -103,7 +103,7 @@ public class ProductionTransferZone : MonoBehaviour
     }
 
     // 기획 수정으로 인해 안 쓰는 메서드
-    // 추후 재사용 가능성으로 삭제 X
+    // 추후 재사용 가능성 고려해 삭제 X
     //private int TryTransferInput(ItemInventory sourceInventory)
     //{
     //    RecipeDataSO recipe = productionBuilding.SelectedRecipe;

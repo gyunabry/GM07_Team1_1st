@@ -5,22 +5,31 @@ public class StorageDecomposition : MonoBehaviour
 {
     [SerializeField] StorageDecompositionValuePopup valuePopup;
     [SerializeField] CurrencySystem currencySystem;
-    [SerializeField] CounterInventory inventory;
     
-    public void OnClickDecompositionButton(int itemValue, ItemDataSO itemData)
+    public void OnClickDecompositionButton(ItemInventory sourceInventory, ItemDataSO itemData)
     {
-        valuePopup.OpenPopup(itemValue, (selectedValue) =>
+        if (sourceInventory == null || itemData == null || valuePopup == null || currencySystem == null)
         {
-            DecompositinonItem(selectedValue, itemData);
+            return;
+        }
+
+        int maxCount = sourceInventory.GetAmount(itemData);
+        if (maxCount <= 0) return;
+
+        valuePopup.OpenPopup(maxCount, selectedValue =>
+        {
+            DecompositinonItem(sourceInventory, selectedValue, itemData);
         });
     }
-    private void DecompositinonItem(int value, ItemDataSO itemData)
+
+    private void DecompositinonItem(ItemInventory sourceInventory, int value, ItemDataSO itemData)
     {
-        if(value != 0)
+        if (value != 0)
         {
-            int totalExp = (itemData.Exp * value) / 100;
+            int totalExp = (itemData.Exp * value) / 10;
             currencySystem.GrantExperience(totalExp);
-            inventory.Inventory.Remove(itemData, value);
+
+            sourceInventory.Remove(itemData, value);
         }
     }
 }

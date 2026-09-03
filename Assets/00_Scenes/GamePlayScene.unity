@@ -1023,17 +1023,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 887422296634722608, guid: f799aac3f6deae746b2d493cd64f0f22, type: 3}
   m_PrefabInstance: {fileID: 1847961223}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &719494337 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8565966294825179077, guid: 1a2b3f65ba58b6a4fbf1a2e6034388ca, type: 3}
-  m_PrefabInstance: {fileID: 1070830142}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b97798ffc919ec2428c72b82ce5406e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CounterInventory
 --- !u!1 &783788860 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4102759576890047757, guid: f799aac3f6deae746b2d493cd64f0f22, type: 3}
@@ -1386,7 +1375,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StorageDecomposition
   valuePopup: {fileID: 387689940}
   currencySystem: {fileID: 29208155}
-  inventory: {fileID: 719494337}
 --- !u!114 &1284114345 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2684076012043019128, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
@@ -3292,9 +3280,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1744276424}
     - target: {fileID: 6160409413427423363, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: slotCount
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6160409413427423363, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: storageDecomposition
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1199466888}
     - target: {fileID: 6178852556267084010, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: placementSystem
       value: 
@@ -3400,9 +3392,13 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1411673944}
     - target: {fileID: 6740921140819799746, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: slotCount
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 6740921140819799746, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: storageDecomposition
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1199466888}
     - target: {fileID: 6823143339636185152, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1

@@ -12,6 +12,7 @@ public class SalesInventoryItemView : MonoBehaviour
 
     private Button button;
 
+    private ItemInventory sourceInventory;
     private StorageDecomposition storageDecomposition;
     private ItemDataSO currentItem;
     private int currentAmount;
@@ -37,7 +38,7 @@ public class SalesInventoryItemView : MonoBehaviour
         }
     }
 
-    public void Bind(InventoryEntry entry, StorageDecomposition sd = null)
+    public void Bind(InventoryEntry entry, ItemInventory inventory, StorageDecomposition sd = null)
     {
         if (entry == null || entry.IsEmpty || entry.Item == null)
         {
@@ -45,6 +46,7 @@ public class SalesInventoryItemView : MonoBehaviour
             return;
         }
 
+        sourceInventory = inventory;
         storageDecomposition = sd;
         currentItem = entry.Item;
         int amount = Mathf.Max(0, entry.Amount);
@@ -64,6 +66,7 @@ public class SalesInventoryItemView : MonoBehaviour
     // 해당 슬롯을 비우는 메서드
     public void SetEmpty()
     {
+        sourceInventory = null;
         storageDecomposition = null;
         currentItem = null;
         currentAmount = 0;
@@ -80,12 +83,15 @@ public class SalesInventoryItemView : MonoBehaviour
 
     private void HandleClick()
     {
-        if (storageDecomposition == null || currentItem == null || currentAmount <= 0)
+        if (storageDecomposition == null || 
+            sourceInventory == null || 
+            currentItem == null || 
+            currentAmount <= 0)
         {
             return;
         }
 
-        storageDecomposition.OnClickDecompositionButton(currentAmount, currentItem);
+        storageDecomposition.OnClickDecompositionButton(sourceInventory, currentItem);
     }
 
     // 1,000을 넘어가면 k로 표시하는 메서드
