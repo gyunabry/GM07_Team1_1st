@@ -184,6 +184,8 @@ public class SkillTreeManager : MonoBehaviour
         }
         effectContext.customerSpawnManager.ResetSpawnIntervalReductionPercent();
 
+        effectContext.employeeManager?.ResetCarryingCapacityBonuses();
+
         BeginEffectsRebuild();
     }
 

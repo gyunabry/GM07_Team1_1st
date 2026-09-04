@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,32 +10,85 @@ public sealed class EmployeeWorkProgressHUD : MonoBehaviour
 {
     private GameObject hudInstance;
     private Slider progressSlider;
+    private Image itemIcon;
+    private TMP_Text amountText;
+    private bool isWorking;
+    private bool hasCargo;
     private bool isPositionAdjusted;
 
     public void ShowProgress(float normalizedProgress)
     {
+        ShowProgress(normalizedProgress, null, 0, 0);
+    }
+
+    public void ShowProgress(float normalizedProgress, ItemInventory inventory)
+    {
+        if (inventory != null)
+        {
+            foreach (InventoryEntry entry in inventory.Entries)
+            {
+                if (entry == null || entry.IsEmpty)
+                {
+                    continue;
+                }
+
+                ShowProgress(normalizedProgress, entry.Item, inventory.TotalAmount, inventory.Capacity);
+                return;
+            }
+        }
+
+        ShowProgress(normalizedProgress, null, 0, 0);
+    }
+
+    public void ShowProgress(float normalizedProgress, ItemDataSO item, int totalAmount, int capacity)
+    {
+        isWorking = true;
         EnsureHud();
         if (hudInstance == null)
         {
             return;
         }
 
-        if (!hudInstance.activeSelf)
-        {
-            hudInstance.SetActive(true);
-        }
-
         if (progressSlider != null)
         {
+            progressSlider.gameObject.SetActive(true);
             progressSlider.SetValueWithoutNotify(Mathf.Clamp01(normalizedProgress));
         }
+
+        UpdateCargo(item, totalAmount, capacity);
     }
 
     public void Hide()
     {
+        isWorking = false;
+        UpdateHudVisibility();
+    }
+
+    public void RefreshCargo(ItemInventory inventory)
+    {
+        if (inventory != null)
+        {
+            foreach (InventoryEntry entry in inventory.Entries)
+            {
+                if (entry == null || entry.IsEmpty)
+                {
+                    continue;
+                }
+
+                RefreshCargo(entry.Item, inventory.TotalAmount, inventory.Capacity);
+                return;
+            }
+        }
+
+        RefreshCargo(null, 0, 0);
+    }
+
+    public void RefreshCargo(ItemDataSO item, int totalAmount, int capacity)
+    {
+        EnsureHud();
         if (hudInstance != null)
         {
-            hudInstance.SetActive(false);
+            UpdateCargo(item, totalAmount, capacity);
         }
     }
 
@@ -64,8 +118,19 @@ public sealed class EmployeeWorkProgressHUD : MonoBehaviour
         }
 
         progressSlider = hudInstance.GetComponentInChildren<Slider>(true);
-        SetChildActive("Inven_Icon", false);
-        SetChildActive("Inven_Text", false);
+        Transform[] children = hudInstance.GetComponentsInChildren<Transform>(true);
+        for (int i = 0; i < children.Length; i++)
+        {
+            if (children[i].name == "Inven_Icon")
+            {
+                itemIcon = children[i].GetComponent<Image>();
+            }
+            else if (children[i].name == "Inven_Text")
+            {
+                amountText = children[i].GetComponent<TMP_Text>();
+            }
+        }
+
         hudInstance.SetActive(false);
     }
 
@@ -83,15 +148,60 @@ public sealed class EmployeeWorkProgressHUD : MonoBehaviour
         return null;
     }
 
-    private void SetChildActive(string childName, bool isActive)
+    private void UpdateCargo(ItemDataSO item, int totalAmount, int capacity)
     {
-        Transform[] children = hudInstance.GetComponentsInChildren<Transform>(true);
-        for (int i = 0; i < children.Length; i++)
+        hasCargo = item != null && totalAmount > 0;
+        if (item != null && totalAmount > 0)
         {
-            if (children[i].name == childName)
+            if (itemIcon != null)
             {
-                children[i].gameObject.SetActive(isActive);
+                itemIcon.sprite = item.Icon;
+                itemIcon.enabled = itemIcon.sprite != null;
             }
+
+            if (amountText != null)
+            {
+                amountText.text = $"{totalAmount} / {Mathf.Max(0, capacity)}";
+            }
+
+            SetCargoVisible(true);
+            UpdateHudVisibility();
+            return;
+        }
+
+        SetCargoVisible(false);
+        UpdateHudVisibility();
+    }
+
+    private void SetCargoVisible(bool isVisible)
+    {
+        if (itemIcon != null)
+        {
+            itemIcon.gameObject.SetActive(isVisible);
+        }
+
+        if (amountText != null)
+        {
+            amountText.gameObject.SetActive(isVisible);
+        }
+    }
+
+    private void UpdateHudVisibility()
+    {
+        if (hudInstance == null)
+        {
+            return;
+        }
+
+        bool shouldShowHud = isWorking || hasCargo;
+        if (hudInstance.activeSelf != shouldShowHud)
+        {
+            hudInstance.SetActive(shouldShowHud);
+        }
+
+        if (progressSlider != null)
+        {
+            progressSlider.gameObject.SetActive(isWorking);
         }
     }
 }

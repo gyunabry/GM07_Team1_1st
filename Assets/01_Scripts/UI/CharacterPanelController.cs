@@ -36,6 +36,7 @@ public class CharacterPanelController : MonoBehaviour
 
     private PlayerInventory playerInventory;
     private PlayerItemCollector playerItemCollector;
+    private InputManager inputManager;
 
     private bool isOpen;
 
@@ -43,6 +44,8 @@ public class CharacterPanelController : MonoBehaviour
 
     private void Awake()
     {
+        inputManager = FindFirstObjectByType<InputManager>();
+
         if (player != null)
         {
             playerInventory = player.GetComponent<PlayerInventory>();
@@ -58,6 +61,11 @@ public class CharacterPanelController : MonoBehaviour
 
     private void OnEnable()
     {
+        if (inputManager != null)
+        {
+            inputManager.OnCancelPressed += Hide;
+        }
+
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp += HandleLevelUp;
@@ -83,6 +91,11 @@ public class CharacterPanelController : MonoBehaviour
 
     private void OnDisable()
     {
+        if (inputManager != null)
+        {
+            inputManager.OnCancelPressed -= Hide;
+        }
+
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp -= HandleLevelUp;

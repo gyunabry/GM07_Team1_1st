@@ -31,10 +31,10 @@ public sealed class CarrierWorker : MonoBehaviour
     }
 
     [SerializeField, Min(0.1f)] private float movementSpeed = 3.5f;
-    [SerializeField, Min(1)] private int carryingCapacity = 10;
+    [SerializeField, Min(1)] private int carryingCapacity = 5;
     [SerializeField, Min(0.05f)] private float stoppingDistance = 1.5f;
-    [SerializeField, Min(0.05f)] private float pickupDuration = 10f;
-    [SerializeField, Min(0.05f)] private float deliveryDuration = 10f;
+    [SerializeField, Min(0.05f)] private float pickupDuration = 1.5f;
+    [SerializeField, Min(0.05f)] private float deliveryDuration = 1.5f;
     [SerializeField] private ItemInventory cargoInventory = new();
 
     private NavMeshAgent agent;
@@ -59,7 +59,6 @@ public sealed class CarrierWorker : MonoBehaviour
     private int skillCarryingCapacityBonus;
     private float movementSpeedIncreasePercent;
     private EmployeeWorkProgressHUD workProgressHud;
-    private EmployeeCargoHUD cargoHud;
 
     public EmployeeRuntimeData Employee => employee;
     public ItemInventory CargoInventory => cargoInventory;
@@ -74,11 +73,16 @@ public sealed class CarrierWorker : MonoBehaviour
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
+        if (GetComponent<CarrierVisualMotionController>() == null)
+        {
+            gameObject.AddComponent<CarrierVisualMotionController>();
+        }
+
         workProgressHud = GetComponent<EmployeeWorkProgressHUD>();
-        cargoHud = GetComponent<EmployeeCargoHUD>();
         cargoInventory.InventoryChanged += RefreshCargoHud;
         baseMovementSpeed = movementSpeed;
         baseCarryingCapacity = carryingCapacity;
+        ApplyCarryingCapacity();
     }
 
     private void OnDisable()
@@ -204,7 +208,14 @@ public sealed class CarrierWorker : MonoBehaviour
     public void SetSkillCarryingCapacityBonus(int amount)
     {
         skillCarryingCapacityBonus = Mathf.Max(0, amount);
+        ApplyCarryingCapacity();
+    }
+
+    private void ApplyCarryingCapacity()
+    {
         carryingCapacity = Mathf.Max(1, baseCarryingCapacity + skillCarryingCapacityBonus);
+        cargoInventory.SetBaseCapacity(carryingCapacity);
+        RefreshCargoHud();
     }
 
     private void ApplyMovementSpeed()
@@ -543,7 +554,7 @@ public sealed class CarrierWorker : MonoBehaviour
         SetWorkingState(EmployeeWorkState.Working);
         pickupElapsed += Time.deltaTime;
         float duration = Mathf.Max(0.05f, pickupDuration * (1f - pickupTimeReductionPercent / 100f));
-        workProgressHud?.ShowProgress(pickupElapsed / duration);
+        workProgressHud?.ShowProgress(pickupElapsed / duration, cargoInventory);
         return pickupElapsed >= duration;
     }
 
@@ -552,7 +563,7 @@ public sealed class CarrierWorker : MonoBehaviour
         SetWorkingState(EmployeeWorkState.Working);
         deliveryElapsed += Time.deltaTime;
         float duration = Mathf.Max(0.05f, deliveryDuration * (1f - deliveryTimeReductionPercent / 100f));
-        workProgressHud?.ShowProgress(deliveryElapsed / duration);
+        workProgressHud?.ShowProgress(deliveryElapsed / duration, cargoInventory);
         return deliveryElapsed >= duration;
     }
 
@@ -610,7 +621,7 @@ public sealed class CarrierWorker : MonoBehaviour
 
     private void RefreshCargoHud()
     {
-        cargoHud?.Refresh(cargoInventory);
+        workProgressHud?.RefreshCargo(cargoInventory);
     }
 
     private void SetCommandClearDestination(ItemInventory destination, Transform destinationPoint)

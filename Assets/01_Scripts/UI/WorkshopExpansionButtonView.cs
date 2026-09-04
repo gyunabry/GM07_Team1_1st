@@ -18,6 +18,7 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text priceText;
     [SerializeField] private GameObject unavailableImage;
+    [SerializeField] private GameObject checkImage;         // 구매 완료된 확장 버튼에 표시할 체크 이미지
 
     [Header("색상")]
     [SerializeField] private Color availableColor = Color.white;
@@ -120,6 +121,11 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
         if (unavailableImage != null)
         {
             unavailableImage.SetActive(!status.CanPurchase);
+        }
+
+        if (checkImage != null)
+        {
+            checkImage.SetActive(status.HasReason(ExpansionBlockReason.AlreadyPurchase));
         }
     }
 } 

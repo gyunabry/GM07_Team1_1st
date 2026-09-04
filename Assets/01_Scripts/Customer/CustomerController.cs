@@ -81,6 +81,7 @@ public sealed class CustomerController : MonoBehaviour
 
     public event System.Action<CustomerController> ExitCompleted;
     public event System.Action<CustomerController, string> ExitFailed;
+    public event System.Action PaymentCompleted;
 
     private void Awake()
     {
@@ -298,6 +299,8 @@ public sealed class CustomerController : MonoBehaviour
         // 주문 재료를 모두 차감한 뒤에만 돈과 경험치를 함께 지급한다.
         currency.GrantReward(finalMoney, finalExp);
         runtimeData.CompletePayment();
+        PaymentCompleted?.Invoke();
+        Checkout?.NotifyPaymentCompleted();
         return true;
     }
 
