@@ -29,6 +29,7 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     private CarrierCommandService commandService;
     private CarrierCommandType currentType = CarrierCommandType.Material;
     private InputManager inputManager;
+    private TMP_Text[] carrierCountTexts;
 
     private bool isOpen;
 
@@ -37,6 +38,9 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
     private void Awake()
     {
         inputManager = FindFirstObjectByType<InputManager>();
+        carrierCountTexts = canvasGroup.GetComponentsInChildren<TMP_Text>(true)
+            .Where(text => text.name == "Amount_Text" && text.text.StartsWith("("))
+            .ToArray();
         materialButton.onClick.AddListener(() => SelectType(CarrierCommandType.Material));
         productButton.onClick.AddListener(() => SelectType(CarrierCommandType.Product));
         SetVisible(false);
@@ -154,6 +158,8 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
             row.Bind(buildings[index], currentType, commandService, GetTotalCarrierCount, RefreshRows);
             activeRows.Add(row);
         }
+
+        RefreshCarrierCount();
     }
 
     private void RefreshRows()
@@ -161,6 +167,22 @@ public sealed class CarrierCommandPanelView : MonoBehaviour
         foreach (CarrierCommandRowView row in activeRows)
         {
             if (row != null) row.Refresh();
+        }
+
+        RefreshCarrierCount();
+    }
+
+    private void RefreshCarrierCount()
+    {
+        int assignedCount = commandService != null ? commandService.GetAssignedWorkerCount() : 0;
+        int totalCount = GetTotalCarrierCount();
+
+        foreach (TMP_Text carrierCountText in carrierCountTexts)
+        {
+            if (carrierCountText != null)
+            {
+                carrierCountText.text = $"({assignedCount} / {totalCount})";
+            }
         }
     }
 
