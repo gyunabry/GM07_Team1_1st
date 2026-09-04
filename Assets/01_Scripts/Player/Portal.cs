@@ -135,6 +135,14 @@ public class Portal : InteractableBase
 
         agent.transform.rotation = arrivalPoint.rotation;
 
+        AudioManager.Instance.PlaySFX(ESFXType.Portal);
+
+        EBGMType nextBgm = interactionMode == PortalInteractionMode.WorkshopSelector
+            ? EBGMType.Atelier
+            : EBGMType.HuntingSpot;
+
+        AudioManager.Instance.PlayBGM(nextBgm);
+
         // 이동이 성공했을 때 공격 상태 전환
         onArrived?.Invoke();
 

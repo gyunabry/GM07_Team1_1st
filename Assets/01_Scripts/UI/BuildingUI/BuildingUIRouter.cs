@@ -23,6 +23,7 @@ public class BuildingUIRouter : MonoBehaviour
             }
 
             activeView = view;
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
             activeView.Open(building);
 
             return true;
@@ -35,6 +36,7 @@ public class BuildingUIRouter : MonoBehaviour
     public void Close()
     {
         if (activeView == null) return;
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
 
         activeView.Close();
         activeView = null;

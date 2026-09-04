@@ -74,6 +74,9 @@ public class AttackEquHud : MonoBehaviour
         closeButton2?.CloseSelector();
 
         layoutWidth.SetActive(true);
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
+
         SelectAttack();
     }
 
