@@ -49,6 +49,10 @@ public class SkillTreeManager : MonoBehaviour
                             state.skillLevel++;
                             AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
                         }
+                        else
+                        {
+                            AudioManager.Instance.PlaySFX(ESFXType.UI_ImpossibleClick);
+                        }
                     }
                     else if (!(skill.skillNeedMoney == 0))
                     {
@@ -58,6 +62,10 @@ public class SkillTreeManager : MonoBehaviour
                             {
                                 state.skillLevel++;
                                 AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+                            }
+                            else
+                            {
+                                AudioManager.Instance.PlaySFX(ESFXType.UI_ImpossibleClick);
                             }
                         }
                     }
