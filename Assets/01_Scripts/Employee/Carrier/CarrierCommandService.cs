@@ -69,6 +69,21 @@ public sealed class CarrierCommandService : MonoBehaviour
         return count;
     }
 
+    /// <summary>현재 운반 명령을 수행 중인 직원 수를 반환합니다.</summary>
+    public int GetAssignedWorkerCount()
+    {
+        int count = 0;
+        foreach (CarrierEmployeeBuildingController controller in controllers)
+        {
+            if (controller != null)
+            {
+                count += controller.GetAssignedWorkerCountInternal();
+            }
+        }
+
+        return count;
+    }
+
     /// <summary>
     /// 전송기 담당 시스템이 준비된 뒤 공용 재료 인벤토리와 작업 위치를 전달하는 API입니다.
     /// 서비스가 등록한 모든 운반 직원에게 즉시 적용합니다.

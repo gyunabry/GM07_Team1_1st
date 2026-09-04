@@ -180,6 +180,20 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         return count;
     }
 
+    internal int GetAssignedWorkerCountInternal()
+    {
+        int count = 0;
+        foreach (CarrierWorker worker in workers.Values)
+        {
+            if (worker != null && worker.HasCommand)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private void HandleConstructionCompleted(PlacedBuilding building)
     {
         if (building == placedBuilding && building.IsComplete)
