@@ -44,18 +44,25 @@ public class StorageDecompositionValuePopup : MonoBehaviour
 
         SetClamp(maxValue > 0 ? 1 : 0);
 
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
+
         gameObject.SetActive(true);
     }
     public void AdjustValue(int delta)
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+
         SetClamp(currentValue + delta);
     }
     public void SetMaxValue()
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+
         SetClamp(maxValue);
     }
     public void SetMinValue()
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
         SetClamp(0);
     }
     private void OnInputValueChanged(string text)
@@ -102,6 +109,7 @@ public class StorageDecompositionValuePopup : MonoBehaviour
     }
     public void ClosePopup()
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
         gameObject.SetActive(false);
     }
 }

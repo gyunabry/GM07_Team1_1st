@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("확장 데이터")]
     [SerializeField] private WorkshopExpansionDataSO expansionData;
@@ -23,6 +23,8 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
     [Header("색상")]
     [SerializeField] private Color availableColor = Color.white;
     [SerializeField] private Color unavailableColor = Color.red;
+
+    private ExpansionPurchaseStatus currentStatus;
 
     public WorkshopExpansionDataSO Data => expansionData;
 
@@ -101,6 +103,8 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
     {
         if (expansionData == null) return;
 
+        currentStatus = status;
+
         if (nameText != null)
         {
             nameText.color = status.CanPurchase
@@ -127,5 +131,21 @@ public class WorkshopExpansionButtonView : MonoBehaviour, IPointerEnterHandler, 
         {
             checkImage.SetActive(status.HasReason(ExpansionBlockReason.AlreadyPurchase));
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left ||
+            expansionData == null ||
+            currentStatus.CanPurchase)
+        {
+            return;
+        }
+
+        ESFXType sound = currentStatus.BlockReasons == ExpansionBlockReason.NotEnoughMoney
+            ? ESFXType.UI_LackGoods
+            : ESFXType.UI_ImpossibleClick;
+
+        AudioManager.Instance.PlaySFX(sound);
     }
 } 

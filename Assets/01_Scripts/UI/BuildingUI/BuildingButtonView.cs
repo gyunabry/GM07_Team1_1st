@@ -1,4 +1,5 @@
 using TMPro;
+using Unity.Android.Gradle.Manifest;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 // 각 하단 건물 버튼에 추가할 컴포넌트
 // IPointerEnterHandler, IPointerExitHandler를 구현해 툴팁 활성화/비활성화
 
-public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [Header("참조")]
     [SerializeField] private PlacementSystem placementSystem;
@@ -18,6 +19,7 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
 
     [Header("버튼 정보")]
     [SerializeField] private Button button;
+    [SerializeField] private Image buildingIcon;
     [SerializeField] private TMP_Text facilityName;
     [SerializeField] private TMP_Text facilityCount;
     [SerializeField] private TMP_Text facilityPrice;
@@ -112,6 +114,12 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
 
         if (facilityName != null) facilityName.text = buildingData.BuildingName;
 
+        if (buildingIcon != null)
+        {
+            buildingIcon.sprite = buildingData.BuildingIcon;
+            buildingIcon.enabled = true;
+        }
+
         if (facilityCount != null)
         {
             facilityCount.text = $"{status.CurrentCount} / {status.MaxCount}";
@@ -140,5 +148,25 @@ public class BuildingButtonView : MonoBehaviour, IPointerEnterHandler, IPointerE
         {
             unavailableImage.gameObject.SetActive(levelBlocked || moneyBlocked || limitBlocked);
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button != PointerEventData.InputButton.Left ||
+            buildingData == null ||
+            placementSystem == null)
+        {
+            return;
+        }
+
+        BuildingPurchaseStatus status = placementSystem.EvaluatePurchase(buildingData);
+
+        if (status.CanPurchase) return;
+
+        ESFXType sound = status.BlockReasons == PurchaseBlockReason.Money
+            ? ESFXType.UI_LackGoods
+            : ESFXType.ImpossibleBuild;
+
+        AudioManager.Instance.PlaySFX(sound);
     }
 }

@@ -107,6 +107,8 @@ public partial class PlacementSystem : MonoBehaviour
     // 버튼에 직접 연결해 사용
     public void StartPlacement(BuildingDataSO data)
     {
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+
         StartPurchasePlacement(data);
     }
 
@@ -209,6 +211,7 @@ public partial class PlacementSystem : MonoBehaviour
                 break;
         }
 
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Cancel);
         ChangeMode(PlacementMode.None);
     }
 

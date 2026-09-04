@@ -46,6 +46,8 @@ public class ProgressionSaveData
     public List<string> unlockedRecipeIds = new();
 
     public List<string> unlockedHuntingFieldIds = new();
+
+    public List<int> seenTutorialLevels = new();
 }
 
 [Serializable]
