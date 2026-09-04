@@ -13,7 +13,9 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
     public event Action<int, int> CurrencyChanged;
     public event Action<int> CurrencyChanged_Gold;
     public event Action<int> CurrencyChanged_EXP;
+
     public event Action LevelUp;
+    public event Action<int> LevelChanged;
 
     // DOTween 이벤트
     public event Action OnGoldChanged;
@@ -138,6 +140,7 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
             nowExperience -= needExp[level - 1];
             level++;
             LevelUp?.Invoke();
+            LevelChanged?.Invoke(level);
         }
     }
 
@@ -154,7 +157,11 @@ public sealed class CurrencySystem : MonoBehaviour, ICustomerCurrency
         // 최대 레벨은 경험치 테이블 개수 + 1 (인덱스)
         level = Mathf.Clamp(savedLevel, 1, needExp.Count + 1);
 
+        LevelChanged?.Invoke(level);
+
         CurrencyChanged?.Invoke(money, experience);
+        CurrencyChanged_Gold?.Invoke(money);
+        CurrencyChanged_EXP.Invoke(experience);
         OnGoldChanged?.Invoke();
     }
 }

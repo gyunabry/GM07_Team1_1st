@@ -62,7 +62,6 @@ public class Transmitter : MonoBehaviour
         transferCoroutine = null;
     }
 
-    // 플레이어, 사냥 직원의 인벤토리에서 호출해 재료를 받는 메서드
     public int TryReceiveOne(ItemInventory sourceInventory, out ItemDataSO receivedItem)
     {
         receivedItem = null;

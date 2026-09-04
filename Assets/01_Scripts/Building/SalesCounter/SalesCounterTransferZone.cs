@@ -95,6 +95,8 @@ public class SalesCounterTransferZone : MonoBehaviour
 
         if (moved > 0)
         {
+            AudioManager.Instance.PlaySFX(ESFXType.Inven_Supply);
+
             Transform destination = transferAnchor != null ? transferAnchor : transform;
 
             ItemTransferEffect.Play(

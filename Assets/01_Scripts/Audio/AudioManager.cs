@@ -169,7 +169,7 @@ public class AudioManager : MonoBehaviour
         sfxSource.PlayOneShot(data.clip, volume);
     }
 
-    public bool PlaySFX(ESFXType type, AudioSource source)
+    public bool PlayLoopSFX(ESFXType type, AudioSource source)
     {
         if (source == null)
         {
@@ -183,10 +183,28 @@ public class AudioManager : MonoBehaviour
             return false;
         }
 
+        if (source.isPlaying && source.loop && source.clip == data.clip)
+        {
+            return true;
+        }
+
+        source.Stop();
+        source.clip = data.clip;
+        source.loop = true;
         float volume = data.volume * sfxVolume * masterVolume;
-        source.PlayOneShot(data.clip, volume);
+        source.volume = volume;
+        source.Play();
 
         return true;
+    }
+
+    public void StopSFX(AudioSource source)
+    {
+        if (source == null) return;
+
+        source.Stop();
+        source.clip = null;
+        source.loop = false;
     }
 
     // UI : BGM º¼·ý Á¶Àý
