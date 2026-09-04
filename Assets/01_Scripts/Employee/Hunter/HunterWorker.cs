@@ -287,17 +287,21 @@ public sealed class HunterWorker : MonoBehaviour
     }
     private void Attack()
     {
-        if (!HasActiveMonsterTarget()) { ReleaseMonster(); RequestTargetSearch(); state = State.Idle; return; }
-        if (Distance(monster.transform.position) > attackRange) { state=State.Trace; return; }
+        if (!HasActiveMonsterTarget()) { ReleaseMonster(); RequestTargetSearch(); state = State.Idle; return;}
+        if (Distance(monster.transform.position) > attackRange) { state=State.Trace; return;}
         Stop(EmployeeWorkState.Working);
         if (Time.time < nextAttack) return;
-        if (monster.CurrentHp <= attackDamage)
+
+        float extraDamage = monster.enemyData.Hp * 0.05f;
+        float totalDamage = attackDamage + extraDamage;
+
+        if (monster.CurrentHp <= totalDamage)
         {
             awaitingKillerDrop = true;
             killerDropWaitUntil = Time.time + 3f;
             KillerDropReservations[this] = monster.transform.position;
         }
-        monster.TakeDamage(attackDamage);
+        monster.TakeDamage(totalDamage);
         monster.stateController.ChangeState(new HunterFleeState(monster, transform));
         if (attackEffect != null) Instantiate(attackEffect, monster.transform.position, Quaternion.identity);
         nextAttack=Time.time+attackInterval;
