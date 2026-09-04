@@ -128,7 +128,11 @@ public sealed class CustomerSpawnManager : MonoBehaviour
     // 스킬 효과가 레벨별 최종 방문 간격 감소율(예: 5, 10)을 전달한다.
     public void SetSpawnIntervalReductionPercent(float percent)
     {
-        visitIntervalReductionPercent = Mathf.Clamp(percent, 0f, 100f);
+        visitIntervalReductionPercent += Mathf.Clamp(percent, 0f, 100f);
+    }
+    public void ResetSpawnIntervalReductionPercent()
+    {
+        visitIntervalReductionPercent = 0f;
     }
 
     // 전역 입·출구와 주문만 구성한다. 계산대는 CustomerCheckoutStation이 자동 등록한다.

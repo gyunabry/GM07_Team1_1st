@@ -5,6 +5,6 @@ public class S12_StaffAttackUpgrade : SkillEffectSO
 {
     public override void SkillEffect(SkillEffectContext context, SkillDataSO skillData, int nowLevel)
     {
-        context.employeeManager.SetHunterAttackRangeIncreasePercent(skillData.value[nowLevel]);
+        context.employeeManager.SetHunterAttackDamageIncreasePercent(skillData.value[nowLevel]);
     }
 }

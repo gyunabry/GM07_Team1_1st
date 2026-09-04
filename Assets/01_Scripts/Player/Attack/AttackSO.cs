@@ -20,7 +20,7 @@ public class AttackSO : ScriptableObject
         ad.forward = player.transform.forward;
 
         ad.attackDamage = (player.attackDamage + player.baseAttackDamage) * (attackDamage + upgrade.damage);
-        ad.attackSpeed = (attackSpeed + upgrade.attackSpeed + player.baseAttackSpeed) + player.attackSpeed;
+        ad.attackSpeed = (attackSpeed + upgrade.attackSpeed)/(player.baseAttackSpeed + player.attackSpeed);
         ad.distance = distance + upgrade.distance + player.baseAttackDistance + player.attackDistance;
         ad.projectileCount = projectileCount + upgrade.projectileCount;
         ad.spreadAngle = spreadAngle;

@@ -1,24 +1,13 @@
-using System;
-using Unity.Mathematics;
-using Unity.VisualScripting;
+
 using UnityEngine;
 
 public class AttackBase : IAttack
 {
-    public void MagicArrow(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer)
+    public void MagicArrow(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer, Collider collider)
     {
-        Collider[] enemy = Physics.OverlapSphere(data.position, data.distance, layer);
-
-        
         AttackPoint ap = poolManager.GetPool<AttackPoint>();
-        if (!(enemy.Length == 0))
-        {
-            if (enemy[0] != null)
-            {
-                Enemy thisEnemy = enemy[0].gameObject.GetComponent<Enemy>();
-                ap.enemy = thisEnemy;
-            }
-        }
+        Enemy thisEnemy = collider.gameObject.GetComponent<Enemy>();
+        ap.enemy = thisEnemy;
         ap.attackDamage = AttackDamage;
         ap.transform.position = new Vector3(data.position.x, data.position.y + 0.7f, data.position.z);
         Quaternion baseRota = Quaternion.LookRotation(data.direction);
@@ -93,9 +82,9 @@ public abstract class AttackDeco : IAttack
     {
         this.attack = attack;
     }
-    public virtual void MagicArrow(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer)
+    public virtual void MagicArrow(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer, Collider collider)
     {
-        this.attack.MagicArrow(AttackDamage, data, poolManager, layer);
+        this.attack.MagicArrow(AttackDamage, data, poolManager, layer, collider);
     }
     public virtual void FireCircle(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer)
     {
@@ -131,7 +120,7 @@ public class AttackData
 }
 public interface IAttack
 {
-    public void MagicArrow(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer);
+    public void MagicArrow(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer, Collider collider);
     public void FireCircle(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer);
     public void ChasingSickle(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer);
     public void LightningRay(float AttackDamage, AttackData data, PoolManager poolManager, LayerMask layer);
