@@ -60,6 +60,8 @@ public sealed class CarrierWorker : MonoBehaviour
     private float movementSpeedIncreasePercent;
     private EmployeeWorkProgressHUD workProgressHud;
 
+    private bool returningCargoAfterLoad;
+
     public EmployeeRuntimeData Employee => employee;
     public ItemInventory CargoInventory => cargoInventory;
     public float MovementSpeed => movementSpeed;
@@ -98,6 +100,12 @@ public sealed class CarrierWorker : MonoBehaviour
     {
         if (!isInitialized)
         {
+            return;
+        }
+
+        if (returningCargoAfterLoad)
+        {
+            TryReturnUnassignedCargo();
             return;
         }
 
@@ -172,6 +180,9 @@ public sealed class CarrierWorker : MonoBehaviour
         isInitialized = employee != null;
         pickupElapsed = 0f;
         deliveryElapsed = 0f;
+
+        cargoInventory.Clear();
+        returningCargoAfterLoad = false;
 
         if (agent != null)
         {
@@ -271,6 +282,10 @@ public sealed class CarrierWorker : MonoBehaviour
         taskState = TaskState.Idle;
         pickupElapsed = 0f;
         deliveryElapsed = 0f;
+
+        cargoInventory.Clear();
+        returningCargoAfterLoad = false;
+
         RefreshCargoHud();
     }
 
@@ -281,13 +296,37 @@ public sealed class CarrierWorker : MonoBehaviour
             return;
         }
 
-        if (command.Type == CarrierCommandType.Material)
+        //if (command.Type == CarrierCommandType.Material)
+        //{
+        //    MoveTo(materialStoragePoint, TaskState.MoveToSource);
+        //    return;
+        //}
+
+        //MoveTo(command.TargetBuilding.transform, TaskState.MoveToSource);
+
+        if (cargoInventory.TotalAmount > 0)
         {
-            MoveTo(materialStoragePoint, TaskState.MoveToSource);
+            Transform destination =
+                command.Type == CarrierCommandType.Material
+                    ? command.TargetBuilding.transform
+                    : FindNearestSalesCounter()?.transform;
+
+            if (destination == null)
+            {
+                SetWorkingState(EmployeeWorkState.Idle);
+                return;
+            }
+
+            MoveTo(destination, TaskState.MoveToDestination);
             return;
         }
 
-        MoveTo(command.TargetBuilding.transform, TaskState.MoveToSource);
+        Transform source =
+            command.Type == CarrierCommandType.Material
+                ? materialStoragePoint
+                : command.TargetBuilding.transform;
+
+        MoveTo(source, TaskState.MoveToSource);
     }
 
     private void ProcessSource()
@@ -765,4 +804,88 @@ public sealed class CarrierWorker : MonoBehaviour
 
         MoveTo(activeDestination, moveState);
     }
+
+    #region 데이터 복원
+    public bool ResumeAfterLoad(CarrierCommandSaveData saved, ProductionBuilding targetBuilding)
+    {
+        bool validCommand =
+            saved != null &&
+            targetBuilding != null &&
+            targetBuilding.SelectedRecipe != null &&
+            targetBuilding.SelectedRecipe.RecipeId ==
+                saved.assignedRecipeId;
+
+        command = validCommand
+            ? new CarrierCommand(saved.commandType, targetBuilding)
+            : default;
+
+        hasCommand = validCommand;
+        taskState = TaskState.Idle;
+        pickupElapsed = 0f;
+        deliveryElapsed = 0f;
+        activeDestination = null;
+        commandClearDestination = null;
+        commandClearDestinationPoint = null;
+
+        returningCargoAfterLoad = !hasCommand && cargoInventory.TotalAmount > 0;
+
+        if (hasCommand)
+        {
+            ActivateAtHome();
+            BeginCommandCycle();
+        }
+        else if (returningCargoAfterLoad)
+        {
+            ActivateAtHome();
+        }
+        else
+        {
+            EnterDormant();
+        }
+
+        return saved == null || validCommand;
+    }
+
+    private void TryReturnUnassignedCargo()
+    {
+        for (int i = cargoInventory.Entries.Count - 1; i >= 0; i--)
+        {
+            InventoryEntry entry = cargoInventory.Entries[i];
+
+            if (entry == null || entry.IsEmpty)
+            {
+                continue;
+            }
+
+            ItemInventory destination = null;
+
+            if (entry.Item.ItemType == ItemType.Material)
+            {
+                destination = materialStorage;
+            }
+            else
+            {
+                destination = FindNearestSalesCounter()?.Inventory;
+            }
+
+            if (destination != null)
+            {
+                cargoInventory.TransferTo(
+                    destination,
+                    entry.Item,
+                    entry.Amount);
+            }
+        }
+
+        // 목적지가 없거나 가득 찼으면 다음 프레임에 다시 시도
+        if (cargoInventory.TotalAmount > 0)
+        {
+            SetWorkingState(EmployeeWorkState.Idle);
+            return;
+        }
+
+        returningCargoAfterLoad = false;
+        MoveToHome();
+    }
+    #endregion
 }
