@@ -33,7 +33,11 @@ public class SkillTreeManager : MonoBehaviour
         {
             if(state.skillID == skill.skillID)
             {
-                if (state.Locked) return;
+                if (state.Locked)
+                {
+                    AudioManager.Instance.PlaySFX(ESFXType.UI_ImpossibleClick);
+                    return;
+                }
                 
                 if(state.skillLevel >= 0)
                 {
@@ -43,6 +47,11 @@ public class SkillTreeManager : MonoBehaviour
                         {
                             effectContext.player.skillPoint -= skill.skillNeedSkillPoint;
                             state.skillLevel++;
+                            AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+                        }
+                        else
+                        {
+                            AudioManager.Instance.PlaySFX(ESFXType.UI_ImpossibleClick);
                         }
                     }
                     else if (!(skill.skillNeedMoney == 0))
@@ -52,12 +61,18 @@ public class SkillTreeManager : MonoBehaviour
                             if (effectContext.currencySystem.TrySpendMoney(skill.skillNeedMoney))
                             {
                                 state.skillLevel++;
+                                AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+                            }
+                            else
+                            {
+                                AudioManager.Instance.PlaySFX(ESFXType.UI_ImpossibleClick);
                             }
                         }
                     }
                     else if(!(skill.skillMaxLevel <= state.skillLevel))
                     {
                         state.skillLevel++;
+                        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
                     }
                 }
             }

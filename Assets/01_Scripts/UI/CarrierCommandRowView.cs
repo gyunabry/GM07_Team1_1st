@@ -60,13 +60,19 @@ public sealed class CarrierCommandRowView : MonoBehaviour
 
     private void AssignOne()
     {
-        commandService.TryAssignCommand(commandType, building);
-        changed();
+        if (commandService.TryAssignCommand(commandType, building))
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+        }
+        changed?.Invoke();
     }
-
+    
     private void ClearOne()
     {
-        commandService.TryClearOneCommand(commandType, building);
-        changed();
+        if (commandService.TryClearOneCommand(commandType, building))
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Cancel);
+        }
+        changed?.Invoke();
     }
 }
