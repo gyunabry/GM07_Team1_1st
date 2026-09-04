@@ -5,7 +5,7 @@ public class TransmitterTransferZone : MonoBehaviour
 {
     [Header("전송 설정")]
     [SerializeField] private Transmitter transmitter;
-    [SerializeField] private float inputInterval = 0.05f;
+    [SerializeField] private float inputInterval = 0.1f;
     [SerializeField] private LayerMask sourceLayer;
 
     [Header("전송 연출")]
@@ -63,6 +63,8 @@ public class TransmitterTransferZone : MonoBehaviour
                 item != null &&
                     currentProviderComponent is PlayerInventory player)
             {
+                AudioManager.Instance.PlaySFX(ESFXType.Inven_Supply);
+
                 Transform source = player.TransferAnchor != null 
                     ? player.TransferAnchor
                     : player.transform;

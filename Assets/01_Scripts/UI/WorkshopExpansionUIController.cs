@@ -27,6 +27,13 @@ public class WorkshopExpansionUIController : MonoBehaviour
 
     private void OnEnable()
     {
+        Refresh();
+    }
+
+    private void Start()
+    {
+        currencySystem = CurrencySystem.Instance;
+
         foreach (WorkshopExpansionButtonView view in buttonViews)
         {
             if (view != null)
@@ -54,19 +61,12 @@ public class WorkshopExpansionUIController : MonoBehaviour
             currencySystem.LevelUp += HandleLevelUp;
         }
 
-        if (currencySystem != null) 
+        if (currencySystem != null)
         {
             currencySystem.CurrencyChanged += HandleCurrencyChanged;
             currencySystem.CurrencyChanged_Gold += HandleGoldChanged;
             currencySystem.CurrencyChanged_EXP += HandleExpChanged;
         }
-
-        Refresh();
-    }
-
-    private void Start()
-    {
-        currencySystem = CurrencySystem.Instance;
 
         Refresh();
     }

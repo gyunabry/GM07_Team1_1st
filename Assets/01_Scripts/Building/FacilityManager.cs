@@ -248,4 +248,10 @@ public class FacilityManager : MonoBehaviour
             }
         }
     }
+
+    public void ResetPlacedCountOnLoad()
+    {
+        placedCounts.Clear();
+        productionPlacedCount = 0;
+    }
 }

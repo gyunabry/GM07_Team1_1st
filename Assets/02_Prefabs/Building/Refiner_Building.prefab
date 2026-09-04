@@ -484,11 +484,11 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: 10fb7d0fbc9e945e0bd8ae02d8936351, type: 3}
-  m_Type: 1
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.991
+  m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -1180,6 +1180,7 @@ GameObject:
   - component: {fileID: 2752481641754463068}
   - component: {fileID: 5945800676341958782}
   - component: {fileID: 5576231481575070866}
+  - component: {fileID: 2220469919299709420}
   m_Layer: 12
   m_Name: Refiner_Building
   m_TagString: Untagged
@@ -1296,3 +1297,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PersistentGuid
   value: 
+--- !u!114 &2220469919299709420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7437105359199679208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2c2db836117c6143afd0902929b148c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProductionAudioController
+  audioSource: {fileID: 8348411111548718354}
+  operationSfx: 13

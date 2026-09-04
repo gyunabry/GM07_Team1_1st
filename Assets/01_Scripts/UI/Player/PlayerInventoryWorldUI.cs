@@ -5,9 +5,14 @@ using UnityEngine.UI;
 
 public class PlayerInventoryWorldUI : MonoBehaviour
 {
+    [Header("HUD 설정")]
     [SerializeField] private Canvas canvas;
     [SerializeField] private TMP_Text countText;
     [SerializeField] private Image InventoryIcon;
+
+    [Header("글자 색상")]
+    [SerializeField] private Color defaultColor = Color.white;
+    [SerializeField] private Color maxColor = Color.red;
 
     private ItemInventory inventory;
 
@@ -51,7 +56,18 @@ public class PlayerInventoryWorldUI : MonoBehaviour
 
         if (totalAmount <= 0 || countText == null) return;
 
-        countText.text = $"{inventory.TotalAmount} / {inventory.Capacity}";
+        if (inventory.RemainingCapacity == 0)
+        {
+            countText.text = "MAX";
+            countText.color = maxColor;
+            countText.fontSize = 0.4f;
+        }
+        else
+        {
+            countText.text = $"{inventory.TotalAmount} / {inventory.Capacity}";
+            countText.color = defaultColor;
+            countText.fontSize = 0.325f;
+        }  
     }
 
     private void SetVisible(bool visible)
