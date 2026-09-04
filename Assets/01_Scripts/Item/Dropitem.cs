@@ -129,6 +129,8 @@ public class Dropitem : MonoBehaviour, ICollectable
 
         if (added <= 0) return false;
 
+        AudioManager.Instance.PlaySFX(ESFXType.Inven_Get);
+
         Amount -= added;
 
         if (Amount <= 0)

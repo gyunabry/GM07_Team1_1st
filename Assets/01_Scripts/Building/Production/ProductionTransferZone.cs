@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 // 재료 납품과 완성품 수령 담당
@@ -96,27 +97,37 @@ public class ProductionTransferZone : MonoBehaviour
 
         if (isPlayerInteracting)
         {
-            TryTransferFromTransmitter();
+            if (TryTransferInput(player.Inventory) == 0)
+            {
+                TryTransferFromTransmitter();
+            }
         }
 
         TryTransferOutput(player);
     }
 
-    // 기획 수정으로 인해 안 쓰는 메서드
-    // 추후 재사용 가능성 고려해 삭제 X
-    //private int TryTransferInput(ItemInventory sourceInventory)
-    //{
-    //    RecipeDataSO recipe = productionBuilding.SelectedRecipe;
+    // 실제 전송된 수를 반환
+    // 1 : 성공 / 0 : 실패
+    private int TryTransferInput(ItemInventory sourceInventory)
+    {
+        RecipeDataSO recipe = productionBuilding.SelectedRecipe;
 
-    //    if (recipe == null || recipe.Input == null) return 0;
+        if (recipe == null || recipe.Input == null) return 0;
 
-    //    // 플레이어의 인벤토리에서 Input Inventory로 레시피에 해당하는 재료를 1개 이동
-    //    return sourceInventory.TransferTo(
-    //        productionBuilding.InputInventory, 
-    //        recipe.Input, 
-    //        1
-    //    );
-    //}
+        // 플레이어의 인벤토리에서 Input Inventory로 레시피에 해당하는 재료를 1개 이동
+        int moved = sourceInventory.TransferTo(
+            productionBuilding.InputInventory,
+            recipe.Input,
+            1);
+
+        // 실제 전송된 아이템이 있을 때 납품 효과음 재생
+        if (moved > 0) 
+        {
+            AudioManager.Instance.PlaySFX(ESFXType.Inven_Supply);
+        }
+
+        return moved;
+    }
 
     private int TryTransferOutput(PlayerInventory player)
     {
@@ -141,6 +152,8 @@ public class ProductionTransferZone : MonoBehaviour
                 source.position,    // 생산 시설 출발
                 player.TransferAnchor
             );     // 플레이어 도착
+
+            AudioManager.Instance.PlaySFX(ESFXType.Inven_Get);
         }
 
         return moved;
