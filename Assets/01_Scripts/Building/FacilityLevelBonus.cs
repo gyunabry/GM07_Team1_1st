@@ -21,30 +21,32 @@ public class FacilityLevelBonus : MonoBehaviour
     {
         if (CurrencySystem.Instance != null)
         {
-            CurrencySystem.Instance.LevelUp += HandleLevelUp;
+            CurrencySystem.Instance.LevelChanged += HandleLevelChanged;
         }
 
-        ApplyCurrentLevelLimits();
+        ApplyCurrentLevelLimits(CurrencySystem.Instance.Level);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (CurrencySystem.Instance != null)
         {
-            CurrencySystem.Instance.LevelUp -= HandleLevelUp;
+            CurrencySystem.Instance.LevelChanged -= HandleLevelChanged;
         }
     }
 
-    private void HandleLevelUp()
+    private void HandleLevelChanged(int currentLevel)
     {
-        ApplyCurrentLevelLimits();
+        ApplyCurrentLevelLimits(currentLevel);
     }
 
-    private void ApplyCurrentLevelLimits()
+    private void ApplyCurrentLevelLimits(int level)
     {
         if (buildingDatabase == null) return;
 
-        LevelFacilityLimit currentLimits = FindLimits(CurrencySystem.Instance.Level);
+        Debug.Log($"레벨별 시설 제한 복구 완료. 복구 기준 레벨: {level}");
+
+        LevelFacilityLimit currentLimits = FindLimits(level);
 
         if (currentLimits == null) return;
 
