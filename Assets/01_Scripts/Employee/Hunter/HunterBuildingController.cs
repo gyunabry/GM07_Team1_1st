@@ -311,4 +311,9 @@ public sealed class HunterBuildingController : MonoBehaviour
 
         Register();
     }
+
+    public bool TryGetWorker(int employeesId, out HunterWorker worker)
+    {
+        return workers.TryGetValue(employeesId, out worker) && worker != null;
+    }
 }

@@ -586,4 +586,25 @@ public sealed class HunterWorker : MonoBehaviour
 
         return true;
     }
+
+    public InventorySaveData CaptureCargo()
+    {
+        return cargo.CaptureSaveData();
+    }
+
+    public bool RestoreCargo(InventorySaveData saved, ItemDatabaseSO itemDatabase)
+    {
+        ReleaseTargets();
+
+        bool success = cargo.RestoreSaveData(saved, itemDatabase);
+
+        itemPickupElapsed = 0f;
+        itemDeliveryElapsed = 0f;
+
+        // 복구 후 소지품이 있으면 전송기 납품 작업 우선 시작
+        state = cargo.TotalAmount > 0 ? State.Store : State.Idle;
+
+        RefreshCargoHud();
+        return success;
+    }
 }

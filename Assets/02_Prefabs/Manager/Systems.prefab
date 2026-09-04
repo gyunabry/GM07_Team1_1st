@@ -58,6 +58,8 @@ MonoBehaviour:
   economyModifierService: {fileID: 8261667966200680934}
   spawnInterval: 5
   spawnOnStart: 1
+  refineOrderWeight: 0.8
+  heatOrderWeight: 0.2
 --- !u!1 &1170767559675279026
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,6 +231,52 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 71522eaa431b9de418cd4e6d40f9fbab, type: 2}
   - {fileID: 11400000, guid: 484250e9a4521214a9e1067e4e72fe0e, type: 2}
   - {fileID: 11400000, guid: 3a8a26d4d16719943b3d5aa124e9d46a, type: 2}
+--- !u!1 &1445221885822580445
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1446817341567564715}
+  - component: {fileID: 344130870075781800}
+  m_Layer: 0
+  m_Name: DecompositionSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1446817341567564715
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445221885822580445}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 684614707514807010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &344130870075781800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445221885822580445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a20875ed786cdfe4ab4285874c9f3e66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StorageDecomposition
+  valuePopup: {fileID: 0}
+  currencySystem: {fileID: 7639431466538978612}
 --- !u!1 &1674618562125681912
 GameObject:
   m_ObjectHideFlags: 0
@@ -288,7 +336,6 @@ GameObject:
   - component: {fileID: 4594496697931293496}
   - component: {fileID: 4116270342163431550}
   - component: {fileID: 1169212744294248023}
-  - component: {fileID: 1490055343293791467}
   m_Layer: 0
   m_Name: WorkshopExpansionSystem
   m_TagString: Untagged
@@ -333,7 +380,6 @@ MonoBehaviour:
   navMeshSurface: {fileID: 4842265015553419280}
   preview: {fileID: 1169212744294248023}
   visualController: {fileID: 4116270342163431550}
-  saveService: {fileID: 1490055343293791467}
 --- !u!114 &4116270342163431550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -370,18 +416,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WorkshopExpansionPreview
   visualController: {fileID: 4116270342163431550}
   previewMaterial: {fileID: 2100000, guid: c2898b57eea2bf54c85e8be3b807f2d8, type: 2}
---- !u!114 &1490055343293791467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2280687891102091479}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c015bf1b2afec9a4195e3096a38da2fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WorkshopExpansionSaveService
 --- !u!1 &3218947324264860921
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,6 +562,7 @@ Transform:
   - {fileID: 3573402552528928363}
   - {fileID: 6925406222427910695}
   - {fileID: 2744392290980029438}
+  - {fileID: 1446817341567564715}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7044040682239475874
@@ -585,6 +620,7 @@ MonoBehaviour:
   recipeUnlockManager: {fileID: 3163766365585529418}
   expansionManager: {fileID: 4594496697931293496}
   placementSystem: {fileID: 8645873690436672994}
+  employeeManager: {fileID: 7672719721574952701}
   counterInventory: {fileID: 8565966294825179077}
   huntingFieldManager: {fileID: 3595694023088747465}
   teleportUI: {fileID: 0}
@@ -766,7 +802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d09001c7ba01da14fb9fd93c7e9aa305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CurrencySystem
-  money: 2000
+  money: 250
   experience: 0
   nowExperience: 0
 --- !u!1 &8770157076762750981
@@ -818,12 +854,12 @@ MonoBehaviour:
     employeeData: {fileID: 11400000, guid: 10a6e090f7c20ee4e99820664bb38122, type: 2}
     maxEmployees: 5
     automaticHireCount: 1
-    additionalHireCosts: [100, 200, 300, 400]
+    additionalHireCosts: 64000000c80000002c01000090010000
   - buildingId: B11
     employeeData: {fileID: 11400000, guid: fbddff4d63c778e449f4ee90a82c31ef, type: 2}
     maxEmployees: 20
     automaticHireCount: 1
-    additionalHireCosts: [100, 200, 300, 400, 500]
+    additionalHireCosts: 64000000c80000002c01000090010000f4010000
 --- !u!1 &8921850648760782774
 GameObject:
   m_ObjectHideFlags: 0
@@ -1054,6 +1090,10 @@ PrefabInstance:
       propertyPath: chasingSicklePrefab
       value: 
       objectReference: {fileID: 1442841952918593527, guid: 9c057b349289c674bbe4dba9c963b14f, type: 3}
+    - target: {fileID: 5824096366678690144, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
+      propertyPath: transferEffectPrefab
+      value: 
+      objectReference: {fileID: 8469898518912321821, guid: 2f7669aea79fe764d835147b2b18d49a, type: 3}
     - target: {fileID: 7119374117894832108, guid: 205ad76a9aac13943ab5382cee9d52a9, type: 3}
       propertyPath: m_Name
       value: PoolPreLoader

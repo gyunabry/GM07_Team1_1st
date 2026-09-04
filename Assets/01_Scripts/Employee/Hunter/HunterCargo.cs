@@ -52,4 +52,66 @@ public sealed class HunterCargo
     }
 
     public void Clear() { amounts.Clear(); TotalAmount = 0; }
+
+    #region 데이터 저장 및 복구
+    public InventorySaveData CaptureSaveData()
+    {
+        InventorySaveData result = new();
+
+        foreach (var pair in amounts)
+        {
+            if (pair.Key == null || pair.Value <= 0)
+            {
+                continue;
+            }
+
+            result.items.Add(new ItemStackSaveData
+            {
+                itemId = pair.Key.ItemId,
+                amount = pair.Value
+            });
+        }
+
+        return result;
+    }
+
+    public bool RestoreSaveData(InventorySaveData saved, ItemDatabaseSO itemDatabase)
+    {
+        if (itemDatabase == null)
+        {
+            return false;
+        }
+
+        Clear();
+
+        if (saved?.items == null)
+        {
+            return true;
+        }
+
+        bool success = true;
+
+        foreach (ItemStackSaveData stack in saved.items)
+        {
+            if (stack == null || stack.amount <= 0)
+            {
+                continue;
+            }
+
+            if (!itemDatabase.TryGetById(stack.itemId, out ItemDataSO item))
+            {
+                Debug.LogWarning($"사냥 직원 소지품 ID를 찾을 수 없습니다: {stack.itemId}");
+
+                success = false;
+                continue;
+            }
+
+            amounts.TryGetValue(item, out int current);
+            amounts[item] = current + stack.amount;
+            TotalAmount += stack.amount;
+        }
+
+        return success;
+    }
+#endregion
 }

@@ -1,11 +1,13 @@
+using System;
 using UnityEngine;
 
 public partial class PlacementSystem : MonoBehaviour
 {
     [SerializeField] private BuildingSaleService buildingSaleService;
-    [SerializeField] private WarningPopupController saleWarningPopup;
 
     private bool salePorcessing;
+
+    public event Action<SaleBlockReason> SaleRejection;
 
     public void BeginSellMode()
     {
@@ -27,12 +29,19 @@ public partial class PlacementSystem : MonoBehaviour
 
     public bool TrySelectSellTarget(PlacedBuilding building)
     {
-        if (!IsSellMode || building == null) return false;
+        if (!IsSellMode ||
+            building == null ||
+            buildingSaleService == null ||
+            salePorcessing)
+        {
+            return false;
+        }
 
         BuildingSaleEvaluation evaluation = buildingSaleService.Evaluate(building);
 
         if (!evaluation.CanSell)
         {
+            SaleRejection?.Invoke(evaluation.BlockReason);
             return false;
         }
 
@@ -51,6 +60,7 @@ public partial class PlacementSystem : MonoBehaviour
     {
         if (CurrentMode != PlacementMode.SellConfirm ||
             selectedPlacedBuilding == null ||
+            buildingSaleService == null ||
             salePorcessing)
         {
             return;
@@ -58,43 +68,50 @@ public partial class PlacementSystem : MonoBehaviour
 
         salePorcessing = true;
 
-        PlacedBuilding building = selectedPlacedBuilding;
-
-        BuildingSaleEvaluation evaluation = buildingSaleService.Evaluate(building);
-
-        if (!evaluation.CanSell)
+        try
         {
+            PlacedBuilding building = selectedPlacedBuilding;
+
+            BuildingSaleEvaluation evaluation = buildingSaleService.Evaluate(building);
+
+            if (!evaluation.CanSell)
+            {
+                ClearSelection();
+                ChangeMode(PlacementMode.SellSelect);
+
+                SaleRejection?.Invoke(evaluation.BlockReason);
+                return;
+            }
+
+            CurrencySystem currencySystem = CurrencySystem.Instance;
+
+            if (currencySystem == null)
+            {
+                ClearSelection();
+                ChangeMode(PlacementMode.SellSelect);
+                return;
+            }
+
+            // 가능한 재고 이관
+            buildingSaleService.TransferInventoryForSale(building);
+
+            // 점유 셀 해제
+            building.AssignedArea?.Release(building, building.OccupiedCells);
+
+            currencySystem.GrantMoney(evaluation.Refund);
+
+            OnBuildingSold(building, evaluation.Refund);
+
             ClearSelection();
+
+            Destroy(building.gameObject);
+
             ChangeMode(PlacementMode.SellSelect);
-            return;
         }
-
-        CurrencySystem currencySystem = CurrencySystem.Instance;
-
-        if (currencySystem == null)
+        finally
         {
-            ClearSelection();
-            ChangeMode(PlacementMode.SellSelect);
-            return;
+            salePorcessing = false;
         }
-
-        // 가능한 재고 이관
-        buildingSaleService.TransferInventoryForSale(building);
-
-        // 점유 셀 해제
-        building.AssignedArea?.Release(building, building.OccupiedCells);
-
-        currencySystem.GrantMoney(evaluation.Refund);
-
-        OnBuildingSold(building, evaluation.Refund);
-
-        ClearSelection();
-
-        Destroy(building.gameObject);
-
-        ChangeMode(PlacementMode.SellSelect);
-
-        salePorcessing = false;
     }
 
     private void ClearSelection()

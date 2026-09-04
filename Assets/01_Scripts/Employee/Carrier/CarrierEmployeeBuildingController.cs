@@ -103,15 +103,15 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         commandService = null;
     }
 
-    private void OnDestroy()
-    {
-        if (registeredByThisComponent && employeeManager != null && placedBuilding != null)
-        {
-            employeeManager.TryUnregisterBuilding(placedBuilding);
-        }
+    //private void OnDestroy()
+    //{
+    //    if (registeredByThisComponent && employeeManager != null && placedBuilding != null)
+    //    {
+    //        employeeManager.TryUnregisterBuilding(placedBuilding);
+    //    }
 
-        ReturnAllWorkers();
-    }
+    //    ReturnAllWorkers();
+    //}
 
     /// <summary>CarrierCommandService가 전송기 연동 값을 전달할 때만 호출합니다.</summary>
     internal void ConfigureLogisticsInternal(ItemInventory sharedMaterialStorage, Transform sharedMaterialStoragePoint)
@@ -336,5 +336,10 @@ public sealed class CarrierEmployeeBuildingController : MonoBehaviour
         {
             PoolManager.Instance.ReturnPool(worker);
         }
+    }
+
+    public bool TryGetWorker(int employeeId, out CarrierWorker worker)
+    {
+        return workers.TryGetValue(employeeId, out worker) && worker != null;
     }
 }

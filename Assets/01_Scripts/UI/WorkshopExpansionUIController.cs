@@ -49,14 +49,16 @@ public class WorkshopExpansionUIController : MonoBehaviour
             placementSystem.ModeChanged += HandlePlacementModeChanged;
         }
 
-        if (player != null)
+        if (currencySystem != null)
         {
-            player.LevelUp += HandleLevelUp;
+            currencySystem.LevelUp += HandleLevelUp;
         }
 
         if (currencySystem != null) 
         {
             currencySystem.CurrencyChanged += HandleCurrencyChanged;
+            currencySystem.CurrencyChanged_Gold += HandleGoldChanged;
+            currencySystem.CurrencyChanged_EXP += HandleExpChanged;
         }
 
         Refresh();
@@ -64,6 +66,8 @@ public class WorkshopExpansionUIController : MonoBehaviour
 
     private void Start()
     {
+        currencySystem = CurrencySystem.Instance;
+
         Refresh();
     }
 
@@ -91,14 +95,16 @@ public class WorkshopExpansionUIController : MonoBehaviour
             placementSystem.ModeChanged -= HandlePlacementModeChanged;
         }
 
-        if (player != null)
+        if (currencySystem != null)
         {
-            player.LevelUp -= HandleLevelUp;
+            currencySystem.LevelUp -= HandleLevelUp;
         }
 
         if (currencySystem != null)
         {
             currencySystem.CurrencyChanged -= HandleCurrencyChanged;
+            currencySystem.CurrencyChanged_Gold -= HandleGoldChanged;
+            currencySystem.CurrencyChanged_EXP -= HandleExpChanged;
         }
     }
 
@@ -172,6 +178,16 @@ public class WorkshopExpansionUIController : MonoBehaviour
     }
 
     private void HandleCurrencyChanged(int money, int exp)
+    {
+        Refresh();
+    }
+
+    private void HandleGoldChanged(int money)
+    {
+        Refresh();
+    }
+
+    private void HandleExpChanged(int exp)
     {
         Refresh();
     }
