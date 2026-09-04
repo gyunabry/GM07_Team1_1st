@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static TutorialUI;
 
 public class TutorialUI : MonoBehaviour
 {
@@ -11,6 +11,9 @@ public class TutorialUI : MonoBehaviour
     [Header("튜토리얼 UI")]
     [SerializeField] private GameObject uI_Tutorial;
     [SerializeField] private Tutorials[] tutorials;
+
+    private readonly HashSet<int> seenTutorialLevels = new();
+    private bool isLoadedGame;
 
     [System.Serializable]
     public struct Tutorials
@@ -24,11 +27,21 @@ public class TutorialUI : MonoBehaviour
     private int currentPage;
     private int totalPage;
 
+    private void Awake()
+    {
+        isLoadedGame = SaveLoadRequest.HasPending;
+    }
+
     private void Start()
     {
         if (CurrencySystem.Instance != null)
         {
             CurrencySystem.Instance.LevelUp += LevelCheck;
+        }
+
+        if (!isLoadedGame)
+        {
+            LevelCheck();
         }
     }
 
@@ -56,9 +69,20 @@ public class TutorialUI : MonoBehaviour
     //popupLevel에 해당하는 레벨이 되면 해당 튜토리얼 리스트가 열리도록 하는 기능
     private void LevelCheck()
     {
+        if (CurrencySystem.Instance == null || uI_Tutorial.activeSelf)
+        {
+            return;
+        }
+
+        int currentLevel = CurrencySystem.Instance.Level;
+
         for (int i = 0; i < tutorials.Length; i++)
         {
-            if (CurrencySystem.Instance.Level == tutorials[i].popupLevel)
+            int popupLevel = tutorials[i].popupLevel;
+
+            // 아직 보지 않은 가이드 오픈
+            if (popupLevel <= currentLevel &&
+                !seenTutorialLevels.Contains(popupLevel))
             {
                 OpenTutorialPopup(i);
                 return;
@@ -66,9 +90,11 @@ public class TutorialUI : MonoBehaviour
         }
     }
 
-    private void OpenTutorialPopup(int level)
+    private void OpenTutorialPopup(int tutorialIndex)
     {
         AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
+
+        seenTutorialLevels.Add(tutorials[tutorialIndex].popupLevel);
 
         uI_Tutorial.SetActive(true);
 
@@ -76,17 +102,17 @@ public class TutorialUI : MonoBehaviour
         {
             tutorials[i].levelPopupPanel.SetActive(false);
         }
-        tutorials[level].levelPopupPanel.SetActive(true);
+        tutorials[tutorialIndex].levelPopupPanel.SetActive(true);
 
-        for (int i = 0; i < tutorials[level].pages.Length; i++)
+        for (int i = 0; i < tutorials[tutorialIndex].pages.Length; i++)
         {
-            tutorials[level].pages[i].SetActive(false);
+            tutorials[tutorialIndex].pages[i].SetActive(false);
         }
-        tutorials[level].pages[0].SetActive(true);
+        tutorials[tutorialIndex].pages[0].SetActive(true);
 
-        currentPopupPanel = level;
+        currentPopupPanel = tutorialIndex;
         currentPage = 0;
-        totalPage = tutorials[level].pages.Length - 1;
+        totalPage = tutorials[tutorialIndex].pages.Length - 1;
         CheckPage();
     }
 
@@ -166,5 +192,30 @@ public class TutorialUI : MonoBehaviour
         AudioManager.Instance.PlaySFX(ESFXType.UI_Close);
 
         uI_Tutorial.SetActive(false);
+
+        LevelCheck();
     }
+
+    #region 저장 및 복구
+    public List<int> CaptureSeenTutorialLevels()
+    {
+        return new List<int>(seenTutorialLevels);
+    }
+
+    public void RestoreSeenTutorialLevels(List<int> savedLevels)
+    {
+        seenTutorialLevels.Clear();
+
+        if (savedLevels != null)
+        {
+            foreach (int level in savedLevels)
+            {
+                seenTutorialLevels.Add(level);
+            }
+        }
+
+        LevelCheck();
+    }
+
+    #endregion
 }

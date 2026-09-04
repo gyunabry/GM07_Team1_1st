@@ -133,7 +133,7 @@ public class BuildModeController : MonoBehaviour
             cameraModeController?.EnterEdgeScroll(activeArea.CameraBounds);
         }
 
-        AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
         exitButton.gameObject.SetActive(true);
 
         IsBuildMode = true;
