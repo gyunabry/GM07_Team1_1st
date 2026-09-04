@@ -6,14 +6,13 @@ public class AttackMagicArrow : SkillBase
 {
     public override IEnumerator RunSkill(Player player, AttackData ad, PoolManager poolManager, ParticleManager particleManager, LayerMask layer, IAttack attack)
     {
-        Collider[] enemyIn = Physics.OverlapSphere(player.transform.position, ad.distance, layer);
-        if (enemyIn == null || enemyIn.Length == 0) yield break;
-
-        ad.direction = (enemyIn[0].transform.position - player.transform.position).normalized;
-
         for(int i = 0; i < ad.projectileCount; i++)
         {
-            if(enemyIn.Length == 0)
+            Collider[] enemyIn = Physics.OverlapSphere(player.transform.position, ad.distance, layer);
+            if (enemyIn == null || enemyIn.Length == 0) yield break;
+
+            ad.direction = (enemyIn[0].transform.position - player.transform.position).normalized;
+            if (enemyIn.Length == 0)
             {
                 enemyIn = Physics.OverlapSphere(player.transform.position, ad.distance, layer);
             }
