@@ -11,7 +11,7 @@ public class HUDButtonController : MonoBehaviour
     {
         if (!characterPanel.IsOpen)
         {
-            AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
         }
         else
         {
@@ -25,7 +25,7 @@ public class HUDButtonController : MonoBehaviour
     {
         if (!employeePanel.IsOpen)
         {
-            AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+            AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
         }
         else
         {
@@ -37,7 +37,7 @@ public class HUDButtonController : MonoBehaviour
 
     public void OpenOptionPanel()
     {
-        AudioManager.Instance.PlaySFX(ESFXType.UI_ButtonClick);
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Open);
         optionUI.Show();
     }
 }

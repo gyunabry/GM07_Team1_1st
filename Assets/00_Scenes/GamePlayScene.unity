@@ -4242,6 +4242,14 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
+    - target: {fileID: 594004930291152271, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 594004930291152271, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 625552458816676673, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -4798,7 +4806,7 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1070830143}
-    - target: {fileID: 2999148601377855113, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+    - target: {fileID: 2977804262756691576, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -5026,6 +5034,14 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
+    - target: {fileID: 4126947790282028785, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1744276425}
+    - target: {fileID: 4126947790282028785, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: skillTreeManager
+      value: 
+      objectReference: {fileID: 1411673944}
     - target: {fileID: 4155583702823908103, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: poolManager
       value: 
@@ -5114,6 +5130,10 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
+    - target: {fileID: 4968214391550621126, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5018639278829964192, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: poolManager
       value: 
@@ -5130,14 +5150,6 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
-    - target: {fileID: 5148602359523316140, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5148602359523316140, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5197303139144741595, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: poolManager
       value: 
@@ -5178,6 +5190,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5394840905659626982, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: currencySystem
+      value: 
+      objectReference: {fileID: 29208155}
     - target: {fileID: 5400399187480142756, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: poolManager
       value: 
@@ -5570,6 +5586,18 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
+    - target: {fileID: 7559957198193663254, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7559957198193663254, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7559957198193663254, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -79
+      objectReference: {fileID: 0}
     - target: {fileID: 7611403335983331077, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5602,18 +5630,6 @@ PrefabInstance:
       propertyPath: skillTreeManager
       value: 
       objectReference: {fileID: 1411673944}
-    - target: {fileID: 7701875416344781024, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7701875416344781024, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7706839385529519039, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7743745430591417593, guid: 5e4f3d44864198d4e94149a26f96add9, type: 3}
       propertyPath: saveGameService
       value: 

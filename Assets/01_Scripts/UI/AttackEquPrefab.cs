@@ -64,6 +64,9 @@ public class AttackEquPrefab : MonoBehaviour
         string selectedAttackId = attackID;
 
         slot.EquipSlot(selectedAttackId);
+
+        AudioManager.Instance.PlaySFX(ESFXType.UI_Comfirm);
+
         slot.CloseSelector();
     }
 
