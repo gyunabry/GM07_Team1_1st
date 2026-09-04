@@ -166,6 +166,9 @@ public class AudioManager : MonoBehaviour
         SFXClipData data = sfxDictionary[type];
 
         float volume = data.volume * sfxVolume * masterVolume;
+
+        sfxSource.pitch = Random.Range(0.95f, 1.05f);
+
         sfxSource.PlayOneShot(data.clip, volume);
     }
 
@@ -193,6 +196,7 @@ public class AudioManager : MonoBehaviour
         source.loop = true;
         float volume = data.volume * sfxVolume * masterVolume;
         source.volume = volume;
+        sfxSource.pitch = Random.Range(0.95f, 1.05f);
         source.Play();
 
         return true;

@@ -92,6 +92,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 135828812005854587, guid: 69dff914f049ff7429af14d85c1e11e9, type: 3}
       insertIndex: -1
       addedObject: {fileID: -3073925459284491288}
+    - targetCorrespondingSourceObject: {fileID: 135828812005854587, guid: 69dff914f049ff7429af14d85c1e11e9, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6387212444359537039}
   m_SourcePrefab: {fileID: 100100000, guid: 69dff914f049ff7429af14d85c1e11e9, type: 3}
 --- !u!95 &134203687235769925 stripped
 Animator:
@@ -125,6 +128,7 @@ MonoBehaviour:
   runStartDistance: 2
   runEndDistance: 2.5
   enemySpawn: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
+  hitFlash: {fileID: 6387212444359537039}
   isHit: 0
 --- !u!195 &9027754593784148381
 NavMeshAgent:
@@ -135,7 +139,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6520678545648219446}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.25
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -185,3 +189,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimationController
   animator: {fileID: 134203687235769925}
   enemy: {fileID: 107964998409984809}
+--- !u!114 &6387212444359537039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6520678545648219446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5423a52cee22634a91d38097ee0ae15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitFlash
+  flashDuration: 0.2
+  flashColor: {r: 1, g: 1, b: 1, a: 1}

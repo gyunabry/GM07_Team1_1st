@@ -26,7 +26,7 @@ public class CameraModeController : MonoBehaviour
     [Header("엣지 스크롤")]
     [SerializeField, Min(1f)] private float edgeThickness = 20f;
     [SerializeField, Min(0f)] private float moveSpeed = 12f;
-    [SerializeField] private bool blockWhenPointerOverUI = false;
+    [SerializeField] private bool blockWhenPointerOverUI = true;
     [SerializeField] private CameraMode initialMode = CameraMode.PlayerFollow;
 
     [Header("줌 설정")]

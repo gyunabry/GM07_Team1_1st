@@ -48,7 +48,7 @@ public class EconomyModifierService : MonoBehaviour
             totalBonusRatio += GetProcessBonusRatio(item.ProcessType);
         }
 
-        return Mathf.Max(0, Mathf.RoundToInt(item.SellPrice * (1f + (totalBonusRatio + 100) / 100)));
+        return Mathf.Max(0, Mathf.RoundToInt(item.SellPrice * (1f + totalBonusRatio / 100f)));
     }
 
     public float GetProcessBonusRatio(ProcessType processType)
