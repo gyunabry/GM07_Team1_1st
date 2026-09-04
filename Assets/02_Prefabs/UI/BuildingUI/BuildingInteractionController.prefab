@@ -52,6 +52,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  workshopPortal: {fileID: 0}
 --- !u!1 &3060379394302684163
 GameObject:
   m_ObjectHideFlags: 0
@@ -143,6 +144,9 @@ MonoBehaviour:
   outputCountText: {fileID: 0}
   productionTimeText: {fileID: 0}
   progressFill: {fileID: 0}
+  arrowRoot: {fileID: 0}
+  orangeMarker: {fileID: 0}
+  redMarker: {fileID: 0}
   recipeSelectPanel: {fileID: 0}
 --- !u!1 &6915876473620602537
 GameObject:
@@ -194,7 +198,7 @@ MonoBehaviour:
   capacityText: {fileID: 0}
   contentRoot: {fileID: 0}
   itemViewPrefab: {fileID: 162598145531071272, guid: c57466c57eb350c4c9b593445cf34959, type: 3}
-  slotCount: 16
+  slotCount: 12
   storageDecomposition: {fileID: 0}
 --- !u!1 &7037930674034345489
 GameObject:
@@ -294,5 +298,5 @@ MonoBehaviour:
   capacityText: {fileID: 0}
   contentRoot: {fileID: 0}
   itemViewPrefab: {fileID: 162598145531071272, guid: c57466c57eb350c4c9b593445cf34959, type: 3}
-  slotCount: 24
+  slotCount: 12
   storageDecomposition: {fileID: 0}
