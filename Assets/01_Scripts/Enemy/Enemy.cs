@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,6 +16,8 @@ public class Enemy : MonoBehaviour
     public float runStartDistance;
     public float runEndDistance;
     public EnemySpawn enemySpawn;
+
+    [SerializeField] private EnemyHitFlash hitFlash;
 
     private bool isStart = false;
     private bool isDying;
@@ -46,13 +49,21 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        if (hitFlash == null)
+        {
+            hitFlash = GetComponent<EnemyHitFlash>();
+        }
+    }
+
     private void Update()
     {
         stateController.UpdateExcute();
 
         if (agent != null && animationController != null)
         {
-            animationController.SetMoveSpeed(agent.velocity.magnitude);
+            animationController.SetMoveSpeed(GetMoveSpeed());
         }
     }
 
@@ -110,6 +121,24 @@ public class Enemy : MonoBehaviour
     {
         CurrentHp = CurrentHp - damage;
         isHit = true;
+
+        hitFlash?.Play();
+    }
+
+    private float GetMoveSpeed()
+    {
+        if (stateController.nowState is EnemyPatrolState)
+        {
+            return enemyData.PatrolSpeed;
+        }
+
+        if (stateController.nowState is EnemyRunState ||
+            stateController.nowState is EnemyHitRunState)
+        {
+            return enemyData.RunSpeed;
+        }
+
+        return 0f;
     }
 
     public void PlayDeathAnimation()

@@ -92,6 +92,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4984208173965400924, guid: f78ee2a02893d3040a472e37f7322cab, type: 3}
       insertIndex: -1
       addedObject: {fileID: -2479247423893897555}
+    - targetCorrespondingSourceObject: {fileID: 4984208173965400924, guid: f78ee2a02893d3040a472e37f7322cab, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -3107638332994598885}
   m_SourcePrefab: {fileID: 100100000, guid: f78ee2a02893d3040a472e37f7322cab, type: 3}
 --- !u!1 &4564672102861070504 stripped
 GameObject:
@@ -130,7 +133,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4564672102861070504}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.25
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -165,6 +168,7 @@ MonoBehaviour:
   runStartDistance: 2
   runEndDistance: 2.5
   enemySpawn: {fileID: 7295964205403367490, guid: c594d1586a24f09488f6f72e918e3b09, type: 3}
+  hitFlash: {fileID: -3107638332994598885}
   isHit: 0
 --- !u!114 &-2479247423893897555
 MonoBehaviour:
@@ -180,6 +184,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimationController
   animator: {fileID: 9070575712826211673}
   enemy: {fileID: -2547916284840409996}
+--- !u!114 &-3107638332994598885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4564672102861070504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5423a52cee22634a91d38097ee0ae15, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitFlash
+  flashDuration: 0.2
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!95 &9070575712826211673 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 545682636550407853, guid: f78ee2a02893d3040a472e37f7322cab, type: 3}
