@@ -30,6 +30,7 @@ public class SaveGameService : MonoBehaviour
     [SerializeField] private HuntingFieldManager huntingFieldManager;
     [Tooltip("텔레포트 UI 참조 연결 복구")]
     [SerializeField] private TeleportUI teleportUI;
+    [SerializeField] private TutorialUI tutorialUI;
 
     private JsonSaveFileStore fileStore;
 
@@ -263,6 +264,8 @@ public class SaveGameService : MonoBehaviour
 
         StartCoroutine(RestoreEmployeeState(pendingEmployees, buildingsByGuid));
 
+        tutorialUI.RestoreSeenTutorialLevels(data.progression.seenTutorialLevels);
+
         return allSuccessed;
     }
     #endregion
@@ -341,6 +344,9 @@ public class SaveGameService : MonoBehaviour
 
             data.world.facilities.Add(facilityData);
         }
+
+        // 지금까지 본 튜토리얼 인덱스 저장
+        data.progression.seenTutorialLevels = tutorialUI.CaptureSeenTutorialLevels();
 
         return true;
     }
